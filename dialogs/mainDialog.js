@@ -5,6 +5,8 @@ const { TimexProperty } = require('@microsoft/recognizers-text-data-types-timex-
 const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const utf8 = require('utf8');
+const fetch = require("node-fetch");
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
@@ -79,36 +81,81 @@ class MainDialog extends ComponentDialog {
         // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt)
         const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
         switch (LuisRecognizer.topIntent(luisResult)) {
-        case 'BookFlight': {
-            // Extract the values for the composite entities from the LUIS result.
-            const fromEntities = this.luisRecognizer.getFromEntities(luisResult);
-            const toEntities = this.luisRecognizer.getToEntities(luisResult);
+            case 'Tìm_đường':
+                const A = this.luisRecognizer.getFromEntities(luisResult);
+                const B = this.luisRecognizer.getToEntities(luisResult);
+                const result = A.from + "->" + B.to;
+                console.log(process.env.GgAPI);
+                const http_request = process.env.GgAPI + "&origin=" + A.from + "&destination=" + B.to;
 
-            // Show a warning for Origin and Destination if we can't resolve them.
-            await this.showWarningForUnsupportedCities(stepContext.context, fromEntities, toEntities);
 
-            // Initialize BookingDetails with any entities we may have found in the response.
-            bookingDetails.destination = toEntities.airport;
-            bookingDetails.origin = fromEntities.airport;
-            bookingDetails.travelDate = this.luisRecognizer.getTravelDate(luisResult);
-            console.log('LUIS extracted these booking details:', JSON.stringify(bookingDetails));
 
-            // Run the BookingDialog passing in whatever details we have from the LUIS call, it will fill out the remainder.
-            return await stepContext.beginDialog('bookingDialog', bookingDetails);
-        }
+                try {
+                    const response = await fetch(utf8.encode(http_request));
+                    
+                    const json = await response.json();
+                    if(response.status!=200||json.routes.length==0){
+                        await stepContext.context.sendActivity("Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không", "Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không", InputHints.IgnoringInput);
+                        break;
+                    }
+                    console.log(json);
+                    let leg= json.routes[0].legs[0];
+                    let route =leg.steps;
+                    const summary_direction = "Đi từ "+leg.start_address+" đến "+leg.end_address+".\n Tổng quãng đường là "+leg.distance.text+" đi mất khoảng "+leg.duration.text;
 
-        case 'GetWeather': {
-            // We haven't implemented the GetWeatherDialog so we just display a TODO message.
-            const getWeatherMessageText = 'TODO: get weather flow here';
-            await stepContext.context.sendActivity(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
-            break;
-        }
+                    await stepContext.context.sendActivity(summary_direction,summary_direction,InputHints.IgnoringInput);
+                    for (var i = 0; i < route.length; i++) {
+                        var step = route[i];
+                        if (step.travel_mode === 'WALKING') {
 
-        default: {
-            // Catch all for unhandled intents
-            const didntUnderstandMessageText = `Sorry, I didn't get that. Please try asking in a different way (intent was ${ LuisRecognizer.topIntent(luisResult) })`;
-            await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
-        }
+                            await stepContext.context.sendActivity(step.html_instructions, step.html_instructions, InputHints.IgnoringInput);
+                        }
+                        else {
+                            const instuction = "Bắt xe bus " + step.transit_details.line.name + "\nTừ trạm " + step.transit_details.departure_stop.name + " tới trạm " + step.transit_details.arrival_stop.name
+                            await stepContext.context.sendActivity(instuction, instuction, InputHints.IgnoringInput);
+
+                        }
+                    }
+
+
+
+                } catch (error) {
+                    console.log(error.message)
+                }
+
+                break;
+
+            case 'BookFlight': {
+                const luis = this.luisRecognizer.getToEntities(luisResult);
+                // Extract the values for the composite entities from the LUIS result.
+                const fromEntities = this.luisRecognizer.getAEntities(luisResult);
+                const toEntities = this.luisRecognizer.getBEntities(luisResult);
+
+                // Show a warning for Origin and Destination if we can't resolve them.
+                await this.showWarningForUnsupportedCities(stepContext.context, fromEntities, toEntities);
+
+                // Initialize BookingDetails with any entities we may have found in the response.
+                bookingDetails.destination = toEntities.airport;
+                bookingDetails.origin = fromEntities.airport;
+                bookingDetails.travelDate = this.luisRecognizer.getTravelDate(luisResult);
+                console.log('LUIS extracted these booking details:', JSON.stringify(bookingDetails));
+
+                // Run the BookingDialog passing in whatever details we have from the LUIS call, it will fill out the remainder.
+                return await stepContext.beginDialog('bookingDialog', bookingDetails);
+            }
+
+            case 'GetWeather': {
+                // We haven't implemented the GetWeatherDialog so we just display a TODO message.
+                const getWeatherMessageText = 'TODO: get weather flow here';
+                await stepContext.context.sendActivity(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
+                break;
+            }
+
+            default: {
+                // Catch all for unhandled intents
+                const didntUnderstandMessageText = `Sorry, I didn't get that. Please try asking in a different way (intent was ${LuisRecognizer.topIntent(luisResult)})`;
+                await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
+            }
         }
 
         return await stepContext.next();
@@ -130,7 +177,7 @@ class MainDialog extends ComponentDialog {
         }
 
         if (unsupportedCities.length) {
-            const messageText = `Sorry but the following airports are not supported: ${ unsupportedCities.join(', ') }`;
+            const messageText = `Sorry but the following airports are not supported: ${unsupportedCities.join(', ')}`;
             await context.sendActivity(messageText, messageText, InputHints.IgnoringInput);
         }
     }
@@ -150,7 +197,7 @@ class MainDialog extends ComponentDialog {
             // If the call to the booking service was successful tell the user.
             const timeProperty = new TimexProperty(result.travelDate);
             const travelDateMsg = timeProperty.toNaturalLanguage(new Date(Date.now()));
-            const msg = `I have you booked to ${ result.destination } from ${ result.origin } on ${ travelDateMsg }.`;
+            const msg = `I have you booked to ${result.destination} from ${result.origin} on ${travelDateMsg}.`;
             await stepContext.context.sendActivity(msg, msg, InputHints.IgnoringInput);
         }
 
