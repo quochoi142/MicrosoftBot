@@ -58,7 +58,8 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         const activity = Object.assign({}, stepContext.context)._activity;
-        stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
+        await stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
+        console.log(JSON.stringify(activity)) 
 
         var result = stepContext.options;
         result.origin = stepContext.result;
