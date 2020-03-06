@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 const { InputHints, MessageFactory } = require('botbuilder');
-const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
-
+const ATTACHMENT_PROMT='AttachmentPromt+routeDetail';
 
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
@@ -17,6 +17,7 @@ class RouteDialog extends CancelAndHelpDialog {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new AttachmentPrompt(ATTACHMENT_PROMT))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.destinationStep.bind(this),
                 this.originStep.bind(this),
@@ -24,7 +25,10 @@ class RouteDialog extends CancelAndHelpDialog {
             ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
+
+
     }
+
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
@@ -34,6 +38,7 @@ class RouteDialog extends CancelAndHelpDialog {
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
+        
         return await stepContext.next(route.destination);
     }
 
@@ -43,7 +48,7 @@ class RouteDialog extends CancelAndHelpDialog {
         if (!route.origin) {
             const messageText = 'Bạn muốn đi từ đâu?';
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+            return await stepContext.prompt(ATTACHMENT_PROMT, { prompt: msg });
         }
         return await stepContext.next(route.origin);
     }
@@ -57,12 +62,15 @@ class RouteDialog extends CancelAndHelpDialog {
         /*----------------------------------------------*/
 
 
-        const activity = Object.assign({}, stepContext.context)._activity;
-        await stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
-        console.log(JSON.stringify(activity)) 
+        // const activity = Object.assign({}, stepContext.context)._activity;
+        // await stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
+        // console.log(JSON.stringify(activity)) 
 
+        //var result = stepContext.options;
         var result = stepContext.options;
-        result.origin = stepContext.result;
+        //result.origin = stepContext.result;
+        result.origin="suối tiên";
+        await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
 
         const http_request = process.env.GgAPI + "&origin=" + result.origin + "&destination=" + result.destination;
