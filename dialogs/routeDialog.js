@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 const { InputHints, MessageFactory } = require('botbuilder');
-const { TextPrompt, WaterfallDialog, AttachmentPrompt, ActivityPrompt } = require('botbuilder-dialogs');
+const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
@@ -19,7 +19,6 @@ class RouteDialog extends CancelAndHelpDialog {
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new AttachmentPrompt(ATTACHMENT_PROMT))
-            .addDialog(new ActivityPrompt(ACTIVIRY_PROMT))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.destinationStep.bind(this),
                 this.originStep.bind(this),
@@ -48,9 +47,20 @@ class RouteDialog extends CancelAndHelpDialog {
         const route = stepContext.options;
         route.destination = stepContext.result;
         if (!route.origin) {
-            const messageText = 'Bạn muốn đi từ đâu?';
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(ACTIVIRY_PROMT, { prompt: msg });
+            // const messageText = 'Bạn muốn đi từ đâu?';
+            // const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            // return await stepContext.prompt(ATTACHMENT_PROMT, { prompt: msg });
+
+            await stepContext.context.sendActivity({
+                text: 'Would you mind sharing your location?',
+                channelData: {
+                    "quick_replies":[
+                        {
+                            "content_type": "location"
+                        }
+                    ]
+                }
+            });
         }
         return await stepContext.next(route.origin);
     }
