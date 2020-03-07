@@ -119,9 +119,8 @@ class RouteDialog extends CancelAndHelpDialog {
                 }
                 //console.log(config);
 
-                const activity = Object.assign({}, stepContext.context)._activity;
-            
-                utils.saveRoute(activity.from.id,result.destination);
+                const id = utils.getIdUser(stepContext.context);
+                utils.saveRoute(id,result.destination);
                 prompt = "Tôi có thể giúp gì thêm cho bạn?";
             }
 

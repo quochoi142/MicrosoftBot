@@ -27,24 +27,37 @@ const utils = {
                     });
 
                     console.log(key);
-                    firebase.database().ref('users/'+id).child(key).set(obj)
+                    firebase.database().ref('users/' + id).child(key).set(obj)
                     db.goOffline();
                 });
-
             }
             else {
                 const x = refFirebase.push();
                 x.set(obj);
                 db.goOffline();
-
             }
-
-
         });
+    },
+
+    readRoute: async (id) => {
+        firebase.initializeApp(config);
+        var arr = [];
+
+        return await firebase.database().ref('users/' + id).orderByChild('time').once('value')
+            .then(function (snapshot) {
+                snapshot.forEach(data => {
+                    arr.push(data.val());
 
 
+                })
+                return arr.reverse();
+            });
 
+    },
 
+    getIdUser: (context) => {
+        const activity = Object.assign({}, context)._activity;
+        return activity.from.id;
     }
 
 }

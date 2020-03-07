@@ -4,7 +4,7 @@
     "description": "TBD",
     "author": "Generated using Microsoft Bot Builder Yeoman generator v4.7.0",
     "license": "MIT",
-    "main": "index.js",
+    "main": "test.js",
     "scripts": {
         "start": "node ./index.js",
         "watch": "nodemon ./index.js",
