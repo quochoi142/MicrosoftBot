@@ -4,11 +4,6 @@
   "version": "1.0",
   "body": [
     {
-      "type": "Image",
-      "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
-      "size": "stretch"
-    },
-    {
       "type": "TextBlock",
       "spacing": "medium",
       "size": "default",
@@ -21,26 +16,81 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": true,
-      "text": "Now that you have successfully run your bot, follow the links in this Adaptive Card to expand your knowledge of Bot Framework.",
+      "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn?",
       "wrap": true,
       "maxLines": 0
     }
   ],
   "actions": [
     {
-      "type": "Action.OpenUrl",
-      "title": "Get an overview",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0"
+      "type": "Action.ShowCard",
+      "title": "Tìm đường",
+      "card": {
+        "type": "AdaptiveCard",
+        "body":[
+          {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Tìm đường đi đến:",
+            "wrap": true,
+            "maxLines": 0
+          },
+          {
+            "type": "Input.ChoiceSet",
+            "id": "Cho2",
+            "style": "compact",
+            "value": "1",
+            "choices": [
+              {
+                "title": "Đến KTX khu A",
+                "value": "1"
+              },
+              {
+                "title": "Đến KTX khu B",
+                "value": "2"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Ask a question",
-      "url": "https://stackoverflow.com/questions/tagged/botframework"
+      "type": "Action.ShowCard",
+      "title": "Tra Cứu",
+      "card": {
+        "type": "AdaptiveCard",
+        "body":[
+          {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Tra cứu xe bus tại:",
+            "wrap": true,
+            "maxLines": 0
+          },
+          {
+            "type": "Input.ChoiceSet",
+            "id": "Cho1",
+            "style": "compact",
+            "value": "1",
+            "choices": [
+              {
+                "title": "Vị trí hiện tại",
+                "value": "1"
+              },
+              {
+                "title": "Vị trí khác",
+                "value": "2"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Learn how to deploy",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-deploy-azure?view=azure-bot-service-4.0"
+      "type": "Action.Submit",
+      "title": "Không cần giúp gì"
     }
   ]
 }

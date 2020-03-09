@@ -24,7 +24,7 @@
         "dotenv": "^8.2.0",
         "https": "^1.0.0",
         "node-fetch": "^2.6.0",
-        "restify": "~8.4.0",
+        "restify": "^8.4.1",
         "utf8": "^3.0.0"
     },
     "devDependencies": {
