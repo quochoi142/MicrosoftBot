@@ -6,9 +6,9 @@
     {
       "type": "TextBlock",
       "spacing": "medium",
-      "size": "default",
+      "size": "medium",
       "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
+      "text": "Welcome to Bot chỉ đường xe bus",
       "wrap": true,
       "maxLines": 0
     },
@@ -17,6 +17,22 @@
       "size": "default",
       "isSubtle": true,
       "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn?",
+      "wrap": true,
+      "maxLines": 0
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": true,
+      "text": "Ngoài cách chọn các lựa chọn bên dưới bạn cũng có thể nói điều bạn muốn. ",
+      "wrap": true,
+      "maxLines": 0
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": true,
+      "text": "VD: Tôi muốn đi từ ABC đến XYZ, Tôi muốn tra cứu xe bus tại trạm ABC ",
       "wrap": true,
       "maxLines": 0
     }

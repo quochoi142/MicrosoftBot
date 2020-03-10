@@ -3,7 +3,7 @@
 
 const { CardFactory } = require('botbuilder-core');
 const { DialogBot } = require('./dialogBot');
-const WelcomeCard = require('../resources/welcomeCard.json');
+const WelcomeCard = require('../resources/confirmLocationCard.json');
 
 class DialogAndWelcomeBot extends DialogBot {
     constructor(conversationState, userState, dialog) {
