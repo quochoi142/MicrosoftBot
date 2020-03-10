@@ -4,7 +4,9 @@
 const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
-
+const { CardFactory } = require('botbuilder-core');
+const WelcomeCard = require('../resources/welcomeCard.json');
+const ConfirmCard = require('../resources/confirmCard.json');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
@@ -59,7 +61,12 @@ class MainDialog extends ComponentDialog {
         //     return await stepContext.next();
         // }
 
-        const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì cho bạn?';
+        //Init card welcome
+        const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
+        await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+
+        //const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì thêm cho bạn?';
+        const messageText = null; //set null Intro message
         const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
         return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
     }
@@ -95,7 +102,7 @@ class MainDialog extends ComponentDialog {
 
             default: {
 
-                const didntUnderstandMessageText = 'Xin lỗi, tôi không hiểu yêu cầu của bạn, bạn có thể nói rõ hơn được không';
+                const didntUnderstandMessageText = 'Xin lỗi, tôi không hiểu yêu cầu của bạn, bạn hãy xem và làm theo hướng dẫn dưới đây';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
         }
@@ -104,13 +111,23 @@ class MainDialog extends ComponentDialog {
     }
 
 
-    async finalStep(stepContext) {
-        const prompt=stepContext.result;
-        if (prompt) {
+    async finalStep(stepContext) { 
+
+
+        const prompt = stepContext.result;
+        // mới thêm !
+        if (!prompt) { 
             return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: prompt });
 
-        }
+        } 
+        //Init card confirm
+        const confirmCard = CardFactory.adaptiveCard(ConfirmCard);
+        await stepContext.context.sendActivity({ attachments: [confirmCard] });
+
+        // IF confirm thì tiếp tục
         return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: 'Bạn cần tôi giúp gì thêm không?' });
+
+        // else thì return Bye bye
     }
 }
 

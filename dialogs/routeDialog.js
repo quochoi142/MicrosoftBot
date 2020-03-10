@@ -4,6 +4,10 @@
 const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
+const { CardFactory } = require('botbuilder-core');
+const OriginCard = require('../resources/originCard.json');
+const DestinationCard = require('../resources/destinationCard.json');
+const ConfirmODCard = require('../resources/confirmODCard.json');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
@@ -30,7 +34,12 @@ class RouteDialog extends CancelAndHelpDialog {
         const route = stepContext.options;
 
         if (!route.destination) {
-            const messageText = 'Nơi bạn muốn đến là?';
+            //Init card destination
+            const destinationCard = CardFactory.adaptiveCard(DestinationCard);
+            await stepContext.context.sendActivity({ attachments: [destinationCard] });
+
+            //const messageText = 'Nơi bạn muốn đến là?';
+            const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
@@ -41,7 +50,12 @@ class RouteDialog extends CancelAndHelpDialog {
         const route = stepContext.options;
         route.destination = stepContext.result;
         if (!route.origin) {
-            const messageText = 'Bạn muốn đi từ đâu?';
+            //Init card destination
+            const originCard = CardFactory.adaptiveCard(OriginCard);
+            await stepContext.context.sendActivity({ attachments: [originCard] });
+
+            //const messageText = 'Bạn muốn đi từ đâu?';
+            const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
@@ -50,13 +64,22 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
     async finalStep(stepContext) {
-        // const route = stepContext.options;
-        // route.origin=stepContext.result;
+        const route = stepContext.options;
+        route.origin = stepContext.result;
 
         // return await stepContext.endDialog(route);
         /*----------------------------------------------*/
 
+        //Cho người dùng biết 2 điểm O-D
+        const messageText = "Bạn muốn đi từ " + route.origin + " đến " + route.destination +".";
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
 
+        //Init card confirmOD
+        const confirmODCard = CardFactory.adaptiveCard(ConfirmODCard);
+        await stepContext.context.sendActivity({ attachments: [confirmODCard] });
+
+        //IF (Confirm)  thì mới chạy cái bên dưới
         const activity = Object.assign({}, stepContext.context)._activity;
         stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
 
@@ -97,8 +120,10 @@ class RouteDialog extends CancelAndHelpDialog {
                 prompt = "Tôi có thể giúp gì thêm cho bạn?";
             }
 
-
-
+        //else thì kiểm tra sai ở đâu
+        //IF destination thì quay lại bước lấy điểm đến 
+        //IF origin thì quay lại bước lấy điểm xuất phát
+        //IF cả hai thì ...
 
         } catch (error) {
             prompt = error.message;

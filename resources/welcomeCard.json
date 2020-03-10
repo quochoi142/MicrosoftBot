@@ -48,15 +48,39 @@
             "type": "TextBlock",
             "size": "default",
             "isSubtle": true,
-            "text": "Tìm đường đi đến:",
+            "text": "Bạn muốn đi từ:",
             "wrap": true,
             "maxLines": 0
           },
           {
             "type": "Input.ChoiceSet",
-            "id": "Cho2",
+            "id": "Origin",
             "style": "compact",
             "value": "1",
+            "choices": [
+              {
+                "title": "Đến KTX khu A",
+                "value": "1"
+              },
+              {
+                "title": "Đến KTX khu B",
+                "value": "2"
+              }
+            ]
+          },
+          {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "đến:",
+            "wrap": true,
+            "maxLines": 0
+          },
+          {
+            "type": "Input.ChoiceSet",
+            "id": "Destination",
+            "style": "compact",
+            "value": "2",
             "choices": [
               {
                 "title": "Đến KTX khu A",
