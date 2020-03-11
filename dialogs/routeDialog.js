@@ -35,12 +35,18 @@ class RouteDialog extends CancelAndHelpDialog {
 
     }
     async locationValidator(promptContext) {
-        var activity = promptContext.Context.Activity;
-        var location = activity.entry[0];
-        if (location != null) {
-            return true;
+        if(promptContext.recognized.succeeded){
+            const obj = promptContext.recognized.value;
+            promptContext.context.sendActivity(JSON.stringify(obj));
         }
-        return false
+        else{
+            return false;
+        }
+        // var location = activity.entry[0];
+        // if (location != null) {
+        //     return true;
+        // }
+        // return false
         // return promptContext.recognized.succeeded && promptContext.recognized.value > 0 && promptContext.recognized.value < 150;
     }
 
@@ -67,7 +73,7 @@ class RouteDialog extends CancelAndHelpDialog {
         if (!route.origin) {
             //Init card destination
             const originCard = CardFactory.adaptiveCard(OriginCard);
-            await stepContext.context.sendActivity({ attachments: [originCard] });
+            //await stepContext.context.sendActivity({ attachments: [originCard] });
 
             //const messageText = 'Bạn muốn đi từ đâu?';
             const messageText = {
@@ -81,8 +87,8 @@ class RouteDialog extends CancelAndHelpDialog {
                 }
 
             };
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: msg });
+           // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: messageText },InputHints.ExpectingInput);
 
             await stepContext.context.sendActivity({
                 text: 'Hãy chia sẻ bị trí cho tôi biết?',
@@ -124,7 +130,7 @@ class RouteDialog extends CancelAndHelpDialog {
         //var result = stepContext.options;
         var result = stepContext.options;
         result.origin = stepContext.result;
-        //result.origin = "suối tiên";
+        result.origin = "suối tiên";
         // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
 

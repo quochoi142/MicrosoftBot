@@ -123,7 +123,7 @@ class MainDialog extends ComponentDialog {
 
         } 
         //Init card confirm
-        const confirmCard = CardFactory.adaptiveCard(ConfirmCard);
+        const confirmCard = CardFactory.adaptiveCard( );
         await stepContext.context.sendActivity({ attachments: [confirmCard] });
 
         // IF confirm thì tiếp tục
