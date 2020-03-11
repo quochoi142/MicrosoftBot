@@ -1,0 +1,33 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "spacing": "medium",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Bạn cần tôi giúp gì nữa không",
+            "wrap": true,
+            "maxLines": 0
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Có",
+            "data":{
+                "x": 1
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Không",
+            "data":{
+                "x": 0
+            }
+        }
+    ]
+
+}
