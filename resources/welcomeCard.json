@@ -6,9 +6,9 @@
     {
       "type": "TextBlock",
       "spacing": "medium",
-      "size": "medium",
+      "size": "default",
       "weight": "bolder",
-      "text": "Welcome to Bot chỉ đường xe bus",
+      "text": "Welcome to Bot Framework!",
       "wrap": true,
       "maxLines": 0
     },
@@ -16,121 +16,35 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": true,
-      "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn?",
-      "wrap": true,
-      "maxLines": 0
-    },
-    {
-      "type": "TextBlock",
-      "size": "default",
-      "isSubtle": true,
-      "text": "Ngoài cách chọn các lựa chọn bên dưới bạn cũng có thể nói điều bạn muốn. ",
-      "wrap": true,
-      "maxLines": 0
-    },
-    {
-      "type": "TextBlock",
-      "size": "default",
-      "isSubtle": true,
-      "text": "VD: Tôi muốn đi từ ABC đến XYZ, Tôi muốn tra cứu xe bus tại trạm ABC ",
+      "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn",
       "wrap": true,
       "maxLines": 0
     }
   ],
   "actions": [
     {
-      "type": "Action.ShowCard",
+      "type": "Action.Submit",
       "title": "Tìm đường",
-      "card": {
-        "type": "AdaptiveCard",
-        "body":[
-          {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Bạn muốn đi từ:",
-            "wrap": true,
-            "maxLines": 0
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "Origin",
-            "style": "compact",
-            "value": "1",
-            "choices": [
-              {
-                "title": "Đến KTX khu A",
-                "value": "1"
-              },
-              {
-                "title": "Đến KTX khu B",
-                "value": "2"
-              }
-            ]
-          },
-          {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "đến:",
-            "wrap": true,
-            "maxLines": 0
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "Destination",
-            "style": "compact",
-            "value": "2",
-            "choices": [
-              {
-                "title": "Đến KTX khu A",
-                "value": "1"
-              },
-              {
-                "title": "Đến KTX khu B",
-                "value": "2"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "type": "Action.ShowCard",
-      "title": "Tra Cứu",
-      "card": {
-        "type": "AdaptiveCard",
-        "body":[
-          {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Tra cứu xe bus tại:",
-            "wrap": true,
-            "maxLines": 0
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "Cho1",
-            "style": "compact",
-            "value": "1",
-            "choices": [
-              {
-                "title": "Vị trí hiện tại",
-                "value": "1"
-              },
-              {
-                "title": "Vị trí khác",
-                "value": "2"
-              }
-            ]
-          }
-        ]
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "I clicked this button",
+          "text": "Tìm đường đi từ a tới b",
+          "value": ""
+        }
       }
     },
     {
       "type": "Action.Submit",
-      "title": "Không cần giúp gì"
+      "title": "Tra cứu",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "I clicked this button",
+          "text": "Tra Cứu",
+          "value": ""
+        }
+      }
     }
   ]
 }
