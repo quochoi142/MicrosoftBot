@@ -32,6 +32,8 @@ class MainDialog extends ComponentDialog {
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
     }
 
+    
+
     /**
      * The run method handles the incoming activity (in the form of a TurnContext) and passes it through the dialog system.
      * If no dialog is active, it will start the default dialog.
@@ -82,7 +84,7 @@ class MainDialog extends ComponentDialog {
             // LUIS is not configured, we just run the BookingDialog path.
             return await stepContext.beginDialog('routeDialog', routeDetails);
         }
-
+    
         // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt)
         const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
         switch (LuisRecognizer.topIntent(luisResult)) {
