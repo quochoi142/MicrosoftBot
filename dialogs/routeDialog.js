@@ -11,7 +11,7 @@ const ConfirmODCard = require('../resources/confirmODCard.json');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
-
+const LOCATION ='location_prompt';
 
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
@@ -21,6 +21,7 @@ class RouteDialog extends CancelAndHelpDialog {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new TextPrompt(LOCATION,this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.destinationStep.bind(this),
                 this.originStep.bind(this),
@@ -58,6 +59,19 @@ class RouteDialog extends CancelAndHelpDialog {
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+
+            await stepContext.context.sendActivity({
+                text: 'Hãy chia sẻ bị trí cho tôi biết?',
+                channelData: {
+                    "quick_replies":[
+                        {
+                            "content_type": "location"
+                        }
+                    ]
+                }
+            });
+
+
         }
         return await stepContext.next(route.origin);
     }
