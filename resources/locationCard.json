@@ -1,0 +1,66 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "spacing": "medium",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Welcome to Bot chỉ đường xe bus",
+            "wrap": true,
+            "maxLines": 0
+          },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Bạn muốn tra cứu xe bus tại trạm nào?",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Nếu bên dưới không có nơi bạn muốn tra cứu thì hãy nhập nơi bạn muốn vào.",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "VD: Tra cứu xe bus tại trạm ABC",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "id": "lo1",
+            "style": "expanded",
+            "value": "0",
+            "choices": [
+                {
+                    "title": "Đại học khoa học tự nhiên cs 2",
+                    "value": "2"
+                },
+                {
+                    "title": "Đại học khoa học tự nhiên cs 1",
+                    "value": "1"
+                },
+                {
+                    "title": "Vị trí hiện tại",
+                    "value": "0"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "OK"
+        }
+    ]
+}

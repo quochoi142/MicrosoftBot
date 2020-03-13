@@ -1,0 +1,66 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "spacing": "medium",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Chọn điểm mà bạn muốn đến",
+            "wrap": true,
+            "maxLines": 0
+          },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Bạn muốn đi đến đâu?",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "Nếu bên dưới không có nơi bạn muốn đến thì hãy nhập nơi bạn muốn đến vào.",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "TextBlock",
+            "size": "default",
+            "isSubtle": true,
+            "text": "VD: Tôi muốn đến ABC.",
+            "wrap": true,
+            "maxLines": 0
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "id": "des1",
+            "style": "expanded",
+            "value": "0",
+            "choices": [
+                {
+                    "title": "Đại học khoa học tự nhiên cs 2",
+                    "value": "2"
+                },
+                {
+                    "title": "Đại học khoa học tự nhiên cs 1",
+                    "value": "1"
+                },
+                {
+                    "title": "Vị trí hiện tại",
+                    "value": "0"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "OK"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "spacing": "medium",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Vị trí mà Bot chọn đã đúng như bạn muốn?.",
+            "wrap": true,
+            "maxLines": 0
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Đúng"
+        },
+        {
+            "type": "Action.ShowCard",
+            "title": "Sai",
+            "card":{
+                "type": "AdaptiveCard",
+                "body": [
+                    {
+                        "type": "Input.ChoiceSet",
+                        "id": "CfmLo",
+                        "style": "expanded",
+                        "isMultiSelect": true,
+                        "choices": [
+                          {
+                            "title": "Sai vị trí cần tra cứu",
+                            "value": "1"
+                          }
+                        ]
+                      }
+                ],
+                "actions": [
+                    {
+                        "type": "Action.Submit",
+                        "title": "OK"
+                    }
+                ]
+            }
+
+        }
+    ]
+}

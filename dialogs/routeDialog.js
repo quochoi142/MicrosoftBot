@@ -4,10 +4,14 @@
 const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
+const { CardFactory } = require('botbuilder-core');
+const OriginCard = require('../resources/originCard.json');
+const DestinationCard = require('../resources/destinationCard.json');
+const ConfirmODCard = require('../resources/confirmODCard.json');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
-const ATTACHMENT_PROMT = 'AttachmentPromt_routeDetail';
+const LOCATION = 'location_prompt';
 
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
@@ -19,6 +23,7 @@ class RouteDialog extends CancelAndHelpDialog {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.destinationStep.bind(this),
                 this.originStep.bind(this),
@@ -29,13 +34,32 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
     }
-
+    async locationValidator(promptContext) {
+        if(promptContext.recognized.succeeded){
+            const obj = promptContext.recognized.value;
+            promptContext.context.sendActivity(JSON.stringify(obj));
+        }
+        else{
+            return false;
+        }
+        // var location = activity.entry[0];
+        // if (location != null) {
+        //     return true;
+        // }
+        // return false
+        // return promptContext.recognized.succeeded && promptContext.recognized.value > 0 && promptContext.recognized.value < 150;
+    }
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
 
         if (!route.destination) {
-            const messageText = 'Nơi bạn muốn đến là?';
+            //Init card destination
+            const destinationCard = CardFactory.adaptiveCard(DestinationCard);
+            await stepContext.context.sendActivity({ attachments: [destinationCard] });
+
+            //const messageText = 'Nơi bạn muốn đến là?';
+            const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
@@ -47,20 +71,35 @@ class RouteDialog extends CancelAndHelpDialog {
         const route = stepContext.options;
         route.destination = stepContext.result;
         if (!route.origin) {
-            const messageText = 'Bạn muốn đi từ đâu?';
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+            //Init card destination
+            const originCard = CardFactory.adaptiveCard(OriginCard);
+            //await stepContext.context.sendActivity({ attachments: [originCard] });
 
-            // await stepContext.context.sendActivity({
-            //     text: 'Would you mind sharing your location?',
-            //     channelData: {
-            //         "quick_replies":[
-            //             {
-            //                 "content_type": "location"
-            //             }
-            //         ]
-            //     }
-            // });
+            //const messageText = 'Bạn muốn đi từ đâu?';
+            const messageText = {
+                text: 'Hãy chia sẻ bị trí cho tôi biết?',
+                channelData: {
+                    "quick_replies": [
+                        {
+                            "content_type": "location"
+                        }
+                    ]
+                }
+
+            };
+           // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: messageText },InputHints.ExpectingInput);
+
+            await stepContext.context.sendActivity({
+                text: 'Hãy chia sẻ bị trí cho tôi biết?',
+                channelData: {
+                    "quick_replies": [
+                        {
+                            "content_type": "location"
+                        }
+                    ]
+                }
+            });
 
 
         }
@@ -69,21 +108,29 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
     async finalStep(stepContext) {
-        // const route = stepContext.options;
-        // route.origin=stepContext.result;
+        const route = stepContext.options;
+        route.origin = stepContext.result;
 
         // return await stepContext.endDialog(route);
         /*----------------------------------------------*/
 
+        //Cho người dùng biết 2 điểm O-D
+        const messageText = "Bạn muốn đi từ " + route.origin + " đến " + route.destination + ".";
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
 
-        // const activity = Object.assign({}, stepContext.context)._activity;
-        // await stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
-        // console.log(JSON.stringify(activity)) 
+        //Init card confirmOD
+        const confirmODCard = CardFactory.adaptiveCard(ConfirmODCard);
+        await stepContext.context.sendActivity({ attachments: [confirmODCard] });
+
+        //IF (Confirm)  thì mới chạy cái bên dưới
+        const activity = Object.assign({}, stepContext.context)._activity;
+        stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
 
         //var result = stepContext.options;
         var result = stepContext.options;
         result.origin = stepContext.result;
-        //result.origin = "suối tiên";
+        result.origin = "suối tiên";
         // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
 
@@ -120,12 +167,14 @@ class RouteDialog extends CancelAndHelpDialog {
                 //console.log(config);
 
                 const id = utils.getIdUser(stepContext.context);
-                utils.saveRoute(id,result.destination);
+                utils.saveRoute(id, result.destination);
                 prompt = "Tôi có thể giúp gì thêm cho bạn?";
             }
 
-
-
+            //else thì kiểm tra sai ở đâu
+            //IF destination thì quay lại bước lấy điểm đến 
+            //IF origin thì quay lại bước lấy điểm xuất phát
+            //IF cả hai thì ...
 
         } catch (error) {
             prompt = error.message;

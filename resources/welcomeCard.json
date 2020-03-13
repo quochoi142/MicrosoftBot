@@ -2,7 +2,7 @@
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
   "version": "1.0",
-  "body": [ 
+  "body": [
     {
       "type": "TextBlock",
       "spacing": "medium",
@@ -27,10 +27,10 @@
       "title": "Tìm đường",
       "data": {
         "msteams": {
-            "type": "messageBack",
-            "displayText": "I clicked this button",
-            "text": "Tìm đường đi từ a tới b",
-            "value": ""
+          "type": "messageBack",
+          "displayText": "I clicked this button",
+          "text": "Tìm đường đi từ a tới b",
+          "value": ""
         }
       }
     },
@@ -39,10 +39,10 @@
       "title": "Tra cứu",
       "data": {
         "msteams": {
-            "type": "messageBack",
-            "displayText": "I clicked this button",
-            "text": "Tra Cứu",
-            "value": ""
+          "type": "messageBack",
+          "displayText": "I clicked this button",
+          "text": "Tra Cứu",
+          "value": ""
         }
       }
     }
