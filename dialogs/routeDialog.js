@@ -82,7 +82,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     text: 'Hãy chia sẻ vị trí của bạn?',
                     quick_replies: [
                         {
-                            "content_type": "location"
+                            content_type: "location"
 
                         }
                     ]
