@@ -35,11 +35,12 @@ class RouteDialog extends CancelAndHelpDialog {
 
     }
     async locationValidator(promptContext) {
-        if(promptContext.recognized.succeeded){
+        if (promptContext.recognized.succeeded) {
             const obj = promptContext.recognized.value;
             promptContext.context.sendActivity(JSON.stringify(obj));
+            return true;
         }
-        else{
+        else {
             return false;
         }
         // var location = activity.entry[0];
@@ -52,7 +53,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
-        stepContext.context.sendActivity('log','log',InputHints.IgnoringInput)
+        stepContext.context.sendActivity('log', 'log', InputHints.IgnoringInput)
         if (!route.destination) {
             //Init card destination
             const destinationCard = CardFactory.adaptiveCard(DestinationCard);
@@ -77,25 +78,18 @@ class RouteDialog extends CancelAndHelpDialog {
 
             //const messageText = 'Bạn muốn đi từ đâu?';
             const messageText = {
-                text: 'Hãy chia sẻ bị trí cho tôi biết?',
-                // channelData: {
-                //     // "quick_replies": [
-                //     //     {
-                //     //         "content_type": "location"
-                //     //     }
-                //     // ]
-                    
-                // }
+                channelData: {
+                    text: 'Hãy chia sẻ vị trí của bạn?',
+                    quick_replies: [
+                        {
+                            "content_type": "location"
 
-                "quick_replies":[
-                    {
-                      "content_type":"location",
-                    }
-                  ]
-
+                        }
+                    ]
+                }
             };
-           // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: messageText },InputHints.ExpectingInput);
+            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
 
             await stepContext.context.sendActivity({
                 text: 'Hãy chia sẻ bị trí cho tôi biết?',
