@@ -89,20 +89,21 @@ class RouteDialog extends CancelAndHelpDialog {
             //     }
             // };
 
-            const messageText = {
-                "messaging_type": "RESPONSE",
-                "message": {
-                    "text": "Share location?",
-                    "quick_replies": [
+            const quickReply = {
+                channelData: {
+                    text: "location",
+                    quick_replies: [
                         {
-                            "content_type": "location"
+                            content_type: "location"
+
                         }
                     ]
                 }
             }
-            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
 
+            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: quickReply }, InputHints.ExpectingInput);
+            //return await stepContext.context.sendActivity(quickReply);
             await stepContext.context.sendActivity({
                 text: 'Hãy chia sẻ bị trí cho tôi biết?',
                 channelData: {
