@@ -52,7 +52,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
-
+        stepContext.context.sendActivity('log','log',InputHints.IgnoringInput);
         if (!route.destination) {
             //Init card destination
             const destinationCard = CardFactory.adaptiveCard(DestinationCard);
