@@ -91,13 +91,15 @@ class RouteDialog extends CancelAndHelpDialog {
 
             const quickReply = {
                 channelData: {
-                    text: "location",
-                    quick_replies: [
-                        {
-                            content_type: "location"
-
-                        }
-                    ]
+                    "messaging_type": "RESPONSE",
+                    "message": {
+                        "text": "Pick a color:",
+                        "quick_replies": [
+                            {
+                                "content_type":"location"
+                            }
+                        ]
+                    }
                 }
             }
 
