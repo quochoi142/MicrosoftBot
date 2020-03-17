@@ -53,7 +53,6 @@ class RouteDialog extends CancelAndHelpDialog {
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
-        stepContext.context.sendActivity('log', 'log', InputHints.IgnoringInput)
         if (!route.destination) {
             //Init card destination
             const destinationCard = CardFactory.adaptiveCard(DestinationCard);
@@ -73,49 +72,15 @@ class RouteDialog extends CancelAndHelpDialog {
         route.destination = stepContext.result;
         if (!route.origin) {
             //Init card destination
-            const originCard = CardFactory.adaptiveCard(OriginCard);
+            //const originCard = CardFactory.adaptiveCard(OriginCard);
             //await stepContext.context.sendActivity({ attachments: [originCard] });
 
-            //const messageText = 'Bạn muốn đi từ đâu?';
-            // const messageText = {
-            //     channelData: {
-            //         text: 'Hãy chia sẻ vị trí của bạn?',
-            //         quick_replies: [
-            //             {
-            //                 content_type: "location"
 
-            //             }
-            //         ]
-            //     }
-            // };
 
-            const quickReply = {
-                channelData: {
-                    "messaging_type": "RESPONSE",
-                    "message": {
-                        "text": "Pick a color:",
-                        "quick_replies": [
-                            {
-                                "content_type":"location"
-                            }
-                        ]
-                    }
-                }
-            }
+            const messageText = 'Bạn sẽ đi từ đâu?';
+            //const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
 
-            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: quickReply }, InputHints.ExpectingInput);
-            //return await stepContext.context.sendActivity(quickReply);
-            await stepContext.context.sendActivity({
-                text: 'Hãy chia sẻ bị trí cho tôi biết?',
-                channelData: {
-                    "quick_replies": [
-                        {
-                            "content_type": "location"
-                        }
-                    ]
-                }
-            });
 
 
         }
@@ -141,16 +106,16 @@ class RouteDialog extends CancelAndHelpDialog {
 
         //IF (Confirm)  thì mới chạy cái bên dưới
         const activity = Object.assign({}, stepContext.context)._activity;
-        stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
+       // stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
 
         //var result = stepContext.options;
         var result = stepContext.options;
         result.origin = stepContext.result;
-        result.origin = "suối tiên";
+       // result.origin = "suối tiên";
         // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
 
-        const http_request = process.env.GgAPI + "&origin=" + result.origin + "&destination=" + result.destination;
+        const http_request = process.env.GgAPI + "&origin=" + result.origin+ ' tphcm' + "&destination=" + result.destination+ ' tphcm';
         var prompt = '';
 
         try {
