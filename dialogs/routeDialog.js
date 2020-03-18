@@ -35,11 +35,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
     }
     async locationValidator(promptContext) {
-        if(promptContext.recognized.succeeded){
+        if (promptContext.recognized.succeeded) {
             const obj = promptContext.recognized.value;
             promptContext.context.sendActivity(JSON.stringify(obj));
         }
-        else{
+        else {
             return false;
         }
         // var location = activity.entry[0];
@@ -87,8 +87,8 @@ class RouteDialog extends CancelAndHelpDialog {
                 }
 
             };
-           // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: messageText },InputHints.ExpectingInput);
+            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
 
             await stepContext.context.sendActivity({
                 text: 'Hãy chia sẻ bị trí cho tôi biết?',
@@ -147,24 +147,52 @@ class RouteDialog extends CancelAndHelpDialog {
 
             }
             else {
-                let leg = json.routes[0].legs[0];
-                let route = leg.steps;
-                const summary_direction = "Đi từ " + leg.start_address + " đến " + leg.end_address + ".\n Tổng quãng đường là " + leg.distance.text + " đi mất khoảng " + leg.duration.text;
 
-                await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-                for (var i = 0; i < route.length; i++) {
-                    var step = route[i];
-                    if (step.travel_mode === 'WALKING') {
+                const route = json.routes[0].legs[0];
 
-                        await stepContext.context.sendActivity(step.html_instructions, step.html_instructions, InputHints.IgnoringInput);
-                    }
-                    else {
-                        const instuction = "Bắt xe bus " + step.transit_details.line.name + "\nTừ trạm " + step.transit_details.departure_stop.name + " tới trạm " + step.transit_details.arrival_stop.name
-                        await stepContext.context.sendActivity(instuction, instuction, InputHints.IgnoringInput);
 
-                    }
-                }
-                //console.log(config);
+                const geoOrigin = route.start_location.lat + ',' + route.start_location.lng;
+                const geoDest = route.end_location.lat + ',' + route.start_location.lng;
+
+                const start_location = route.start_address;
+                const end_address = route.end_address;
+
+                const url = 'https://transit.router.hereapi.com/v1/routes?lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest;
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+
+
+
+
+                const response = await fetch(url, requestOptions)
+                const data = await response.json();
+                console.log(data);
+
+                // let leg = json.routes[0].legs[0];
+
+                // let route = leg.steps;
+                // const summary_direction = "Đi từ " + leg.start_address + " đến " + leg.end_address + ".\n Tổng quãng đường là " + leg.distance.text + " đi mất khoảng " + leg.duration.text;
+
+                // await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                // for (var i = 0; i < route.length; i++) {
+                //     var step = route[i];
+                //     if (step.travel_mode === 'WALKING') {
+
+                //         await stepContext.context.sendActivity(step.html_instructions, step.html_instructions, InputHints.IgnoringInput);
+                //     }
+                //     else {
+                //         const instuction = "Bắt xe bus " + step.transit_details.line.name + "\nTừ trạm " + step.transit_details.departure_stop.name + " tới trạm " + step.transit_details.arrival_stop.name
+                //         await stepContext.context.sendActivity(instuction, instuction, InputHints.IgnoringInput);
+
+                //     }
+                // }
+                // //console.log(config);
 
                 const id = utils.getIdUser(stepContext.context);
                 utils.saveRoute(id, result.destination);
