@@ -4,14 +4,11 @@
     "version": "1.0",
     "body": [
         {
-            "type": "TextBlock",
-            "spacing": "medium",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Chọn điểm bạn muốn xuất phát",
-            "wrap": true,
-            "maxLines": 0
-          },
+            "type": "Image",
+            "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
+            "size": "large",
+            "style": "default"
+        },
         {
             "type": "TextBlock",
             "size": "default",
@@ -24,7 +21,7 @@
             "type": "TextBlock",
             "size": "default",
             "isSubtle": true,
-            "text": "Nếu bên dưới không có nơi bạn muốn xuất phát thì hãy nhập nơi bạn muốn xuất phát vào.",
+            "text": "Bạn có thể nhập nơi xuất phát vào.",
             "wrap": true,
             "maxLines": 0
         },
