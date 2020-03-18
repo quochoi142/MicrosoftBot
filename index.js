@@ -6,7 +6,7 @@
 // Import required packages
 const path = require('path');
 const restify = require('restify');
-
+const setAccessToken=require('./API/oauth1');
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
@@ -81,6 +81,9 @@ const routeDialog = new RouteDialog(ROUTE_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 
+
+//Get bearer
+setAccessToken()
 // Create HTTP server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function() {
