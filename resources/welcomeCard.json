@@ -23,7 +23,12 @@
       "type": "Action.Submit",
       "title": "Tìm đường",
       "data": {
-        "text": "Tìm_đường"
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "Tìm_đường",
+          "text": "Tìm_đường",
+          "value": "Tìm_đường"
+        }
       }
     },
     {
@@ -33,7 +38,7 @@
         "msteams": {
           "type": "messageBack",
           "displayText": "I clicked this button",
-          "text": "Tra_Cứu",
+          "text": "Tra_cứu",
           "value": ""
         }
       }
