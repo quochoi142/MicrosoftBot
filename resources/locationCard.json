@@ -4,19 +4,16 @@
     "version": "1.0",
     "body": [
         {
-            "type": "TextBlock",
-            "spacing": "medium",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Welcome to Bot chỉ đường xe bus",
-            "wrap": true,
-            "maxLines": 0
+            "type": "Image",
+            "url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+            "size": "large",
+            "style": "default"
           },
-        {
+          {
             "type": "TextBlock",
             "size": "default",
             "isSubtle": true,
-            "text": "Bạn muốn tra cứu xe bus tại trạm nào?",
+            "text": "Bạn tra cứu xe bus tại trạm nào?",
             "wrap": true,
             "maxLines": 0
         },
@@ -24,7 +21,7 @@
             "type": "TextBlock",
             "size": "default",
             "isSubtle": true,
-            "text": "Nếu bên dưới không có nơi bạn muốn tra cứu thì hãy nhập nơi bạn muốn vào.",
+            "text": "Bạn có thể nhập nơi bạn muốn vào.",
             "wrap": true,
             "maxLines": 0
         },

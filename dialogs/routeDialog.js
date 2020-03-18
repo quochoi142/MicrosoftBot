@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 const { InputHints, MessageFactory } = require('botbuilder');
-const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
+const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
 const OriginCard = require('../resources/originCard.json');
@@ -38,6 +38,7 @@ class RouteDialog extends CancelAndHelpDialog {
         if (promptContext.recognized.succeeded) {
             const obj = promptContext.recognized.value;
             promptContext.context.sendActivity(JSON.stringify(obj));
+            return true;
         }
         else {
             return false;
@@ -52,7 +53,6 @@ class RouteDialog extends CancelAndHelpDialog {
 
     async destinationStep(stepContext) {
         const route = stepContext.options;
-
         if (!route.destination) {
             //Init card destination
             const destinationCard = CardFactory.adaptiveCard(DestinationCard);
@@ -72,34 +72,15 @@ class RouteDialog extends CancelAndHelpDialog {
         route.destination = stepContext.result;
         if (!route.origin) {
             //Init card destination
-            const originCard = CardFactory.adaptiveCard(OriginCard);
+            //const originCard = CardFactory.adaptiveCard(OriginCard);
             //await stepContext.context.sendActivity({ attachments: [originCard] });
 
-            //const messageText = 'Bạn muốn đi từ đâu?';
-            const messageText = {
-                text: 'Hãy chia sẻ bị trí cho tôi biết?',
-                channelData: {
-                    "quick_replies": [
-                        {
-                            "content_type": "location"
-                        }
-                    ]
-                }
 
-            };
-            // const msg = MessageFactory.(messageText, messageText, InputHints.ExpectingInput);
+
+            const messageText = 'Bạn sẽ đi từ đâu?';
+            //const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
 
-            await stepContext.context.sendActivity({
-                text: 'Hãy chia sẻ bị trí cho tôi biết?',
-                channelData: {
-                    "quick_replies": [
-                        {
-                            "content_type": "location"
-                        }
-                    ]
-                }
-            });
 
 
         }
@@ -125,16 +106,16 @@ class RouteDialog extends CancelAndHelpDialog {
 
         //IF (Confirm)  thì mới chạy cái bên dưới
         const activity = Object.assign({}, stepContext.context)._activity;
-        stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
+       // stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
 
         //var result = stepContext.options;
         var result = stepContext.options;
         result.origin = stepContext.result;
-        result.origin = "suối tiên";
+       // result.origin = "suối tiên";
         // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
 
-        const http_request = process.env.GgAPI + "&origin=" + result.origin + "&destination=" + result.destination;
+        const http_request = process.env.GgAPI + "&origin=" + result.origin+ ' tphcm' + "&destination=" + result.destination+ ' tphcm';
         var prompt = '';
 
         try {

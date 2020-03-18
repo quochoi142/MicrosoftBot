@@ -4,19 +4,16 @@
   "version": "1.0",
   "body": [
     {
-      "type": "TextBlock",
-      "spacing": "medium",
-      "size": "default",
-      "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
-      "wrap": true,
-      "maxLines": 0
+      "type": "Image",
+      "url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+      "width": "stretch",
+      "style": "default"
     },
     {
       "type": "TextBlock",
       "size": "default",
       "isSubtle": true,
-      "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn",
+      "text": "Tôi có thể giúp gì cho bạn",
       "wrap": true,
       "maxLines": 0
     }
@@ -29,7 +26,7 @@
         "msteams": {
           "type": "messageBack",
           "displayText": "I clicked this button",
-          "text": "Tìm đường đi từ a tới b",
+          "text": "Tìm_đường",
           "value": ""
         }
       }
@@ -41,7 +38,7 @@
         "msteams": {
           "type": "messageBack",
           "displayText": "I clicked this button",
-          "text": "Tra Cứu",
+          "text": "Tra_cứu",
           "value": ""
         }
       }
