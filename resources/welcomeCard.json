@@ -6,7 +6,7 @@
     {
       "type": "Image",
       "url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
-      "size": "large",
+      "width": "stretch",
       "style": "default"
     },
     {
@@ -25,9 +25,9 @@
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "Tìm_đường",
-          "text": "Tìm_đường",
-          "value": "Tìm_đường"
+          "displayText": "I clicked this button",
+          "text": "Tra_cứu",
+          "value": ""
         }
       }
     },
