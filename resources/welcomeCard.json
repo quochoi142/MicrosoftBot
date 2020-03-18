@@ -26,8 +26,8 @@
         "msteams": {
           "type": "messageBack",
           "displayText": "I clicked this button",
-          "text": "Tra_cứu",
-          "value": ""
+          "text": "Tìm_đường",
+          "value": "Tìm_đường"
         }
       }
     },
@@ -39,7 +39,7 @@
           "type": "messageBack",
           "displayText": "I clicked this button",
           "text": "Tra_cứu",
-          "value": ""
+          "value": "Tìm_đường"
         }
       }
     }
