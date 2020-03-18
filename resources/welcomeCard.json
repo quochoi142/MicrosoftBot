@@ -2,6 +2,7 @@
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
   "version": "1.0",
+  "title":"hello",
   "body": [
     {
       "type": "TextBlock",
@@ -16,7 +17,7 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": true,
-      "text": "Tôi là bot hổ trợ việc tìm đường và tra cứu xe bus. Tôi có thể giúp gì cho bạn",
+      "text": "Tôi có thể giúp gì cho bạn",
       "wrap": true,
       "maxLines": 0
     }
@@ -24,27 +25,11 @@
   "actions": [
     {
       "type": "Action.Submit",
-      "title": "Tìm đường",
-      "data": {
-        "msteams": {
-          "type": "messageBack",
-          "displayText": "I clicked this button",
-          "text": "Tìm đường đi từ a tới b",
-          "value": ""
-        }
-      }
+      "title": "Tìm đường"
     },
     {
       "type": "Action.Submit",
-      "title": "Tra cứu",
-      "data": {
-        "msteams": {
-          "type": "messageBack",
-          "displayText": "I clicked this button",
-          "text": "Tra Cứu",
-          "value": ""
-        }
-      }
+      "title": "Tra cứu"
     }
   ]
 }
