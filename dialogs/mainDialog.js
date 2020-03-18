@@ -6,6 +6,7 @@ const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
 const WelcomeCard = require('../resources/welcomeCard.json');
+const LocationCard = require('../resources/locationCard.json');
 const ConfirmCard = require('../resources/confirmCard.json');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
@@ -32,7 +33,7 @@ class MainDialog extends ComponentDialog {
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
     }
 
-    
+
 
     /**
      * The run method handles the incoming activity (in the form of a TurnContext) and passes it through the dialog system.
@@ -84,7 +85,7 @@ class MainDialog extends ComponentDialog {
             // LUIS is not configured, we just run the BookingDialog path.
             return await stepContext.beginDialog('routeDialog', routeDetails);
         }
-    
+
         // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt)
         const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
         switch (LuisRecognizer.topIntent(luisResult)) {
@@ -95,15 +96,14 @@ class MainDialog extends ComponentDialog {
                 routeDetails.destination = to;
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-
-
-
-
-
-
-
+            case 'Tra_cứu': {
+                //chỉ hiện location card
+                //Init card location
+                const locationCard = CardFactory.adaptiveCard(LocationCard);
+                return await stepContext.context.sendActivity({ attachments: [locationCard] });
+            }
             default: {
- 
+
                 const didntUnderstandMessageText = 'Xin lỗi, tôi không hiểu yêu cầu của bạn, bạn hãy xem và làm theo hướng dẫn dưới đây';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
@@ -113,17 +113,17 @@ class MainDialog extends ComponentDialog {
     }
 
 
-    async finalStep(stepContext) { 
+    async finalStep(stepContext) {
 
 
         const prompt = stepContext.result;
         // mới thêm !
-        if (!prompt) { 
+        if (!prompt) {
             return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: prompt });
 
-        } 
+        }
         //Init card confirm
-        const confirmCard = CardFactory.adaptiveCard( );
+        const confirmCard = CardFactory.adaptiveCard();
         await stepContext.context.sendActivity({ attachments: [confirmCard] });
 
         // IF confirm thì tiếp tục
