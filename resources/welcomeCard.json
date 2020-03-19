@@ -8,14 +8,6 @@
       "url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
       "width": "stretch",
       "style": "default"
-    },
-    {
-      "type": "TextBlock",
-      "size": "default",
-      "isSubtle": true,
-      "text": "Tôi có thể giúp gì cho bạn",
-      "wrap": true,
-      "maxLines": 0
     }
   ],
   "actions": [

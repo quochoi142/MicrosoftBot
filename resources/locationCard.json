@@ -53,11 +53,5 @@
                 }
             ]
         }
-    ],
-    "actions": [
-        {
-            "type": "Action.Submit",
-            "title": "OK"
-        }
     ]
 }

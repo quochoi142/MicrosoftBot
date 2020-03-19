@@ -5,7 +5,8 @@ const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
-const WelcomeCard = require('../resources/welcomeCard.json');
+//const WelcomeCard = require('../resources/welcomeCard.json');
+const WelcomeCard = require('../resources/locationCard.json');
 const LocationCard = require('../resources/locationCard.json');
 const ConfirmCard = require('../resources/confirmCard.json');
 
@@ -104,7 +105,7 @@ class MainDialog extends ComponentDialog {
             }
             default: {
 
-                const didntUnderstandMessageText = 'Xin lỗi, tôi không hiểu yêu cầu của bạn, bạn hãy xem và làm theo hướng dẫn dưới đây';
+                const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
         }
