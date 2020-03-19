@@ -15,24 +15,14 @@
       "type": "Action.Submit",
       "title": "Tìm đường",
       "data": {
-        "msteams": {
-          "type": "messageBack",
-          "displayText": "I clicked this button",
-          "text": "Tìm_đường",
-          "value": ""
-        }
+        "x": "Tìm đường"
       }
     },
     {
       "type": "Action.Submit",
       "title": "Tra cứu",
       "data": {
-        "msteams": {
-          "type": "messageBack",
-          "displayText": "I clicked this button",
-          "text": "Tra_cứu",
-          "value": ""
-        }
+        "x": "Tìm_đường"
       }
     }
   ]

@@ -15,36 +15,21 @@
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 2",
             "data": {
-                "msteams": {
-                    "type": "messageBack",
-                    "displayText": "I clicked this button",
-                    "text": "1",
-                    "value": ""
-                }
+                "x": ""
             }
         },
         {
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 1",
             "data": {
-                "msteams": {
-                    "type": "messageBack",
-                    "displayText": "I clicked this button",
-                    "text": "2",
-                    "value": ""
-                }
+                "x": ""
             }
         },
         {
             "type": "Action.Submit",
             "title": "Vị trí hiện tại",
             "data": {
-                "msteams": {
-                    "type": "messageBack",
-                    "displayText": "I clicked this button",
-                    "text": "3",
-                    "value": ""
-                }
+                "x": ""
             }
         }
     ]

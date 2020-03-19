@@ -5,8 +5,8 @@ const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
-//const WelcomeCard = require('../resources/welcomeCard.json');
-const WelcomeCard = require('../resources/confirmCard.json');
+const WelcomeCard = require('../resources/welcomeCard.json');
+//const WelcomeCard = require('../resources/confirmCard.json');
 const LocationCard = require('../resources/locationCard.json');
 const ConfirmCard = require('../resources/confirmCard.json');
 

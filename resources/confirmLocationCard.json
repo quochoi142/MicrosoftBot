@@ -16,33 +16,16 @@
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "Đúng"
+            "title": "Đúng",
+            "data": {
+                "x": ""
+            }
         },
         {
             "type": "Action.ShowCard",
             "title": "Sai",
-            "card":{
-                "type": "AdaptiveCard",
-                "body": [
-                    {
-                        "type": "Input.ChoiceSet",
-                        "id": "CfmLo",
-                        "style": "expanded",
-                        "isMultiSelect": true,
-                        "choices": [
-                          {
-                            "title": "Sai vị trí cần tra cứu",
-                            "value": "1"
-                          }
-                        ]
-                      }
-                ],
-                "actions": [
-                    {
-                        "type": "Action.Submit",
-                        "title": "OK"
-                    }
-                ]
+            "data": {
+                "x": ""
             }
 
         }

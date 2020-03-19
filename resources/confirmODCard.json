@@ -16,39 +16,17 @@
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "Đúng"
+            "title": "Đúng",
+            "data": {
+                "x": ""
+            }
         },
         {
             "type": "Action.ShowCard",
             "title": "Sai",
-            "card":{
-                "type": "AdaptiveCard",
-                "body": [
-                    {
-                        "type": "Input.ChoiceSet",
-                        "id": "CfmOD",
-                        "style": "expanded",
-                        "isMultiSelect": true,
-                        "choices": [
-                          {
-                            "title": "Sai điểm xuất phát",
-                            "value": "1"
-                          },
-                          {
-                            "title": "Sai điểm đến",
-                            "value": "2"
-                          }
-                        ]
-                      }
-                ],
-                "actions": [
-                    {
-                        "type": "Action.Submit",
-                        "title": "OK"
-                    }
-                ]
+            "data": {
+                "x": ""
             }
-
         }
     ]
 }
