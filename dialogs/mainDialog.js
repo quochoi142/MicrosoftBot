@@ -66,8 +66,8 @@ class MainDialog extends ComponentDialog {
         // }
 
         //Init card welcome
-        //const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
-        //await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+        const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
+        await stepContext.context.sendActivity({ attachments: [welcomeCard] });
 
         //const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì thêm cho bạn?';
         const messageText = null; //set null Intro message
