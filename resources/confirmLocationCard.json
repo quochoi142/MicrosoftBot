@@ -18,14 +18,14 @@
             "type": "Action.Submit",
             "title": "Đúng",
             "data": {
-                "x": ""
+                "x": 1
             }
         },
         {
-            "type": "Action.ShowCard",
+            "type": "Action.Submit",
             "title": "Sai",
             "data": {
-                "x": ""
+                "x": 0
             }
 
         }
