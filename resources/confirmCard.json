@@ -4,13 +4,10 @@
     "version": "1.0",
     "body": [
         {
-            "type": "TextBlock",
-            "spacing": "medium",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Bạn cần tôi giúp gì nữa không",
-            "wrap": true,
-            "maxLines": 0
+            "type": "Image",
+            "url": "https://i.ytimg.com/vi/Q9jUjocAQNE/maxresdefault.jpg",
+            "width": "stretch",
+            "style": "default"
         }
     ],
     "actions": [

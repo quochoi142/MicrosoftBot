@@ -6,58 +6,46 @@
         {
             "type": "Image",
             "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
-            "size": "large",
+            "width": "stretch",
             "style": "default"
-        },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Bạn muốn đi từ đâu?",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Bạn có thể nhập nơi xuất phát vào.",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "VD: Tôi muốn đi từ ABC ",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "Input.ChoiceSet",
-            "id": "lo1",
-            "style": "expanded",
-            "value": "0",
-            "choices": [
-                {
-                    "title": "Đại học khoa học tự nhiên cs 2",
-                    "value": "2"
-                },
-                {
-                    "title": "Đại học khoa học tự nhiên cs 1",
-                    "value": "1"
-                },
-                {
-                    "title": "Vị trí hiện tại",
-                    "value": "0"
-                }
-            ]
         }
     ],
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "OK"
+            "title": "Đại học khoa học tự nhiên cs 2",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "1",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 1",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "2",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Vị trí hiện tại",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "3",
+                    "value": ""
+                }
+            }
         }
     ]
 }

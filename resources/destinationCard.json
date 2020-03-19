@@ -4,62 +4,48 @@
     "version": "1.0",
     "body": [
         {
-           
-                "type": "Image",
-                "url": "https://previews.123rf.com/images/cosmaa/cosmaa1801/cosmaa180100190/93932215-vector-carton-illustration-of-hands-holding-abstract-city-map-with-pin-destination-location-route-st.jpg",
-                "size": "large",
-                "style": "default"
-            
-          },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Bạn muốn đi đến đâu?",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "Bạn có thể nhập nơi muốn đến vào.",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "TextBlock",
-            "size": "default",
-            "isSubtle": true,
-            "text": "VD: Tôi muốn đến ABC.",
-            "wrap": true,
-            "maxLines": 0
-        },
-        {
-            "type": "Input.ChoiceSet",
-            "id": "des1",
-            "style": "expanded",
-            "value": "0",
-            "choices": [
-                {
-                    "title": "Đại học khoa học tự nhiên cs 2",
-                    "value": "2"
-                },
-                {
-                    "title": "Đại học khoa học tự nhiên cs 1",
-                    "value": "1"
-                },
-                {
-                    "title": "Vị trí hiện tại",
-                    "value": "0"
-                }
-            ]
+            "type": "Image",
+            "url": "https://previews.123rf.com/images/cosmaa/cosmaa1801/cosmaa180100190/93932215-vector-carton-illustration-of-hands-holding-abstract-city-map-with-pin-destination-location-route-st.jpg",
+            "width": "stretch",
+            "style": "default"
         }
     ],
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "OK"
+            "title": "Đại học khoa học tự nhiên cs 2",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "1",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 1",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "2",
+                    "value": ""
+                }
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Vị trí hiện tại",
+            "data": {
+                "msteams": {
+                    "type": "messageBack",
+                    "displayText": "I clicked this button",
+                    "text": "3",
+                    "value": ""
+                }
+            }
         }
     ]
 }
