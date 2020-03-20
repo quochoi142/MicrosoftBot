@@ -14,23 +14,20 @@
         {
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 2",
-            "data": {
-                "x": "Đại học khoa học tự nhiên cs 2"
-            }
+            "data":  "Đại học khoa học tự nhiên cs 2"
+            
         },
         {
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 1",
-            "data": {
-                "x": "Đại học khoa học tự nhiên cs 1"
-            }
+            "data":  "Đại học khoa học tự nhiên cs 1"
+            
         },
         {
             "type": "Action.Submit",
             "title": "Vị trí hiện tại",
-            "data": {
-                "x": "Vị trí hiện tại"
-            }
+            "data": "Vị trí hiện tại"
+            
         }
     ]
 }

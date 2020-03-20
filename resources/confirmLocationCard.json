@@ -14,16 +14,14 @@
         {
             "type": "Action.Submit",
             "title": "Đúng",
-            "data": {
-                "x": 1
-            }
+            "data":  "1"
+            
         },
         {
             "type": "Action.Submit",
             "title": "Sai",
-            "data": {
-                "x": 0
-            }
+            "data": "0"
+            
 
         }
     ]

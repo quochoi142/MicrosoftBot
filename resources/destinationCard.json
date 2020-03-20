@@ -5,7 +5,7 @@
     "body": [
         {
             "type": "Image",
-            "url": "https://previews.123rf.com/images/cosmaa/cosmaa1801/cosmaa180100190/93932215-vector-carton-illustration-of-hands-holding-abstract-city-map-with-pin-destination-location-route-st.jpg",
+            "url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
             "width": "stretch",
             "style": "default"
         }
@@ -14,23 +14,20 @@
         {
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 2",
-            "data": {
-                "x": "Đại học khoa học tự nhiên cs 2"
-            }
+            "data":  "Đại học khoa học tự nhiên cs 2"
+            
         },
         {
             "type": "Action.Submit",
             "title": "Đại học khoa học tự nhiên cs 1",
-            "data": {
-                "x": "Đại học khoa học tự nhiên cs 1"
-            }
+            "data":  "Đại học khoa học tự nhiên cs 1"
+            
         },
         {
             "type": "Action.Submit",
             "title": "Vị trí hiện tại",
-            "data": {
-                "x": "Vị trí hiện tại"
-            }
+            "data": "Vị trí hiện tại"
+            
         }
     ]
 }

@@ -21,9 +21,8 @@
     {
       "type": "Action.Submit",
       "title": "Tra cứu",
-      "data": {
-        "x": "Tra cứu"
-      }
+      "data": "Tra cứu"
+
     }
   ]
 }
