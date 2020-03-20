@@ -66,8 +66,21 @@ class MainDialog extends ComponentDialog {
         // }
 
         //Init card welcome
+        const welcomeMessageText = 'Chào mừng bạn đến với Bus bot. Hãy chọn 1 trong 2 chức năng ở dưới';
+        await stepContext.context.sendActivity(welcomeMessageText, welcomeMessageText, InputHints.IgnoringInput);
+      
+
         const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+
+        const welcomeMessageText_Hint = 'Ngoài cách lựa chọn chức năng bạn cũng có thể nhập trực tiếp yêu cầu vào';
+        const welcomeMessageText_Example1 = 'VD: Tìm đường';
+        const welcomeMessageText_Example2 = 'Tra cứu xe bus tại trạm suối tiên';
+        const welcomeMessageText_Example3 = 'Tôi muốn đi từ đầm sen đến suối tiên v.v.';
+        await stepContext.context.sendActivity(welcomeMessageText_Hint, welcomeMessageText_Hint, InputHints.IgnoringInput);
+        await stepContext.context.sendActivity(welcomeMessageText_Example1, welcomeMessageText_Example1, InputHints.IgnoringInput);
+        await stepContext.context.sendActivity(welcomeMessageText_Example2, welcomeMessageText_Example2, InputHints.IgnoringInput);
+        await stepContext.context.sendActivity(welcomeMessageText_Example3, welcomeMessageText_Example3, InputHints.IgnoringInput);
 
         //const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì thêm cho bạn?';
         const messageText = null; //set null Intro message
@@ -99,9 +112,22 @@ class MainDialog extends ComponentDialog {
             }
             case 'Tra_cứu': {
                 //chỉ hiện location card
+
                 //Init card location
+                const locationMessageText = 'Bạn tra cứu xe bus cho trạm nào?';
+                await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
+               
                 const locationCard = CardFactory.adaptiveCard(LocationCard);
-                return await stepContext.context.sendActivity({ attachments: [locationCard] });
+                await stepContext.context.sendActivity({ attachments: [locationCard] });
+
+                const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập nơi bạn muốn tra cứu vào';
+                const LocationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
+                await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
+                await stepContext.context.sendActivity(LocationMessageText_Example, LocationMessageText_Example, InputHints.IgnoringInput);
+
+                const alert = "Chưa cài đặt chức năng"
+                return await stepContext.context.sendActivity(alert, alert, InputHints.IgnoringInput);
+
             }
             default: {
 
