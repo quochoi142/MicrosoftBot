@@ -5,7 +5,7 @@
     "body": [
         {
             "type": "Image",
-            "url": "https://i.ytimg.com/vi/Q9jUjocAQNE/maxresdefault.jpg",
+            "url": "https://image.freepik.com/free-vector/choice-right-wrong_74440-1741.jpg",
             "width": "stretch",
             "style": "default"
         }
@@ -13,16 +13,22 @@
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "Đúng",
-            "data":  "Đúng"
+            "title": "Sai điểm xuất phát",
+            "data":"Sai điểm xuất phát" 
             
         },
         {
             "type": "Action.Submit",
-            "title": "Sai",
-            "data": "Sai"
+            "title": "Sai điểm đến",
+            "data": "Sai điểm đến"
             
-
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Sai cả hai",
+            "data": "Sai cả hai"
+            
         }
     ]
+
 }

@@ -28,7 +28,9 @@ class MainDialog extends ComponentDialog {
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.introStep.bind(this),
                 this.actStep.bind(this),
+                this.confirmEndStep.bind(this),
                 this.finalStep.bind(this)
+
             ]));
 
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
@@ -68,7 +70,7 @@ class MainDialog extends ComponentDialog {
         //Init card welcome
         const welcomeMessageText = 'Chào mừng bạn đến với Bus bot. Hãy chọn 1 trong 2 chức năng ở dưới';
         await stepContext.context.sendActivity(welcomeMessageText, welcomeMessageText, InputHints.IgnoringInput);
-      
+
 
         const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
@@ -116,7 +118,7 @@ class MainDialog extends ComponentDialog {
                 //Init card location
                 const locationMessageText = 'Bạn tra cứu xe bus cho trạm nào?';
                 await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
-               
+
                 const locationCard = CardFactory.adaptiveCard(LocationCard);
                 await stepContext.context.sendActivity({ attachments: [locationCard] });
 
@@ -140,23 +142,29 @@ class MainDialog extends ComponentDialog {
     }
 
 
+    async confirmEndStep(stepContext) {
+        const prompt = stepContext.result;
+
+        // mới thêm !
+        if (prompt == "Bạn cần giúp gì thêm không?") {
+            //Init card confirm
+            const confirmCard = CardFactory.adaptiveCard(ConfirmCard);
+            await stepContext.context.sendActivity({ attachments: [confirmCard] });
+
+            return await stepContext.prompt('TextPrompt', { prompt: prompt });
+        }
+
+        return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: prompt });
+    }
+
     async finalStep(stepContext) {
 
-
-        const prompt = stepContext.result;
-        // mới thêm !
-        if (!prompt) {
-            return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: prompt });
-
+        if ('Có' == stepContext.result || 'có' == stepContext.result) {
+            return await stepContext.beginDialog('MainDialog');
         }
-        //Init card confirm
-        const confirmCard = CardFactory.adaptiveCard();
-        await stepContext.context.sendActivity({ attachments: [confirmCard] });
+        const byeMessageText = "Chào tạm biệt, hi vọng tôi đã giúp được bạn <3 !!!";
+        return await stepContext.context.sendActivity(byeMessageText,byeMessageText, InputHints.IgnoringInput);
 
-        // IF confirm thì tiếp tục
-        return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: 'Bạn cần tôi giúp gì thêm không?' });
-
-        // else thì return Bye bye
     }
 }
 

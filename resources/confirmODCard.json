@@ -14,13 +14,13 @@
         {
             "type": "Action.Submit",
             "title": "Đúng",
-            "data": "1"
+            "data": "Đúng"
             
         },
         {
             "type": "Action.Submit",
             "title": "Sai",
-            "data": "0"
+            "data": "Sai"
             
         }
     ]
