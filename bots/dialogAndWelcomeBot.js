@@ -20,6 +20,8 @@ class DialogAndWelcomeBot extends DialogBot {
             }
 
             // By calling next() you ensure that the next BotHandler is run.
+            const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
+            await context.sendActivity({ attachments: [welcomeCard] });
             await next();
         });
 
