@@ -139,42 +139,8 @@ class RouteDialog extends CancelAndHelpDialog {
             // result.origin = "suối tiên";
             // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
 
-
-            const http_request = process.env.GgAPI + "&origin=" + result.origin + ' tphcm' + "&destination=" + result.destination + ' tphcm';
-            var prompt = '';
-
             try {
-                const response = await fetch(utf8.encode(http_request));
 
-                const json = await response.json();
-                if (response.status != 200 || json.routes.length == 0) {
-                    //await stepContext.context.sendActivity("Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không", "Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không", InputHints.IgnoringInput);
-                    prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không';
-
-                }
-                else {
-                    let leg = json.routes[0].legs[0];
-                    let route = leg.steps;
-                    const summary_direction = "Đi từ " + leg.start_address + " đến " + leg.end_address + ".\n Tổng quãng đường là " + leg.distance.text + " đi mất khoảng " + leg.duration.text;
-
-                    await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-                    for (var i = 0; i < route.length; i++) {
-                        var step = route[i];
-                        if (step.travel_mode === 'WALKING') {
-
-                            await stepContext.context.sendActivity(step.html_instructions, step.html_instructions, InputHints.IgnoringInput);
-                        }
-                        else {
-                            const instuction = "Bắt xe bus " + step.transit_details.line.name + "\nTừ trạm " + step.transit_details.departure_stop.name + " tới trạm " + step.transit_details.arrival_stop.name
-                            await stepContext.context.sendActivity(instuction, instuction, InputHints.IgnoringInput);
-
-                        }
-                    }
-                    //console.log(config);
-                    const id = utils.getIdUser(stepContext.context);
-                    utils.saveRoute(id, result.destination);
-                    prompt = "Bạn cần giúp gì thêm không?";
-                }
             } catch (error) {
                 prompt = error.message;
             }
