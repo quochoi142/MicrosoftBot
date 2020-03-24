@@ -99,8 +99,8 @@ class RouteDialog extends CancelAndHelpDialog {
             await stepContext.context.sendActivity(originMessageText_Example, originMessageText_Example, InputHints.IgnoringInput);
 
             const messageText = null;
-            //const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: messageText }, InputHints.ExpectingInput);
+            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
 
 
 
@@ -122,10 +122,13 @@ class RouteDialog extends CancelAndHelpDialog {
         //Init card confirmOD
         const confirmODCard = CardFactory.adaptiveCard(ConfirmODCard);
         await stepContext.context.sendActivity({ attachments: [confirmODCard] });
-        return await stepContext.prompt(LOCATION, { prompt: null }, InputHints.ExpectingInput);
+
+        const messageText = null;
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
     }
     async finalStep(stepContext) {
-        if ('Đúng' == stepContext.result || 'đúng' == stepContext.result) {
+        if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
             const activity = Object.assign({}, stepContext.context)._activity;
 
             // stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
@@ -168,15 +171,12 @@ class RouteDialog extends CancelAndHelpDialog {
                         }
                     }
                     //console.log(config);
-                    await stepContext.context.sendActivity("1", "1", InputHints.IgnoringInput);
                     const id = utils.getIdUser(stepContext.context);
-                    await stepContext.context.sendActivity("2", "2", InputHints.IgnoringInput);
                     utils.saveRoute(id, result.destination);
                     prompt = "Bạn cần giúp gì thêm không?";
                 }
             } catch (error) {
                 prompt = error.message;
-                await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
             }
 
             return await stepContext.endDialog(prompt);
@@ -187,7 +187,10 @@ class RouteDialog extends CancelAndHelpDialog {
 
         const wrongCard = CardFactory.adaptiveCard(WrongCard);
         await stepContext.context.sendActivity({ attachments: [wrongCard] });
-        return await stepContext.prompt(LOCATION, { prompt: "" }, InputHints.ExpectingInput);
+
+        const messageText = null;
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
 
     }
 
@@ -203,6 +206,19 @@ class RouteDialog extends CancelAndHelpDialog {
                 return await stepContext.beginDialog('routeDialog', route);
             }
             case 'Sai cả hai': {
+                route.origin = null;
+                route.destination = null;
+                return await stepContext.beginDialog('routeDialog', route);
+            }
+            case '\"Sai điểm xuất phát\"': {
+                route.origin = null;
+                return await stepContext.beginDialog('routeDialog', route);
+            }
+            case '\"Sai điểm đến\"': {
+                route.destination = null;
+                return await stepContext.beginDialog('routeDialog', route);
+            }
+            case '\"Sai cả hai\"': {
                 route.origin = null;
                 route.destination = null;
                 return await stepContext.beginDialog('routeDialog', route);

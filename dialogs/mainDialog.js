@@ -159,7 +159,7 @@ class MainDialog extends ComponentDialog {
 
     async finalStep(stepContext) {
 
-        if ('Có' == stepContext.result || 'có' == stepContext.result) {
+        if ('Có' == stepContext.result || 'có' == stepContext.result ||'\"Có\"' == stepContext.result) {
             return await stepContext.beginDialog('MainDialog');
         }
         const byeMessageText = "Chào tạm biệt, hi vọng tôi đã giúp được bạn <3 !!!";
