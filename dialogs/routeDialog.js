@@ -131,75 +131,119 @@ class RouteDialog extends CancelAndHelpDialog {
 
         // code tìm đường nằm trong đây
         if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
-            
-            //chèn code vô  đây
-            const activity = Object.assign({}, stepContext.context)._activity;
 
-            // stepContext.context.sendActivity(JSON.stringify(activity), JSON.stringify(activity), InputHints.IgnoringInput);
-
-            //var result = stepContext.options;
             var result = stepContext.options;
-            result.origin = stepContext.result;
-            // result.origin = "suối tiên";
-            // await stepContext.context.sendActivity(JSON.stringify(stepContext.result), JSON.stringify(stepContext.result), InputHints.IgnoringInput);
-            /* 
+            //result.origin = stepContext.result;
+
+            const http_request = process.env.GgAPI + "&origin=" + result.origin + ' tphcm' + "&destination=" + result.destination + ' tphcm';
+            var prompt = '';
+
             try {
-             } catch (error) {
-              prompt = error.message; 
-             }*/
+                const response = await fetch(utf8.encode(http_request));
 
-            const route = json.routes[0].legs[0];
+                const json = await response.json();
+                if (response.status != 200 || json.routes.length == 0) {
+                    prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không';
 
+                }
+                else {
 
-            const geoOrigin = route.start_location.lat + ',' + route.start_location.lng;
-            const geoDest = route.end_location.lat + ',' + route.start_location.lng;
-
-            const start_location = route.start_address;
-            const end_address = route.end_address;
-
-            const url = 'https://transit.router.hereapi.com/v1/routes?lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest;
-            var myHeaders = new fetch.Headers();
-            myHeaders.append("Authorization", 'Bearer ' + process.env.token);
-
-            var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
+                    const route = json.routes[0].legs[0];
 
 
+                    const geoOrigin = route.start_location.lat + ',' + route.start_location.lng;
+                    const geoDest = route.end_location.lat + ',' + route.end_location.lng;
+
+                    // const start_address = route.start_address;
+                    // const end_address = route.end_address;
+
+                    const urls = [];
+                    urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                    urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                    var myHeaders = new fetch.Headers();
+                    myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                    var requestOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                        redirect: 'follow'
+                    };
+
+                    var data;
+                    for (var i = 0; i < urls.length; i++) {
+                        const response = await fetch(urls[i], requestOptions)
+                        data = await response.json();
+                        if (data.routes.length) {
+                            break;
+                        }
+                    }
 
 
-            const response = await fetch(url, requestOptions)
-            const data = await response.json();
-            console.log(data);
+                    console.log(JSON.stringify(data));
+                    const steps = data.routes[0].sections;
 
-            // let leg = json.routes[0].legs[0];
+                    var duration = 0;
+                    var length = 0;
+                    var index = 0;
 
-            // let route = leg.steps;
-            // const summary_direction = "Đi từ " + leg.start_address + " đến " + leg.end_address + ".\n Tổng quãng đường là " + leg.distance.text + " đi mất khoảng " + leg.duration.text;
+                    var time = 0;
+                    var instuctions = [];
 
-            // await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-            // for (var i = 0; i < route.length; i++) {
-            //     var step = route[i];
-            //     if (step.travel_mode === 'WALKING') {
+                    steps.forEach(step => {
+                        duration = duration + step.travelSummary.duration;
+                        length = length + step.travelSummary.length;
+                        var pivot = '';
 
-            //         await stepContext.context.sendActivity(step.html_instructions, step.html_instructions, InputHints.IgnoringInput);
-            //     }
-            //     else {
-            //         const instuction = "Bắt xe bus " + step.transit_details.line.name + "\nTừ trạm " + step.transit_details.departure_stop.name + " tới trạm " + step.transit_details.arrival_stop.name
-            //         await stepContext.context.sendActivity(instuction, instuction, InputHints.IgnoringInput);
+                        var instuction = '';
+                        const type = step.type;
+                        if (type === "pedestrian") {
+                            if (index == 0) {
+                                instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name
+                            } else if (index == steps.length - 1) {
+                                instuction = 'Đi bộ đến ' + result.destination
+                            }
+                            else if (pivot != '' && step.departure.place.name != pivot) {
+                                instuction = 'Đi bộ đến ' + step.departure.place.name;
+                                pivot = '';
+                            }
+                        } else if (type === 'transit') {
+                            pivot = step.arrival.place.name;
+                            instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
+                        }
 
-            //     }
-            // }
-            // //console.log(config);
+                        index++;
+                        if (instuction != '')
+                            instuctions.push(instuction);
 
-            const id = utils.getIdUser(stepContext.context);
-            utils.saveRoute(id, result.destination);
+                    });
+
+                    const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
+
+                    await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                    instuctions.forEach(async (element) => {
+                        await stepContext.context.sendActivity(element, element, InputHints.IgnoringInput);
+
+                    })
+
+
+
+                    const id = utils.getIdUser(stepContext.context);
+                    utils.saveRoute(id, result.destination);
+                    prompt = "Tôi có thể giúp gì thêm cho bạn?";
+                }
+
+                //else thì kiểm tra sai ở đâu
+                //IF destination thì quay lại bước lấy điểm đến 
+                //IF origin thì quay lại bước lấy điểm xuất phát
+                //IF cả hai thì ...
+
+            } catch (error) {
+                prompt = error.message;
+
+
+            }
+
             prompt = "Bạn cần giúp gì thêm không?";
-
-
-
             return await stepContext.endDialog(prompt);
         }
         else {

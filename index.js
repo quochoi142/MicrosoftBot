@@ -81,7 +81,9 @@ const routeDialog = new RouteDialog(ROUTE_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 
-
+//Initialize Firebase
+const Firebase= require('./firebaseConfig/utils')
+Firebase.initialize_FireBase();
 //Get bearer
 setAccessToken()
 // Create HTTP server

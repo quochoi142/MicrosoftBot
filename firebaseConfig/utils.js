@@ -3,9 +3,12 @@ const config = require('./config')
 
 const utils = {
 
+    initialize_FireBase: () => {
+        firebase.initializeApp(config);
+
+    },
     saveRoute: (id, destination) => {
         //initialize firebase
-        firebase.initializeApp(config);
         var db = firebase.database();
 
         //initialize route
@@ -28,13 +31,11 @@ const utils = {
 
                     console.log(key);
                     firebase.database().ref('users/' + id).child(key).set(obj)
-                    db.goOffline();
                 });
             }
             else {
                 const x = refFirebase.push();
                 x.set(obj);
-                db.goOffline();
             }
         });
     },
@@ -58,6 +59,12 @@ const utils = {
     getIdUser: (context) => {
         const activity = Object.assign({}, context)._activity;
         return activity.from.id;
+    },
+
+    convertDuration: (secs) => {
+        var h = Math.floor(secs / 3600)
+        var m = Math.floor(secs % 3600 / 60);
+        return h + 'h' + m + '\'';
     }
 
 }
