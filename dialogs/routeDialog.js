@@ -19,10 +19,14 @@ const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
 
 
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class RouteDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
-
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -222,10 +226,9 @@ class RouteDialog extends CancelAndHelpDialog {
                     await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                     instuctions.forEach(async (element) => {
                         await stepContext.context.sendActivity(element, element, InputHints.IgnoringInput);
+                        await sleep(200);
 
                     })
-
-
 
                     const id = utils.getIdUser(stepContext.context);
                     utils.saveRoute(id, result.destination);

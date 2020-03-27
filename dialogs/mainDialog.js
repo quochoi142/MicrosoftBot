@@ -5,14 +5,18 @@ const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
+
 const WelcomeCard = require('../resources/welcomeCard.json');
 //const WelcomeCard = require('../resources/confirmCard.json');
+const LocationCard = require('../resources/locationCard.json');
 const ConfirmCard = require('../resources/confirmCard.json');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
 class MainDialog extends ComponentDialog {
+
     constructor(luisRecognizer, routeDialog, searchDialog) {
+
         super('MainDialog');
 
         if (!luisRecognizer) throw new Error('[MainDialog]: Missing parameter \'luisRecognizer\' is required');
@@ -117,7 +121,6 @@ class MainDialog extends ComponentDialog {
             case 'Tra_cứu': {
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
-
             }
             default: {
 
@@ -147,11 +150,11 @@ class MainDialog extends ComponentDialog {
 
     async finalStep(stepContext) {
 
-        if ('Có' == stepContext.result || 'có' == stepContext.result ||'\"Có\"' == stepContext.result) {
+        if ('Có' == stepContext.result || 'có' == stepContext.result || '\"Có\"' == stepContext.result) {
             return await stepContext.beginDialog('MainDialog');
         }
         const byeMessageText = "Chào tạm biệt, hi vọng tôi đã giúp được bạn <3 !!!";
-        return await stepContext.context.sendActivity(byeMessageText,byeMessageText, InputHints.IgnoringInput);
+        return await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
 
     }
 }
