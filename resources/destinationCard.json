@@ -1,0 +1,33 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+            "width": "stretch",
+            "style": "default"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 2",
+            "data":  "Đại học khoa học tự nhiên cs 2"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 1",
+            "data":  "Đại học khoa học tự nhiên cs 1"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Vị trí hiện tại",
+            "data": "Vị trí hiện tại"
+            
+        }
+    ]
+}

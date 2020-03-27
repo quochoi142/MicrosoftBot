@@ -1,0 +1,48 @@
+{
+    "name": "msbot",
+    "version": "1.0.0",
+    "description": "TBD",
+    "author": "Generated using Microsoft Bot Builder Yeoman generator v4.7.0",
+    "license": "MIT",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "watch": "nodemon ./index.js",
+        "lint": "eslint .",
+        "test": "nyc mocha tests/**/*.test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com"
+    },
+    "dependencies": {
+        "@microsoft/recognizers-text-data-types-timex-expression": "^1.1.4",
+        "botbuilder": "~4.7.0",
+        "botbuilder-ai": "~4.7.0",
+        "botbuilder-dialogs": "~4.7.0",
+        "botbuilder-testing": "~4.7.0",
+        "crypto": "^1.0.1",
+        "dotenv": "^8.2.0",
+        "firebase": "^7.10.0",
+        "https": "^1.0.0",
+        "node-fetch": "^2.6.0",
+        "request": "^2.88.2",
+        "restify": "^8.5.1",
+        "utf8": "^3.0.0"
+    },
+    "devDependencies": {
+        "eslint": "^6.6.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-node": "^10.0.0",
+        "eslint-plugin-promise": "^4.2.1",
+        "eslint-plugin-standard": "^4.0.1",
+        "mocha": "^6.2.2",
+        "nodemon": "~1.19.4",
+        "nyc": "^14.1.1"
+    },
+    "engines": {
+        "node": "12.13.0",
+        "npm": "6.12.0"
+    }
+}

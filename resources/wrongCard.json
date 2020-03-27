@@ -1,0 +1,34 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://image.freepik.com/free-vector/choice-right-wrong_74440-1741.jpg",
+            "width": "stretch",
+            "style": "default"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Sai điểm xuất phát",
+            "data":"Sai điểm xuất phát" 
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Sai điểm đến",
+            "data": "Sai điểm đến"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Sai cả hai",
+            "data": "Sai cả hai"
+            
+        }
+    ]
+
+}

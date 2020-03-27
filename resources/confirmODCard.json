@@ -1,0 +1,27 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://i.ytimg.com/vi/Q9jUjocAQNE/maxresdefault.jpg",
+            "width": "stretch",
+            "style": "default"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Đúng",
+            "data": "Đúng"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Sai",
+            "data": "Sai"
+            
+        }
+    ]
+}

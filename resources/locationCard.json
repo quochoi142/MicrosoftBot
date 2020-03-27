@@ -1,0 +1,33 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+            "width": "stretch",
+            "style": "default"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 2",
+            "data":  "Đại học khoa học tự nhiên cs 2"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Đại học khoa học tự nhiên cs 1",
+            "data": "Đại học khoa học tự nhiên cs 1"
+            
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Vị trí hiện tại",
+            "data":  "Vị trí hiện tại"
+            
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Image",
+      "url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+      "width": "stretch",
+      "style": "default"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Tìm đường",
+      "data": {
+        "x": "Tìm đường"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Tra cứu",
+      "data": "Tra cứu"
+
+    }
+  ]
+}
