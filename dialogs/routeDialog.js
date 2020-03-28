@@ -162,7 +162,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     // const end_address = route.end_address;
 
                     const urls = [];
-                    urls.push('https://transit.router.hereapi.com/v1/routes?&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                    urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
                     var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
@@ -251,18 +251,65 @@ class RouteDialog extends CancelAndHelpDialog {
                     const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                     console.log(urlImage);
                     await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-                    instuctions.forEach(async (element) => {
-                        await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
-                        console.log(element.urlImage);
-                        await utils.sleep(500);
-                    })
+                    for (var i = 0; i < instuctions.length; i++) {
+                        await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
+
+                        const json = {
+
+                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                            "type": "AdaptiveCard",
+                            "version": "1.0",
+                            "body": [
+                                {
+                                    "type": "Image",
+                                    "url": instuctions[i].urlImage,
+                                    "width": "stretch",
+                                    "style": "default",
+                                    "altText":instuctions[i].instuction
+                                }
+                            ],
 
 
+                        };
+
+                        //console.log(element.urlImage);
+                        const welcomeCard = CardFactory.adaptiveCard(json);
+                        await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+
+                        // await utils.sleep(500);
+                    }
+                    // instuctions.forEach(async (element) => {
+                    //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
+
+                    //     const json = {
+
+                    //         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    //         "type": "AdaptiveCard",
+                    //         "version": "1.0",
+                    //         "body": [
+                    //             {
+                    //                 "type": "Image",
+                    //                 "url": element.urlImage,
+                    //                 "width": "stretch",
+                    //                 "style": "default"
+                    //             }
+                    //         ],
+
+
+                    //     };
+
+                    //     console.log(element.urlImage);
+                    //     await stepContext.context.sendActivity({ attachments: [json] });
+
+                    //     await utils.sleep(500);
+                    // })
+
+                    const id = utils.getIdUser(stepContext.context);
+                    utils.saveRoute(id, result.destination);
+                    prompt = "Tôi có thể giúp gì thêm cho bạn?";
                 }
 
-                const id = utils.getIdUser(stepContext.context);
-                utils.saveRoute(id, result.destination);
-                prompt = "Tôi có thể giúp gì thêm cho bạn?";
+
             }
 
             //else thì kiểm tra sai ở đâu
