@@ -1,6 +1,6 @@
 var firebase = require('firebase')
 const config = require('./config')
-
+const polylineTool= require('../API/polyline')
 const utils = {
 
     initialize_FireBase: () => {
@@ -64,9 +64,47 @@ const utils = {
     convertDuration: (secs) => {
         var h = Math.floor(secs / 3600)
         var m = Math.floor(secs % 3600 / 60);
-        return h + 'h' + m + '\'';
-    }
 
+        const hh= h+'h';
+        const mm =m+'\'';
+        var result='';
+        if(h!=0){
+            result+=hh;
+        }
+        if(mm!=0){
+            result+=mm;
+        }
+        return result;
+    },
+
+
+    sleep: (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
+    convertPolyline: (polyline) => {
+        // const raw = polylineTool.decode(polyline);
+        // var result='';
+        // // raw.polyline.forEach(e=>{
+        // //     result+=e;
+        // // })
+        // for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+3){
+        //     result+=raw.polyline[i]+',';
+        // }
+        // result.replace(' ','');
+        // return result.substring(0,result.length-2);
+
+        const raw = polylineTool.decode(polyline);
+        var result='';
+        raw.polyline.forEach(e=>{
+            result+=e+',';
+        })
+        // for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+3){
+        //     result+=raw.polyline[i]+',';
+        // }
+        result.replace(' ','');
+        return result.substring(0,result.length-2);
+    }
 }
 
 module.exports = utils

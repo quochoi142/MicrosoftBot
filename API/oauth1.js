@@ -3,7 +3,7 @@ var request = require('request');
 
 
 
-const setAccessToken=() => {
+const setAccessToken = () => {
     const timestamp = Math.floor(Date.now() / 1000);
     const nonce = "hoi" + Date.now();
 
@@ -39,12 +39,12 @@ const setAccessToken=() => {
     };
     request(options, function (error, response) {
         if (error) throw new Error(error);
-        const body =JSON.parse(response.body);
-        process.env.token=body.access_token;
-        process.env.timeout= parseInt(body.expires_in)*900;
+        const body = JSON.parse(response.body);
+        process.env.token = body.access_token;
+        process.env.timeout = parseInt(body.expires_in) * 900;
 
-
-        setInterval(setAccessToken,process.env.timeout);
+        console.log(process.env.token);
+        setInterval(setAccessToken, process.env.timeout);
     });
 
 }

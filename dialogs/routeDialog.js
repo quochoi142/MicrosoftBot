@@ -19,9 +19,8 @@ const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
 
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
+
 
 
 class RouteDialog extends CancelAndHelpDialog {
@@ -169,6 +168,9 @@ class RouteDialog extends CancelAndHelpDialog {
                     const urls = [];
                     urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+
+                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
+
                     var myHeaders = new fetch.Headers();
                     myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
@@ -197,41 +199,66 @@ class RouteDialog extends CancelAndHelpDialog {
 
                     var time = 0;
                     var instuctions = [];
+                    var indexGeo = 0;
 
                     steps.forEach(step => {
+
+                        var queryRoute = '&r0' + '=' + utils.convertPolyline(step.polyline);
+
                         duration = duration + step.travelSummary.duration;
                         length = length + step.travelSummary.length;
                         var pivot = '';
 
                         var instuction = '';
                         const type = step.type;
+                        var queryPoint = ''
                         if (type === "pedestrian") {
+                            var queryPoint1 = '', queryPoint2 = '';
                             if (index == 0) {
-                                instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name
-                            } else if (index == steps.length - 1) {
-                                instuction = 'Đi bộ đến ' + result.destination
+                                instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;' + result.origin;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;đến trạm: ' + step.arrival.place.name;
+                            } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
+                                instuction = 'Đi bộ đến ' + result.destination;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ trạm:  '+ step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;' + result.destination;
                             }
                             else if (pivot != '' && step.departure.place.name != pivot) {
                                 instuction = 'Đi bộ đến ' + step.departure.place.name;
                                 pivot = '';
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;đến trạm: ' + step.arrival.place.name;
                             }
+                            queryPoint = queryPoint1 + queryPoint2;
+
                         } else if (type === 'transit') {
+                            const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
+                            const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;Xuống trạm: ' + step.arrival.place.name;
+                            queryPoint = queryPoint1 + queryPoint2;
                             pivot = step.arrival.place.name;
                             instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
+                         //   indexGeo++;
                         }
 
                         index++;
-                        if (instuction != '')
-                            instuctions.push(instuction);
+                        const Image =urlImage+ queryRoute + queryPoint;
 
+                        if (instuction != '') {
+                            var object = {};
+                            object.instuction = instuction;
+                            object.urlImage = Image;
+                            instuctions.push(object);
+
+                        }
                     });
 
                     const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
-
+                    console.log(urlImage);
                     await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                     instuctions.forEach(async (element) => {
-                        await stepContext.context.sendActivity(element, element, InputHints.IgnoringInput);
-                        await sleep(200);
+                        await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
+                        console.log(element.urlImage);
+                        await utils.sleep(500);
                     })
 
 
@@ -248,6 +275,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
             } catch (error) {
                 prompt = error.message;
+                console.log(error.message);
 
 
             }
