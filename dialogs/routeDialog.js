@@ -20,14 +20,13 @@ const utils = require('../firebaseConfig/utils');
 
 
 
-
-
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 class RouteDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
-
-
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -44,9 +43,6 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
     }
-
-
-
     async locationValidator(promptContext) {
         if (promptContext.recognized.succeeded) {
             const obj = promptContext.recognized.value;
@@ -166,7 +162,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     // const end_address = route.end_address;
 
                     const urls = [];
-                    urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                    urls.push('https://transit.router.hereapi.com/v1/routes?&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
                     var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
@@ -220,7 +216,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;đến trạm: ' + step.arrival.place.name;
                             } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
                                 instuction = 'Đi bộ đến ' + result.destination;
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ trạm:  '+ step.departure.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ trạm:  ' + step.departure.place.name;
                                 queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;' + result.destination;
                             }
                             else if (pivot != '' && step.departure.place.name != pivot) {
@@ -237,11 +233,11 @@ class RouteDialog extends CancelAndHelpDialog {
                             queryPoint = queryPoint1 + queryPoint2;
                             pivot = step.arrival.place.name;
                             instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
-                         //   indexGeo++;
+                            //   indexGeo++;
                         }
 
                         index++;
-                        const Image =urlImage+ queryRoute + queryPoint;
+                        const Image = urlImage + queryRoute + queryPoint;
 
                         if (instuction != '') {
                             var object = {};
@@ -262,18 +258,19 @@ class RouteDialog extends CancelAndHelpDialog {
                     })
 
 
-
-                    const id = utils.getIdUser(stepContext.context);
-                    utils.saveRoute(id, result.destination);
-                    prompt = "Tôi có thể giúp gì thêm cho bạn?";
                 }
 
-                //else thì kiểm tra sai ở đâu
-                //IF destination thì quay lại bước lấy điểm đến 
-                //IF origin thì quay lại bước lấy điểm xuất phát
-                //IF cả hai thì ...
+                const id = utils.getIdUser(stepContext.context);
+                utils.saveRoute(id, result.destination);
+                prompt = "Tôi có thể giúp gì thêm cho bạn?";
+            }
 
-            } catch (error) {
+            //else thì kiểm tra sai ở đâu
+            //IF destination thì quay lại bước lấy điểm đến 
+            //IF origin thì quay lại bước lấy điểm xuất phát
+            //IF cả hai thì ...
+
+            catch (error) {
                 prompt = error.message;
                 console.log(error.message);
 

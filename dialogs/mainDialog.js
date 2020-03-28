@@ -5,6 +5,7 @@ const { MessageFactory, InputHints } = require('botbuilder');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
+
 const WelcomeCard = require('../resources/welcomeCard.json');
 //const WelcomeCard = require('../resources/confirmCard.json');
 const LocationCard = require('../resources/locationCard.json');
@@ -13,7 +14,9 @@ const ConfirmCard = require('../resources/confirmCard.json');
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
 class MainDialog extends ComponentDialog {
-    constructor(luisRecognizer, routeDialog) {
+
+    constructor(luisRecognizer, routeDialog, searchDialog) {
+
         super('MainDialog');
 
         if (!luisRecognizer) throw new Error('[MainDialog]: Missing parameter \'luisRecognizer\' is required');
@@ -21,10 +24,13 @@ class MainDialog extends ComponentDialog {
 
         if (!routeDialog) throw new Error('[MainDialog]: Missing parameter \'routeDialog\' is required');
 
+        if (!searchDialog) throw new Error('[MainDialog]: Missing parameter \'searchDialog\' is required');
+
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(routeDialog)
+            .addDialog(searchDialog)
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.introStep.bind(this),
                 this.actStep.bind(this),
@@ -114,22 +120,7 @@ class MainDialog extends ComponentDialog {
             }
             case 'Tra_cứu': {
                 //chỉ hiện location card
-
-                //Init card location
-                const locationMessageText = 'Bạn tra cứu xe bus cho trạm nào?';
-                await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
-
-                const locationCard = CardFactory.adaptiveCard(LocationCard);
-                await stepContext.context.sendActivity({ attachments: [locationCard] });
-
-                const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập nơi bạn muốn tra cứu vào';
-                const LocationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
-                await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
-                await stepContext.context.sendActivity(LocationMessageText_Example, LocationMessageText_Example, InputHints.IgnoringInput);
-
-                const alert = "Chưa cài đặt chức năng"
-                return await stepContext.context.sendActivity(alert, alert, InputHints.IgnoringInput);
-
+                return await stepContext.beginDialog('searchDialog', routeDetails);
             }
             default: {
 
@@ -159,11 +150,11 @@ class MainDialog extends ComponentDialog {
 
     async finalStep(stepContext) {
 
-        if ('Có' == stepContext.result || 'có' == stepContext.result ||'\"Có\"' == stepContext.result) {
+        if ('Có' == stepContext.result || 'có' == stepContext.result || '\"Có\"' == stepContext.result) {
             return await stepContext.beginDialog('MainDialog');
         }
         const byeMessageText = "Chào tạm biệt, hi vọng tôi đã giúp được bạn <3 !!!";
-        return await stepContext.context.sendActivity(byeMessageText,byeMessageText, InputHints.IgnoringInput);
+        return await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
 
     }
 }

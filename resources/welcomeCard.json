@@ -14,9 +14,7 @@
     {
       "type": "Action.Submit",
       "title": "Tìm đường",
-      "data": {
-        "x": "Tìm đường"
-      }
+      "data": "Tìm đường"
     },
     {
       "type": "Action.Submit",
