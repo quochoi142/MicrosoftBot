@@ -263,7 +263,8 @@ class RouteDialog extends CancelAndHelpDialog {
                                 {
                                     "type": "Image",
                                     "url": instuctions[i].urlImage,
-                                    "width": "stretch",
+                                    "width": "2048",
+                                    "height": "2048",
                                     "style": "default",
                                     "altText":instuctions[i].instuction
                                 }
