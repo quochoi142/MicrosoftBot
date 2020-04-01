@@ -21,6 +21,12 @@
       "title": "Tra cứu",
       "data": "Tra cứu"
 
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Trợ giúp",
+      "data": "Trợ giúp"
+
     }
   ]
 }

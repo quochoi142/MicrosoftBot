@@ -274,8 +274,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         };
 
                         //console.log(element.urlImage);
-                        const welcomeCard = CardFactory.adaptiveCard(json);
-                        await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+                        const image = CardFactory.adaptiveCard(json);
+                        await stepContext.context.sendActivity({ attachments: [image] });
 
                         // await utils.sleep(500);
                     }

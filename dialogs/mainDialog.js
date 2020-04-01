@@ -74,14 +74,14 @@ class MainDialog extends ComponentDialog {
         // }
 
         //Init card welcome
-        const welcomeMessageText = 'Chào mừng bạn đến với Bus bot. Hãy chọn 1 trong 2 chức năng ở dưới';
+        const welcomeMessageText = 'Chào mừng bạn đến với Bus bot. Hãy chọn 1 trong các chức năng ở dưới';
         await stepContext.context.sendActivity(welcomeMessageText, welcomeMessageText, InputHints.IgnoringInput);
 
 
         const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
 
-        const welcomeMessageText_Hint = 'Ngoài cách lựa chọn chức năng bạn cũng có thể nhập trực tiếp yêu cầu vào';
+       /*  const welcomeMessageText_Hint = 'Ngoài cách lựa chọn chức năng bạn cũng có thể nhập trực tiếp yêu cầu vào';
         const welcomeMessageText_Example1 = 'VD: Tìm đường';
         const welcomeMessageText_Example2 = 'Tra cứu xe bus tại trạm suối tiên';
         const welcomeMessageText_Example3 = 'Tôi muốn đi từ đầm sen đến suối tiên v.v.';
@@ -89,7 +89,7 @@ class MainDialog extends ComponentDialog {
         await stepContext.context.sendActivity(welcomeMessageText_Example1, welcomeMessageText_Example1, InputHints.IgnoringInput);
         await stepContext.context.sendActivity(welcomeMessageText_Example2, welcomeMessageText_Example2, InputHints.IgnoringInput);
         await stepContext.context.sendActivity(welcomeMessageText_Example3, welcomeMessageText_Example3, InputHints.IgnoringInput);
-
+ */
         //const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì thêm cho bạn?';
         const messageText = null; //set null Intro message
         const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -127,6 +127,12 @@ class MainDialog extends ComponentDialog {
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
+            case 'Trợ_giúp': {
+                const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
+                await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
+           
+            }
+          
         }
 
         return await stepContext.next();
