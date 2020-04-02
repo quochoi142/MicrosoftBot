@@ -18,7 +18,7 @@ const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
 
-
+var encodeUrl = require('encodeurl')
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -272,10 +272,10 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
                         };
-
+                        const url =  encodeUrl(instuctions[i].urlImage);
                         const obj = {
                             contentType: 'image/jpeg',
-                            contentUrl: instuctions[i].urlImage,
+                            contentUrl:url,
 
                         };
 
