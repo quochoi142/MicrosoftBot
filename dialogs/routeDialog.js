@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { InputHints, MessageFactory,ActivityTypes } = require('botbuilder');
+const { InputHints, MessageFactory, ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
@@ -165,7 +165,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=1500&w=2048&ml=vie&ppi=320&q=100'
+                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
 
                     var myHeaders = new fetch.Headers();
                     myHeaders.append("Authorization", 'Bearer ' + process.env.token);
@@ -266,30 +266,42 @@ class RouteDialog extends CancelAndHelpDialog {
                                     "width": "2048px",
                                     "height": "2048px",
                                     "style": "default",
-                                    "size":"auto"
+                                    "size": "auto"
                                 }
                             ],
 
 
                         };
 
-                        const obj={
+                        const obj = {
                             contentType: 'image/jpeg',
                             contentUrl: instuctions[i].urlImage,
-                          
+
                         };
 
                         const reply = { type: ActivityTypes.Message };
                         reply.attachments = [obj];
                         //reply.text = 'This is an internet attachment.';
-                        
+
 
                         //console.log(element.urlImage);
                         const image = CardFactory.adaptiveCard(json);
-                       // await stepContext.context.sendActivity({ attachments: [image] });
-                
-                       // const welcomeCard = CardFactory.adaptiveCard(json);
-                        await stepContext.context.sendActivity(reply);
+                        // await stepContext.context.sendActivity({ attachments: [image] });
+
+                        // const welcomeCard = CardFactory.adaptiveCard(json);
+                        //await stepContext.context.sendActivity(reply);
+                        await turnContext.sendActivity({
+                            text: 'What is your email?',
+                            channelData: {
+                                "attachment": {
+                                    "type": "image",
+                                    "payload": {
+                                        "url": "https://messenger-rocks.com/wp-content/uploads/2020/01/logo-512x512-1.jpg",
+                                        "is_reusable": true
+                                    }
+                                }
+                            }
+                        });
 
                         // await utils.sleep(500);
                     }
