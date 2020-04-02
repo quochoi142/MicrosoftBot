@@ -296,7 +296,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "attachment": {
                                     "type": "image",
                                     "payload": {
-                                        "url": "https://messenger-rocks.com/wp-content/uploads/2020/01/logo-512x512-1.jpg",
+                                        "url": instuctions[i].urlImage,
                                         "is_reusable": true
                                     }
                                 }

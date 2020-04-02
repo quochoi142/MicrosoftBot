@@ -11,7 +11,7 @@ class StopArounDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
         this.addDialog(new TextPrompt(TEXT_PROMPT))
-            .addDialog(new AttachmentPrompt(LOCATION, this.locationValidator))
+            .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.getLocationStep.bind(this),
                 this.searchStopsStep.bind(this)
