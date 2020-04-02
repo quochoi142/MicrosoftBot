@@ -290,7 +290,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                         // const welcomeCard = CardFactory.adaptiveCard(json);
                         //await stepContext.context.sendActivity(reply);
-                        await turnContext.sendActivity({
+                        await stepContext.context.sendActivity({
                             text: 'What is your email?',
                             channelData: {
                                 "attachment": {

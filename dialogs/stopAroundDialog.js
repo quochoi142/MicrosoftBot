@@ -22,14 +22,17 @@ class StopArounDialog extends CancelAndHelpDialog {
     }
 
     async locationValidator(promptContext) {
-        if (promptContext.recognized.succeeded) {
-            const obj = promptContext.recognized.value;
-            promptContext.context.sendActivity(JSON.stringify(obj));
-            return true;
-        }
-        else {
-            return false;
-        }
+         promptContext.context.sendActivity(JSON.stringify(promptContext));
+
+        // if (promptContext.recognized.succeeded) {
+        //     const obj = promptContext.recognized.value;
+        //     promptContext.context.sendActivity(JSON.stringify(obj));
+        //     return true;
+        // }
+        // else {
+        //     return false;
+        // }
+        return true;
     }
 
 
