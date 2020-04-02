@@ -83,27 +83,24 @@ const utils = {
     },
 
     convertPolyline: (polyline) => {
-        // const raw = polylineTool.decode(polyline);
-        // var result='';
-        // // raw.polyline.forEach(e=>{
-        // //     result+=e;
-        // // })
-        // for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+3){
-        //     result+=raw.polyline[i]+',';
-        // }
-        // result.replace(' ','');
-        // return result.substring(0,result.length-2);
-
         const raw = polylineTool.decode(polyline);
         var result='';
-        raw.polyline.forEach(e=>{
-            result+=e+',';
-        })
-        // for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+3){
-        //     result+=raw.polyline[i]+',';
-        // }
+        // raw.polyline.forEach(e=>{
+        //     result+=e;
+        // })
+        for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+2){
+            result+=raw.polyline[i]+',';
+        }
         result.replace(' ','');
         return result.substring(0,result.length-2);
+
+        // const raw = polylineTool.decode(polyline);
+        // var result='';
+        // raw.polyline.forEach(e=>{
+        //     result+=e+',';
+        // })
+        // result.replace(' ','');
+        // return result.substring(0,result.length-2);
     }
 }
 
