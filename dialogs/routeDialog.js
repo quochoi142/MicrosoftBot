@@ -296,7 +296,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "attachment": {
                                     "type": "image",
                                     "payload": {
-                                        "url": ,
+                                        "url": instuctions[i].urlImage,
                                         "is_reusable": true
                                     }
                                 }
