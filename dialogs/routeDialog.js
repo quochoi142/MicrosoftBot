@@ -212,24 +212,24 @@ class RouteDialog extends CancelAndHelpDialog {
                             var queryPoint1 = '', queryPoint2 = '';
                             if (index == 0) {
                                 instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;' + result.origin;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;đến trạm: ' + step.arrival.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;' + result.origin;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
                             } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
                                 instuction = 'Đi bộ đến ' + result.destination;
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Đi bộ từ trạm:  ' + step.departure.place.name;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;' + result.destination;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ trạm:  ' + step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;' + result.destination;
                             }
                             else if (pivot != '' && step.departure.place.name != pivot) {
                                 instuction = 'Đi bộ đến ' + step.departure.place.name;
                                 pivot = '';
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;đến trạm: ' + step.arrival.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
                             }
                             queryPoint = queryPoint1 + queryPoint2;
 
                         } else if (type === 'transit') {
-                            const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
-                            const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;Xuống trạm: ' + step.arrival.place.name;
+                            const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
+                            const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;Xuống trạm: ' + step.arrival.place.name;
                             queryPoint = queryPoint1 + queryPoint2;
                             pivot = step.arrival.place.name;
                             instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
