@@ -165,7 +165,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
+                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=1024&w=1024&ml=vie&ppi=250&q=100'
 
                     var myHeaders = new fetch.Headers();
                     myHeaders.append("Authorization", 'Bearer ' + process.env.token);
@@ -212,24 +212,24 @@ class RouteDialog extends CancelAndHelpDialog {
                             var queryPoint1 = '', queryPoint2 = '';
                             if (index == 0) {
                                 instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;' + result.origin;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;đến trạm: ' + step.arrival.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;' + result.origin;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;đến trạm: ' + step.arrival.place.name;
                             } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
                                 instuction = 'Đi bộ đến ' + result.destination;
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ trạm:  ' + step.departure.place.name;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;' + result.destination;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Đi bộ từ trạm:  ' + step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;' + result.destination;
                             }
                             else if (pivot != '' && step.departure.place.name != pivot) {
                                 instuction = 'Đi bộ đến ' + step.departure.place.name;
                                 pivot = '';
-                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
-                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;đến trạm: ' + step.arrival.place.name;
+                                queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
+                                queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;đến trạm: ' + step.arrival.place.name;
                             }
                             queryPoint = queryPoint1 + queryPoint2;
 
                         } else if (type === 'transit') {
-                            const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;30;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
-                            const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;30;Xuống trạm: ' + step.arrival.place.name;
+                            const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;10;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
+                            const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;10;Xuống trạm: ' + step.arrival.place.name;
                             queryPoint = queryPoint1 + queryPoint2;
                             pivot = step.arrival.place.name;
                             instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
@@ -296,7 +296,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "attachment": {
                                     "type": "image",
                                     "payload": {
-                                        "url": 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=512&w=512&ml=vie&ppi=250&q=100&r0=10.8666694,106.8030632,10.8670127,106.8035781,10.867238,106.8037605,10.867238,106.80391069999999,10.8675063,106.8043077,10.8676779,106.8045545,10.8677852,106.80469389999999,10.8678925,106.8047905,10.8680642,106.80496219999999,10.868782999999999,106.8056917,10.869405299999999,106.80626029999999,10.869566199999998,106.80641059999999,10.870467399999997,106.80709719999999,10.870649799999997,106.80714009999998,10.870585399999998,106.80701139999998,10.870617599999997,106.80688259999998,10.870692699999998,106.80673239999999,10.870767799999998,106.80662509999999,10.870928799999998,106.8065393,10.871014599999999,106.80650709999999,10.871143299999998,106.80654999999999,10.871025299999998,106.8064642,10.870284999999997,106.80588479999999,10.869448199999997,106.80515529999998,10.869255099999997,106.80496219999998,10.868815199999997,106.80450079999997,10.868600599999997,106.80418969999997,10.868514799999996,106.80406089999997,10.868214399999996,106.80370689999997,10.867817399999996,106.80323479999997,10.867302399999996,106.80250529999996,10.866905499999996,106.80266619999996,10.866873299999996,106.80246229999996,10.866073299999996,106.8011014999999&poix0=10.866454,106.803222;white;blue;10;su%E1%BB%91i%20ti%C3%AAn&poix1=10.86605,106.801116;white;blue;10;%C4%91%E1%BA%BFn%20tr%E1%BA%A1m:%20Khu%20DL%20Su%E1%BB%91i%20Ti%C3%AAn',
+                                        "url": ,
                                         "is_reusable": true
                                     }
                                 }
