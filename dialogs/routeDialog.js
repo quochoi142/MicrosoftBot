@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { InputHints, MessageFactory } = require('botbuilder');
+const { InputHints, MessageFactory,ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
@@ -165,7 +165,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                     urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=320&q=100'
+                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=1500&w=2048&ml=vie&ppi=320&q=100'
 
                     var myHeaders = new fetch.Headers();
                     myHeaders.append("Authorization", 'Bearer ' + process.env.token);
@@ -263,19 +263,35 @@ class RouteDialog extends CancelAndHelpDialog {
                                 {
                                     "type": "Image",
                                     "url": instuctions[i].urlImage,
-                                    "width": "2048",
-                                    "height": "2048",
+                                    "width": "2048px",
+                                    "height": "2048px",
                                     "style": "default",
-                                    "altText":instuctions[i].instuction
+                                    "size":"auto"
                                 }
                             ],
 
 
                         };
 
+                        const obj={
+                            name: 'guide.jpeg',
+                            contentType: 'image/png',
+                            contentUrl: instuctions[i].urlImage,
+                            width: '2048',
+                            height:'2048'
+                        };
+
+                        const reply = { type: ActivityTypes.Message };
+                        reply.attachments = [obj];
+                        //reply.text = 'This is an internet attachment.';
+                        
+
                         //console.log(element.urlImage);
                         const image = CardFactory.adaptiveCard(json);
                         await stepContext.context.sendActivity({ attachments: [image] });
+                
+                       // const welcomeCard = CardFactory.adaptiveCard(json);
+                        //await stepContext.context.sendActivity(reply);
 
                         // await utils.sleep(500);
                     }
