@@ -38,7 +38,7 @@ class StopArounDialog extends CancelAndHelpDialog {
         const result = stepContext.options;
         if (!result.location) {
             const messageText = 'Cho tôi biết nơi bạn muốn tìm';
-            const msg = MessageFactor.text(messageText, messageText, InputHints.ExpectingInput);
+            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(LOCATION, { prompt: msg });
             // stepContext.context.sendActivity()
         }

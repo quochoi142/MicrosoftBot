@@ -274,11 +274,9 @@ class RouteDialog extends CancelAndHelpDialog {
                         };
 
                         const obj={
-                            name: 'guide.jpeg',
-                            contentType: 'image/png',
+                            contentType: 'image/jpeg',
                             contentUrl: instuctions[i].urlImage,
-                            width: '2048',
-                            height:'2048'
+                          
                         };
 
                         const reply = { type: ActivityTypes.Message };
@@ -288,10 +286,10 @@ class RouteDialog extends CancelAndHelpDialog {
 
                         //console.log(element.urlImage);
                         const image = CardFactory.adaptiveCard(json);
-                        await stepContext.context.sendActivity({ attachments: [image] });
+                       // await stepContext.context.sendActivity({ attachments: [image] });
                 
                        // const welcomeCard = CardFactory.adaptiveCard(json);
-                        //await stepContext.context.sendActivity(reply);
+                        await stepContext.context.sendActivity(reply);
 
                         // await utils.sleep(500);
                     }
