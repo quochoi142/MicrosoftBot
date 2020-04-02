@@ -273,14 +273,14 @@ class RouteDialog extends CancelAndHelpDialog {
 
                         };
                         const url =  encodeUrl(instuctions[i].urlImage);
-                        const obj = {
-                            contentType: 'image/jpeg',
-                            contentUrl:url,
+                        // const obj = {
+                        //     contentType: 'image/jpeg',
+                        //     contentUrl:url,
 
-                        };
+                        // };
 
-                        const reply = { type: ActivityTypes.Message };
-                        reply.attachments = [obj];
+                        // const reply = { type: ActivityTypes.Message };
+                        // reply.attachments = [obj];
                         //reply.text = 'This is an internet attachment.';
 
 
@@ -291,12 +291,12 @@ class RouteDialog extends CancelAndHelpDialog {
                         // const welcomeCard = CardFactory.adaptiveCard(json);
                         //await stepContext.context.sendActivity(reply);
                         await stepContext.context.sendActivity({
-                            text: 'What is your email?',
+                            text: instuctions[i].instuction,
                             channelData: {
                                 "attachment": {
                                     "type": "image",
                                     "payload": {
-                                        "url": instuctions[i].urlImage,
+                                        "url": url,
                                         "is_reusable": true
                                     }
                                 }
