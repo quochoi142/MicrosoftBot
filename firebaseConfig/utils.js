@@ -82,7 +82,7 @@ const utils = {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
 
-    convertPolyline: (polyline) => {
+    convertPolylineX2: (polyline) => {
         const raw = polylineTool.decode(polyline);
         var result='';
         // raw.polyline.forEach(e=>{
@@ -101,6 +101,17 @@ const utils = {
         // })
         // result.replace(' ','');
         // return result.substring(0,result.length-2);
+    },
+
+    convertPolylineX1:(polyline)=>{
+        const raw = polylineTool.decode(polyline);
+        var result='';
+        raw.polyline.forEach(e=>{
+            result+=e+',';
+        })
+        result.replace(' ','');
+        return result.substring(0,result.length-2);
+
     }
 }
 

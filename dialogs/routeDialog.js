@@ -198,8 +198,12 @@ class RouteDialog extends CancelAndHelpDialog {
                     var indexGeo = 0;
 
                     steps.forEach(step => {
-
-                        var queryRoute = '&r0' + '=' + utils.convertPolyline(step.polyline);
+                        var queryRoute ='';
+                        if(index==0||index==steps.length - 1){
+                            queryRoute = '&r0' + '=' + utils.convertPolylineX1(step.polyline);
+                        }else{
+                            queryRoute = '&r0' + '=' + utils.convertPolylineX2(step.polyline);
+                        }
 
                         duration = duration + step.travelSummary.duration;
                         length = length + step.travelSummary.length;
