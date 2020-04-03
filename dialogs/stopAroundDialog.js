@@ -57,7 +57,7 @@ class StopArounDialog extends CancelAndHelpDialog {
     async searchStopsStep(stepContext) {
         const place = stepContext.options;
         var prompt = '';
-        const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + 'tphcm';
+        const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
         var flag = true;
 
         try {
