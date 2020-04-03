@@ -132,7 +132,7 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('searchDialog', routeDetails);
             }
             case 'Tìm_trạm': {
-                let location;
+                var location={};
                 const result = luisResult
                 if (result.entities.$instance.Origin) {
                     location = result.entities.$instance.Origin[0].text;

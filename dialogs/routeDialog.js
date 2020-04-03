@@ -147,7 +147,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 const json = await response.json();
                 if (response.status != 200 || json.routes.length == 0) {
-                    prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không';
+                    prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không?';
 
                 }
                 else {
