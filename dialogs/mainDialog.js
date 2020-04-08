@@ -6,17 +6,10 @@ const { LuisRecognizer } = require('botbuilder-ai');
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
 
-const {StopArounDialog}=require('./stopAroundDialog')
-
 const WelcomeCard = require('../resources/welcomeCard.json');
-//const WelcomeCard = require('../resources/confirmCard.json');
-const LocationCard = require('../resources/locationCard.json');
 const ConfirmCard = require('../resources/confirmCard.json');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
-
-const STOP_AROUND_DIALOG='STOP_AROUND_DIALOG';
-
 
 class MainDialog extends ComponentDialog {
 
@@ -33,18 +26,14 @@ class MainDialog extends ComponentDialog {
 
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
-
-        const stopAround = new StopArounDialog(STOP_AROUND_DIALOG);
-
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(routeDialog)
-            .addDialog(stopAround)
             .addDialog(searchDialog)
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.introStep.bind(this),
                 this.actStep.bind(this),
-                this.confirmEndStep.bind(this),
-                this.finalStep.bind(this)
+                this.finalStep.bind(this),
+                this.confirmEndStep.bind(this)
 
             ]));
 
@@ -83,23 +72,10 @@ class MainDialog extends ComponentDialog {
         // }
 
         //Init card welcome
-        const welcomeMessageText = 'Chào mừng bạn đến với Bus bot. Hãy chọn 1 trong các chức năng ở dưới';
-        await stepContext.context.sendActivity(welcomeMessageText, welcomeMessageText, InputHints.IgnoringInput);
-
 
         const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
 
-        /*  const welcomeMessageText_Hint = 'Ngoài cách lựa chọn chức năng bạn cũng có thể nhập trực tiếp yêu cầu vào';
-         const welcomeMessageText_Example1 = 'VD: Tìm đường';
-         const welcomeMessageText_Example2 = 'Tra cứu xe bus tại trạm suối tiên';
-         const welcomeMessageText_Example3 = 'Tôi muốn đi từ đầm sen đến suối tiên v.v.';
-         await stepContext.context.sendActivity(welcomeMessageText_Hint, welcomeMessageText_Hint, InputHints.IgnoringInput);
-         await stepContext.context.sendActivity(welcomeMessageText_Example1, welcomeMessageText_Example1, InputHints.IgnoringInput);
-         await stepContext.context.sendActivity(welcomeMessageText_Example2, welcomeMessageText_Example2, InputHints.IgnoringInput);
-         await stepContext.context.sendActivity(welcomeMessageText_Example3, welcomeMessageText_Example3, InputHints.IgnoringInput);
-  */
-        //const messageText = stepContext.options.restartMsg ? stepContext.options.restartMsg : 'Tôi có thể giúp gì thêm cho bạn?';
         const messageText = null; //set null Intro message
         const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
         return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
@@ -111,6 +87,7 @@ class MainDialog extends ComponentDialog {
      */
     async actStep(stepContext) {
         const routeDetails = {};
+
 
         if (!this.luisRecognizer.isConfigured) {
             // LUIS is not configured, we just run the BookingDialog path.
@@ -125,22 +102,21 @@ class MainDialog extends ComponentDialog {
                 const to = this.luisRecognizer.getToEntities(luisResult);
                 routeDetails.origin = from;
                 routeDetails.destination = to;
+                console.log(routeDetails.origin);
+                console.log(routeDetails.destination);
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-            case 'Tra_cứu': {
+            case 'Tìm_xe_bus': {
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
             }
             case 'Tìm_trạm': {
-                var location={};
-                const result = luisResult
-                if (result.entities.$instance.Origin) {
-                    location = result.entities.$instance.Origin[0].text;
-                }
-
-                return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
-
-
+                //chỉ hiện location card
+                return await stepContext.beginDialog('searchDialog', routeDetails);
+            }
+            case 'Kết_thúc': {
+                //chỉ hiện location card
+                return await stepContext.next();
             }
             default: {
 
@@ -155,34 +131,33 @@ class MainDialog extends ComponentDialog {
 
         }
 
-        return await stepContext.next();
-    }
-
-
-    async confirmEndStep(stepContext) {
-        const prompt = stepContext.result;
-
-        // mới thêm !
-        if (prompt == "Bạn cần giúp gì thêm không?") {
-            //Init card confirm
-            const confirmCard = CardFactory.adaptiveCard(ConfirmCard);
-            await stepContext.context.sendActivity({ attachments: [confirmCard] });
-
-            return await stepContext.prompt('TextPrompt', { prompt: prompt });
-        }
-
-        return await stepContext.replaceDialog(this.initialDialogId, { restartMsg: prompt });
+        return await stepContext.replaceDialog(this.initialDialogId);
     }
 
     async finalStep(stepContext) {
+      
+        if (stepContext.result == "Bạn cần giúp gì thêm không?") {
+            
+            return await stepContext.next(stepContext.result);
 
-        if ('Có' == stepContext.result || 'có' == stepContext.result || '\"Có\"' == stepContext.result) {
-            return await stepContext.beginDialog('MainDialog');
         }
-        const byeMessageText = "Chào tạm biệt, hi vọng tôi đã giúp được bạn <3 !!!";
-        return await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
+        else {
+
+            const byeMessageText = 'Chào tạm biệt...';
+            await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
+            
+            return await stepContext.endDialog();
+        }
+    }
+
+    async confirmEndStep(stepContext) {
+
+        const prompt = stepContext.result;
+        await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
+
+        return await stepContext.replaceDialog(this.initialDialogId);
+
 
     }
 }
-
 module.exports.MainDialog = MainDialog;

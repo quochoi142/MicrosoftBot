@@ -18,14 +18,26 @@
     },
     {
       "type": "Action.Submit",
-      "title": "Tra cứu",
-      "data": "Tra cứu"
+      "title": "Tìm xe bus",
+      "data": "Tìm xe bus"
+
+    },
+        {
+      "type": "Action.Submit",
+      "title": "Tìm trạm",
+      "data": "Tìm trạm"
 
     },
     {
       "type": "Action.Submit",
       "title": "Trợ giúp",
       "data": "Trợ giúp"
+
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Kết thúc",
+      "data": "Kết thúc"
 
     }
   ]

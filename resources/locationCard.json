@@ -13,20 +13,20 @@
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "Đại học khoa học tự nhiên cs 2",
-            "data":  "Đại học khoa học tự nhiên cs 2"
+            "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
+            "data":  "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
             
         },
         {
             "type": "Action.Submit",
-            "title": "Đại học khoa học tự nhiên cs 1",
-            "data": "Đại học khoa học tự nhiên cs 1"
+            "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
+            "data":  "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
             
         },
         {
             "type": "Action.Submit",
             "title": "Vị trí hiện tại",
-            "data":  "Vị trí hiện tại"
+            "data": "Vị trí hiện tại"
             
         }
     ]

@@ -25,7 +25,6 @@ class SearchDialog extends CancelAndHelpDialog {
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.locationStep.bind(this),
-                this.confirmLocationStep.bind(this),
                 this.finalStep.bind(this)
 
 
@@ -73,36 +72,15 @@ class SearchDialog extends CancelAndHelpDialog {
         return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
     }
 
-
-    async confirmLocationStep(stepContext) {
-
-        //Cho người dùng biết trạm sẽ tra cứu
-        const confirmLocationmessageText = "Bạn muốn tra cứu cho trạm này có phải không?";
-        await stepContext.context.sendActivity(confirmLocationmessageText, confirmLocationmessageText, InputHints.IgnoringInput);
-
-        //Init card confirmOD
-        const confirmLocationCard = CardFactory.adaptiveCard(ConfirmLocationCard);
-        await stepContext.context.sendActivity({ attachments: [confirmLocationCard] });
-
-        const messageText = null;
-        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
-    }
-
     async finalStep(stepContext) {
 
         // code tra cứu nằm trong đây
-        if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
+        const messageText = 'chức năng chưa cài đặt';
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
 
-            const prompt = "Bạn cần giúp gì thêm không?";
-            return await stepContext.endDialog(prompt);
+        const prompt = "Bạn cần giúp gì thêm không?";
+        return await stepContext.endDialog(prompt);
 
-        }
-        else {
-
-            return await stepContext.beginDialog('searchDialog');
-
-        }
     }
 
 
