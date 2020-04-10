@@ -121,10 +121,10 @@ class MainDialog extends ComponentDialog {
             case 'Tìm_trạm': {
 
 
-                var location = {};
+                var location={};
                 const result = luisResult
                 if (result.entities.$instance.Origin) {
-                    location = result.entities.$instance.Origin[0].text;
+                    location.origin = result.entities.$instance.Origin[0].text;
                 }
 
                 return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);

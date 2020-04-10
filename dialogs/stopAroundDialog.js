@@ -18,7 +18,6 @@ class StopArounDialog extends CancelAndHelpDialog {
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.getLocationStep.bind(this),
-                this.test.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -58,11 +57,11 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     async getLocationStep(stepContext) {
         const result = stepContext.options;
-        if (!result) {
+        if (!result.origin) {
             const messageText = 'Cho tôi biết nơi bạn muốn tìm';
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            await stepContext.prompt(LOCATION, { prompt: msg });
-            // stepContext.context.sendActivity()
+            return await stepContext.prompt(LOCATION, { prompt: msg });
+          
         }
         return await stepContext.next(result);
 
