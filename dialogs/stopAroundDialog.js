@@ -69,7 +69,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
     async searchStopsStep(stepContext) {
-        const place = stepContext.options;
+        const place = (stepContext.options.origin)?stepContext.options.origin:stepContext.result;
         var prompt = '';
         const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
         var flag = true;
@@ -111,7 +111,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                         const point = '&poix' + i + '=' + data.stations[i].place.location.lat + ',' + data.stations[i].place.location.lng + ';white;blue;25;' + data.stations[i].place.name;
                         urlGetImage += point;
                     }
-                    urlGetImage += '&poix' + i + '=' + result.geo.lat + ',' + result.geo.lng + ';white;blue;25;' + result.address;
+                    urlGetImage += '&poix' + i + '=' + result.geo.lat + ',' + result.geo.lng + ';white;blue;25;' + result.address.replace("700000", "");;
 
                     const url = encodeUrl(urlGetImage);
 
