@@ -1,6 +1,6 @@
 var firebase = require('firebase')
 const config = require('./config')
-const polylineTool= require('../API/polyline')
+const polylineTool = require('../API/polyline')
 const utils = {
 
     initialize_FireBase: () => {
@@ -55,6 +55,19 @@ const utils = {
             });
 
     },
+    wait: () => {
+        var flag = false;
+        while (flag) {
+            firebase.database().ref('flag').on('value', function () {
+                flag = (snapshot.val()) ? true : false;
+            });
+        }
+        return flag
+
+
+    }
+
+    ,
 
     getIdUser: (context) => {
         const activity = Object.assign({}, context)._activity;
@@ -65,14 +78,14 @@ const utils = {
         var h = Math.floor(secs / 3600)
         var m = Math.floor(secs % 3600 / 60);
 
-        const hh= h+'h';
-        const mm =m+'\'';
-        var result='';
-        if(h!=0){
-            result+=hh;
+        const hh = h + 'h';
+        const mm = m + '\'';
+        var result = '';
+        if (h != 0) {
+            result += hh;
         }
-        if(mm!=0){
-            result+=mm;
+        if (mm != 0) {
+            result += mm;
         }
         return result;
     },
@@ -84,15 +97,15 @@ const utils = {
 
     convertPolylineX2: (polyline) => {
         const raw = polylineTool.decode(polyline);
-        var result='';
+        var result = '';
         // raw.polyline.forEach(e=>{
         //     result+=e;
         // })
-        for(var i =0 ;i<raw.polyline.length||i==raw.polyline.length-1;i=i+2){
-            result+=raw.polyline[i]+',';
+        for (var i = 0; i < raw.polyline.length || i == raw.polyline.length - 1; i = i + 2) {
+            result += raw.polyline[i] + ',';
         }
-        result.replace(' ','');
-        return result.substring(0,result.length-2);
+        result.replace(' ', '');
+        return result.substring(0, result.length - 2);
 
         // const raw = polylineTool.decode(polyline);
         // var result='';
@@ -103,14 +116,14 @@ const utils = {
         // return result.substring(0,result.length-2);
     },
 
-    convertPolylineX1:(polyline)=>{
+    convertPolylineX1: (polyline) => {
         const raw = polylineTool.decode(polyline);
-        var result='';
-        raw.polyline.forEach(e=>{
-            result+=e+',';
+        var result = '';
+        raw.polyline.forEach(e => {
+            result += e + ',';
         })
-        result.replace(' ','');
-        return result.substring(0,result.length-2);
+        result.replace(' ', '');
+        return result.substring(0, result.length - 2);
 
     }
 }

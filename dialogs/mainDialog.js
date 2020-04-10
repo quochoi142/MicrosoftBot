@@ -11,6 +11,10 @@ const ConfirmCard = require('../resources/confirmCard.json');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
+
+const { StopArounDialog } = require('./stopAroundDialog')
+const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
+
 class MainDialog extends ComponentDialog {
 
     constructor(luisRecognizer, routeDialog, searchDialog) {
@@ -24,10 +28,14 @@ class MainDialog extends ComponentDialog {
 
         if (!searchDialog) throw new Error('[MainDialog]: Missing parameter \'searchDialog\' is required');
 
+
+        const stopAround = new StopArounDialog(STOP_AROUND_DIALOG);
+
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(routeDialog)
+            .addDialog(stopAround)
             .addDialog(searchDialog)
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.introStep.bind(this),
@@ -111,8 +119,17 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('searchDialog', routeDetails);
             }
             case 'Tìm_trạm': {
-                //chỉ hiện location card
-                return await stepContext.beginDialog('searchDialog', routeDetails);
+
+
+                var location = {};
+                const result = luisResult
+                if (result.entities.$instance.Origin) {
+                    location = result.entities.$instance.Origin[0].text;
+                }
+
+                return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
+
+
             }
             case 'Kết_thúc': {
                 //chỉ hiện location card
@@ -135,9 +152,9 @@ class MainDialog extends ComponentDialog {
     }
 
     async finalStep(stepContext) {
-      
+
         if (stepContext.result == "Bạn cần giúp gì thêm không?") {
-            
+
             return await stepContext.next(stepContext.result);
 
         }
@@ -145,7 +162,7 @@ class MainDialog extends ComponentDialog {
 
             const byeMessageText = 'Chào tạm biệt...';
             await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
-            
+
             return await stepContext.endDialog();
         }
     }

@@ -6,7 +6,7 @@
 // Import required packages
 const path = require('path');
 const restify = require('restify');
-const setAccessToken=require('./API/oauth1');
+const setAccessToken = require('./API/oauth1');
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
@@ -41,12 +41,12 @@ const onTurnErrorHandler = async (context, error) => {
     // This check writes out errors to console log .vs. app insights.
     // NOTE: In production environment, you should consider logging this to Azure
     //       application insights.
-    console.error(`\n [onTurnError] unhandled error: ${ error }`);
+    console.error(`\n [onTurnError] unhandled error: ${error}`);
 
     // Send a trace activity, which will be displayed in Bot Framework Emulator
     await context.sendTraceActivity(
         'OnTurnError Trace',
-        `${ error }`,
+        `${error}`,
         'https://www.botframework.com/schemas/error',
         'TurnError'
     );
@@ -75,7 +75,7 @@ const userState = new UserState(memoryStorage);
 
 // If configured, pass in the FlightBookingRecognizer.  (Defining it externally allows it to be mocked for tests)
 const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
-const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${ LuisAPIHostName }` };
+const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
 
 const luisRecognizer = new BusRecognizer(luisConfig);
 
@@ -86,22 +86,31 @@ const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 
 //Initialize Firebase
-const Firebase= require('./firebaseConfig/utils')
+const Firebase = require('./firebaseConfig/utils')
 Firebase.initialize_FireBase();
 //Get bearer
 setAccessToken()
 // Create HTTP server
+const render = require('restify-render-middleware')
 const server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function() {
-    console.log(`\n${ server.name } listening to ${ server.url }`);
+server.use(render({
+    engine: {
+        name: 'swig',
+        extname: 'html'
+    },
+    dir: __dirname
+}))
+
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+    console.log(`\n${server.name} listening to ${server.url}`);
     console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
     console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
 });
 
+
 // Listen for incoming activities and route them to your bot main dialog.
 server.post('/api/messages', (req, res) => {
 
-   
 
     // Route received a request to adapter for processing
     adapter.processActivity(req, res, async (turnContext) => {
@@ -109,6 +118,15 @@ server.post('/api/messages', (req, res) => {
         await bot.run(turnContext);
     });
 });
+
+
+server.get('/map',(req,res)=>{
+
+    res.render('map')
+});
+
+
+
 
 // Listen for Upgrade requests for Streaming.
 server.on('upgrade', (req, socket, head) => {

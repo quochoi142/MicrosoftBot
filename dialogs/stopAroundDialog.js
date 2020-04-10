@@ -18,10 +18,25 @@ class StopArounDialog extends CancelAndHelpDialog {
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.getLocationStep.bind(this),
+                this.test.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
+
+    }
+
+    async test(stepContext) {
+        await stepContext.context.sendActivity('waiting');
+         const utils = require('../firebaseConfig/utils');
+        // var x;
+        // const a = await utils.wait().then(res=>{
+        //     console.log(res);
+        //     x='suối tiên tphcm';
+        // })
+        // await utils.sleep(5000)
+        var a =await utils.wait();
+        return await stepContext.next();
 
     }
 
