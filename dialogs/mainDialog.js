@@ -118,12 +118,11 @@ class MainDialog extends ComponentDialog {
                 await stepContext.context.sendActivity({
                     text: "test",
                     channelData: {
-                        "message":{
                         "attachment": {
                             "type": "template",
                             "payload": {
                                 "template_type": "button",
-                                "text":"What do you want to do next?",
+                                "text": "What do you want to do next?",
                                 "buttons": [
                                     {
                                         "type": "postback",
@@ -145,7 +144,7 @@ class MainDialog extends ComponentDialog {
                         }
                     }
                 }
-            });
+                );
 
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
