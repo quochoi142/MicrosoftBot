@@ -115,163 +115,96 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {
-                /*  await stepContext.context.sendActivity({
-                     text: "test",
-                     channelData: {
-                         "attachment": {
-                             "type": "template",
-                             "payload": {
-                                 "template_type": "button",
-                                 "text": "What do you want to do next?",
-                                 "buttons": [
-                                     {
-                                         "type": "postback",
-                                         "title": "View More 1",
-                                         "payload": "View More"
-                                     },
-                                     {
-                                         "type": "postback",
-                                         "title": "View More 2",
-                                         "payload": "View More"
-                                     },
-                                     {
-                                         "type": "postback",
-                                         "title": "View More 3",
-                                         "payload": "View More"
-                                     }
-                                 ]
-                             }
-                         }
-                     }
-                 }); */
                 await stepContext.context.sendActivity({
-                    text: "test",
+                text: "test",
                     channelData: {
-                        "attachment": {
-                            "type": "template",
+                    "attachment": {
+                        "type": "template",
                             "payload": {
-                                "template_type": "list",
-                                "top_element_style": "compact",
-                                "elements": [
-                                    {
-                                        "title": "Classic T-Shirt Collection",
-                                        "subtitle": "See all our colors",
-                                        "image_url": "https://peterssendreceiveapp.ngrok.io/img/collection.png",
-                                        "buttons": [
-                                            {
-                                                "title": "View",
-                                                "type": "web_url",
-                                                "url": "https://peterssendreceiveapp.ngrok.io/collection",
-                                                "messenger_extensions": true,
-                                                "webview_height_ratio": "tall",
-                                                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "title": "Classic White T-Shirt",
-                                        "subtitle": "See all our colors",
-                                        "default_action": {
-                                            "type": "web_url",
-                                            "url": "https://peterssendreceiveapp.ngrok.io/view?item=100",
-                                            "messenger_extensions": false,
-                                            "webview_height_ratio": "tall"
-                                        }
-                                    },
-                                    {
-                                        "title": "Classic Blue T-Shirt",
-                                        "image_url": "https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png",
-                                        "subtitle": "100% Cotton, 200% Comfortable",
-                                        "default_action": {
-                                            "type": "web_url",
-                                            "url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
-                                            "messenger_extensions": true,
-                                            "webview_height_ratio": "tall",
-                                            "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                            "template_type": "button",
+                                "text": "What do you want to do next?",
+                                    "buttons": [
+                                        {
+                                            "type": "postback",
+                                            "title": "View More 1",
+                                            "payload": "View More"
                                         },
-                                        "buttons": [
-                                            {
-                                                "title": "Shop Now",
-                                                "type": "web_url",
-                                                "url": "https://peterssendreceiveapp.ngrok.io/shop?item=101",
-                                                "messenger_extensions": true,
-                                                "webview_height_ratio": "tall",
-                                                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "buttons": [
-                                    {
-                                        "title": "View More",
-                                        "type": "postback",
-                                        "payload": "payload"
-                                    }
-                                ]
-                            }
+                                        {
+                                            "type": "postback",
+                                            "title": "View More 2",
+                                            "payload": "View More"
+                                        },
+                                        {
+                                            "type": "postback",
+                                            "title": "View More 3",
+                                            "payload": "View More"
+                                        }
+                                    ]
                         }
                     }
-                });
+                }
+            });
+
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
-            }
+        }
             case 'Tìm_trạm': {
 
 
-                var location = {};
-                const result = luisResult
-                if (result.entities.$instance.Origin) {
-                    location.origin = result.entities.$instance.Origin[0].text;
-                }
-
-                return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
-
-
+            var location = {};
+            const result = luisResult
+            if (result.entities.$instance.Origin) {
+                location.origin = result.entities.$instance.Origin[0].text;
             }
+
+            return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
+
+
+        }
             case 'Kết_thúc': {
-                //chỉ hiện location card
-                return await stepContext.next();
-            }
+            //chỉ hiện location card
+            return await stepContext.next();
+        }
             default: {
 
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
             case 'Trợ_giúp': {
-                const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
-                await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
+    const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
+    await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
 
-            }
-
-        }
-
-        return await stepContext.replaceDialog(this.initialDialogId);
-    }
-
-    async finalStep(stepContext) {
-
-        if (stepContext.result == "Bạn cần giúp gì thêm không?") {
-
-            return await stepContext.next(stepContext.result);
+}
 
         }
-        else {
 
-            const byeMessageText = 'Chào tạm biệt...';
-            await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
-
-            return await stepContext.endDialog();
-        }
+return await stepContext.replaceDialog(this.initialDialogId);
     }
 
-    async confirmEndStep(stepContext) {
+async finalStep(stepContext) {
 
-        const prompt = stepContext.result;
-        await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
+    if (stepContext.result == "Bạn cần giúp gì thêm không?") {
 
-        return await stepContext.replaceDialog(this.initialDialogId);
-
+        return await stepContext.next(stepContext.result);
 
     }
+    else {
+
+        const byeMessageText = 'Chào tạm biệt...';
+        await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
+
+        return await stepContext.endDialog();
+    }
+}
+
+async confirmEndStep(stepContext) {
+
+    const prompt = stepContext.result;
+    await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
+
+    return await stepContext.replaceDialog(this.initialDialogId);
+
+
+}
 }
 module.exports.MainDialog = MainDialog;
