@@ -115,13 +115,70 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {
+                await stepContext.context.sendActivity({
+                    text: "test",
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "list",
+                                "elements": [
+                                    {
+                                        "title": "Classic T  Shirt Collection",
+                                        "subtitle": "See all our colors",
+                                        "image_url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "select",
+                                                "payload": "Collection"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "title": "Classic White T Shirt",
+                                        "subtitle": "See all our colors",
+                                        "default_action": {
+                                            "type": "web_url",
+                                            "url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
+                                            "messenger_extensions": false,
+                                            "webview_height_ratio": "tall"
+                                        }
+                                    },
+                                    {
+                                        "title": "Classic Blue T Shirt",
+                                        "subtitle": "100 Comfortable",
+                                        "image_url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "select",
+                                                "payload": "Blue"
+                                            }
+
+                                        ]
+                                    }
+                                ],
+                                "top_element_style": "compact",
+                                "buttons": [
+                                    {
+                                        "type": "postback",
+                                        "title": "View More",
+                                        "payload": "View More"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
             }
             case 'Tìm_trạm': {
 
 
-                var location={};
+                var location = {};
                 const result = luisResult
                 if (result.entities.$instance.Origin) {
                     location.origin = result.entities.$instance.Origin[0].text;
