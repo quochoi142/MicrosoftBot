@@ -138,6 +138,11 @@ class MainDialog extends ComponentDialog {
                                         "type": "postback",
                                         "title": "View More 3",
                                         "payload": "View More"
+                                    },
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 4",
+                                        "payload": "View More"
                                     }
                                 ]
                             }
