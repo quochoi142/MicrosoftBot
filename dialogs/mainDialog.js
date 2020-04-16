@@ -118,42 +118,34 @@ class MainDialog extends ComponentDialog {
                 await stepContext.context.sendActivity({
                     text: "test",
                     channelData: {
+                        "message":{
                         "attachment": {
                             "type": "template",
                             "payload": {
-                                "template_type": "list",
-                                "elements": [
-                                    {
-                                        "title": "Classic T  Shirt Collection",
-                                        "subtitle": "See all our colors",
-                                        "image_url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
-                                        "buttons": [
-                                            {
-                                                "type": "postback",
-                                                "title": "select",
-                                                "payload": "Collection"
-                                            }
-                                        ],
-                                        "default_action": {
-                                            "type": "web_url",
-                                            "url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
-                                            "messenger_extensions": false,
-                                            "webview_height_ratio": "tall"
-                                        }
-                                    }
-                                ],
-                                "top_element_style": "compact",
+                                "template_type": "button",
+                                "text":"What do you want to do next?",
                                 "buttons": [
                                     {
                                         "type": "postback",
-                                        "title": "View More",
+                                        "title": "View More 1",
+                                        "payload": "View More"
+                                    },
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 2",
+                                        "payload": "View More"
+                                    },
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 3",
                                         "payload": "View More"
                                     }
                                 ]
                             }
                         }
                     }
-                });
+                }
+            });
 
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
