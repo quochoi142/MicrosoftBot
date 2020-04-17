@@ -96,7 +96,7 @@ const server = restify.createServer();
 server.use(render({
     engine: {
         name: 'swig',
-        extname: 'html'
+        extname: 'hbs'
     },
     dir: __dirname
 }))
@@ -122,7 +122,7 @@ server.post('/api/messages', (req, res) => {
 
 server.get('/map',(req,res)=>{
 
-    res.render('map')
+    res.render('map',{ name: "example" })
 });
 
 

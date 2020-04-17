@@ -25,6 +25,7 @@
         "dotenv": "^8.2.0",
         "encodeurl": "^1.0.2",
         "firebase": "^7.10.0",
+        "handlebars": "^4.7.6",
         "https": "^1.0.0",
         "node-fetch": "^2.6.0",
         "request": "^2.88.2",

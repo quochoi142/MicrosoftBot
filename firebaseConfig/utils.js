@@ -2,7 +2,7 @@ var firebase = require('firebase')
 const config = require('./config')
 const polylineTool = require('../API/polyline')
 const utils = {
-
+    x: undefined,
     initialize_FireBase: () => {
         firebase.initializeApp(config);
 
@@ -125,6 +125,46 @@ const utils = {
         result.replace(' ', '');
         return result.substring(0, result.length - 2);
 
+    },
+
+    abc: () => {
+        firebase.database().ref('flag').on('value', function (snap) {
+            console.log('add in action', snap.val());
+
+        });
+
+        // return await firebase.database().ref('flag').on('value', await (snap => {
+        //     console.log('add in action', snap.val());
+        // }))
+    }
+    //         .then( snap=> {
+    //             console.log('add in action', snap.val());
+    //         });
+    // }
+    ,
+    getFirebase: () => {
+        return firebase;
+    },
+
+    openMap: () => {
+        var timeout, promise;
+
+        promise = new Promise(function (resolve, reject) {
+            var i = false;
+            firebase.database().ref('flag').on('value', async function (snap) {
+
+                if (i) {
+                    resolve(snap.val());
+
+                }
+                i = true;
+
+
+            });
+
+        });
+
+        return promise;
     }
 }
 

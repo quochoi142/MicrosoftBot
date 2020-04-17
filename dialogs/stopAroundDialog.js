@@ -10,6 +10,7 @@ const TEXT_PROMPT = 'TextPrompt_StopAround';
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
 var encodeUrl = require('encodeurl');
+const utils = require('../firebaseConfig/utils');
 
 class StopArounDialog extends CancelAndHelpDialog {
     constructor(id) {
@@ -27,14 +28,13 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     async test(stepContext) {
         await stepContext.context.sendActivity('waiting');
-         const utils = require('../firebaseConfig/utils');
         // var x;
         // const a = await utils.wait().then(res=>{
         //     console.log(res);
         //     x='suối tiên tphcm';
         // })
         // await utils.sleep(5000)
-        var a =await utils.wait();
+        var a = await utils.wait();
         return await stepContext.next();
 
     }
@@ -55,21 +55,44 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
 
+
     async getLocationStep(stepContext) {
+
         const result = stepContext.options;
         if (!result.origin) {
+
+
             const messageText = 'Cho tôi biết nơi bạn muốn tìm';
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(LOCATION, { prompt: msg });
-          
+
         }
-        return await stepContext.next(result);
+
+        return await stepContext.next(result.origin);
+
+
 
     }
 
+    // async openMap(stepContext) {
+    //     if (stepContext.result != 'map')
+    //         const result = stepContext.options;
+
+    //     return await stepContext.next(result.origin);
+
+    //     var timeOutObj = utils.openMap();
+
+    //     await timeOutObj.then(function (result) {
+
+
+    //     });
+
+    //     //Cancel it.
+
+    // }
 
     async searchStopsStep(stepContext) {
-        const place = (stepContext.options.origin)?stepContext.options.origin:stepContext.result;
+        const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
         var flag = true;
