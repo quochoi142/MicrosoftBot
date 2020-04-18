@@ -1,0 +1,22 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://i.pcmag.com/imagery/articles/05ADBV1ymnSvbBWkkDkQIzv-5.fit_scale.size_2698x1517.v1569489490.jpg",
+            "width": "stretch",
+            "style": "default"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Open map",
+            "data":"map" 
+            
+        }
+    ]
+
+}

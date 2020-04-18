@@ -300,44 +300,6 @@ class RouteDialog extends CancelAndHelpDialog {
         return await stepContext.endDialog(prompt);
     }
 
-    /*  async errorStep(stepContext) {
-         const route = stepContext.options;
-         switch (stepContext.result) {
-             case 'Sai điểm xuất phát': {
-                 route.origin = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             case 'Sai điểm đến': {
-                 route.destination = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             case 'Sai cả hai': {
-                 route.origin = null;
-                 route.destination = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             case '\"Sai điểm xuất phát\"': {
-                 route.origin = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             case '\"Sai điểm đến\"': {
-                 route.destination = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             case '\"Sai cả hai\"': {
-                 route.origin = null;
-                 route.destination = null;
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-             default: {
-                 const didntUnderstandMessageText = "Lựa chọn của bạn không phù hợp?";
-                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
- 
-                 return await stepContext.beginDialog('routeDialog', route);
-             }
-         }
-     } */
-
 }
 
 module.exports.RouteDialog = RouteDialog;

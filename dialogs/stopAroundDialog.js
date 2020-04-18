@@ -2,10 +2,13 @@ const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 
 const { InputHints, MessageFactory, ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
+const { CardFactory } = require('botbuilder-core');
 
 const WATERFALL_DIALOG = 'STOP_AROUND_WATERFALL'
 const LOCATION = 'CONFIRM_LOCATION'
 const TEXT_PROMPT = 'TextPrompt_StopAround';
+
+const OpenMapCard = require('../resources/openMapCard.json');
 
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
@@ -19,6 +22,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.getLocationStep.bind(this),
+                this.openMapStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -74,7 +78,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     }
 
-    // async openMap(stepContext) {
+    //  async openMap(stepContext) {
     //     if (stepContext.result != 'map')
     //         const result = stepContext.options;
 
@@ -91,7 +95,20 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     // }
 
+    //code here
+    async openMapStep(stepContext) {
+    
+        const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
+        await stepContext.context.sendActivity({ attachments: [openMapCard] });
+
+        const messageText = null; //set null Intro message
+        const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
+    }
+
+
     async searchStopsStep(stepContext) {
+
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
