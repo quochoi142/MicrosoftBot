@@ -6,6 +6,7 @@
 // Import required packages
 const path = require('path');
 const restify = require('restify');
+var bodyParser = require('body-parser')
 const setAccessToken = require('./API/oauth1');
 
 // Import required bot services.
@@ -93,6 +94,8 @@ setAccessToken()
 // Create HTTP server
 const render = require('restify-render-middleware')
 const server = restify.createServer();
+// process.env.url=server.url;
+// console.log('url '+process.env.url);
 server.use(render({
     engine: {
         name: 'swig',
@@ -107,7 +110,13 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
 });
 
-
+//server.use(bodyParser.json());
+server.use(restify.plugins.queryParser({
+    mapParams: true
+}));
+server.use(restify.plugins.bodyParser({
+    mapParams: true
+}));
 // Listen for incoming activities and route them to your bot main dialog.
 server.post('/api/messages', (req, res) => {
 
@@ -120,9 +129,12 @@ server.post('/api/messages', (req, res) => {
 });
 
 
-server.get('/map',(req,res)=>{
-
-    res.render('map',{ name: "example" })
+server.get('/map', (req, res) => {
+   
+    res.render('map', { 
+        id: req.params.id,
+        token:req.params.token
+     })
 });
 
 

@@ -1,6 +1,8 @@
 var firebase = require('firebase')
 const config = require('./config')
 const polylineTool = require('../API/polyline')
+var randomstring = require("randomstring");
+
 const utils = {
     x: undefined,
     initialize_FireBase: () => {
@@ -17,7 +19,7 @@ const utils = {
         obj.time = Date.now();
 
         //save db, each user contain the 5 latest route, 
-        var refFirebase = firebase.database().ref('users/' + id);
+        var refFirebase = firebase.database().ref('users/' + id+'/routes');
         refFirebase.once('value').then(function (snapshot) {
             const arr = snapshot.val();
             const leng = snapshot.numChildren();
@@ -44,7 +46,7 @@ const utils = {
         firebase.initializeApp(config);
         var arr = [];
 
-        return await firebase.database().ref('users/' + id).orderByChild('time').once('value')
+        return await firebase.database().ref('users/' + id+'/routes').orderByChild('time').once('value')
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     arr.push(data.val());
@@ -145,6 +147,14 @@ const utils = {
     getFirebase: () => {
         return firebase;
     },
+
+  
+    setToken:(context)=>{
+        const activity = Object.assign({}, context)._activity;
+        const id = activity.from.id;
+        firebase.database().ref('users/' + id+'/token').set(randomstring.generate(10));
+    },
+    
 
     openMap: () => {
         var timeout, promise;

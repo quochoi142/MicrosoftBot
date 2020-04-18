@@ -15,6 +15,8 @@ const fetch = require("node-fetch");
 var encodeUrl = require('encodeurl');
 const utils = require('../firebaseConfig/utils');
 
+const randomstring=require('randomstring')
+
 class StopArounDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
@@ -62,17 +64,48 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     async getLocationStep(stepContext) {
 
-        const result = stepContext.options;
-        if (!result.origin) {
+        // const result = stepContext.options;
+        // if (!result.origin) {
 
 
-            const messageText = 'Cho tôi biết nơi bạn muốn tìm';
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(LOCATION, { prompt: msg });
+        //     const messageText = 'Cho tôi biết nơi bạn muốn tìm';
+        //     const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        //     return await stepContext.prompt(LOCATION, { prompt: msg });
 
-        }
+        // }
 
-        return await stepContext.next(result.origin);
+        // return await stepContext.next(result.origin);
+
+
+
+        var promise = new Promise(function (resolve, reject) {
+            const id = utils.getIdUser(stepContext.context);
+            var token;
+            var firebase = utils.getFirebase();
+            firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                token = snap.val();
+                var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                setTimeout(function () {
+                    firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                }, 30000);
+                resolve(url)
+
+            })
+
+
+        });
+        var myUrl;
+        await promise.then(url=>{
+            myUrl=url;
+        }).catch(err=>{
+            console.log(err);
+        })
+
+        const messageText = myUrl;
+        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+
 
 
 
@@ -97,7 +130,29 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     //code here
     async openMapStep(stepContext) {
-    
+
+
+
+        // "attachment":{
+        //     "type":"template",
+        //     "payload":{
+        //       "template_type":"button",
+        //       "text":"What do you want to do next?",
+        //       "buttons":[
+        //         {
+        //           "type":"web_url",
+        //           "url":"https://www.messenger.com",
+        //           "title":"Visit Messenger"
+        //         },
+        //         {
+        //           ...
+        //         },
+        //         {...}
+        //       ]
+        //     }
+        //   }
+
+
         const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
         await stepContext.context.sendActivity({ attachments: [openMapCard] });
 
