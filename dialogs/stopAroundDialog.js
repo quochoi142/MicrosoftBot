@@ -166,6 +166,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 console.log(err);
             })
 
+            //đã thêm button tại đây
             await stepContext.context.sendActivity({
                 text: "Bạn cũng có thể nhập trực tiếp",
                 channelData: {
@@ -176,10 +177,25 @@ class StopArounDialog extends CancelAndHelpDialog {
                             "text": "Chọn nơi bạn muốn tra cứu",
                             "buttons": [
                                 {
+
+                                    "type": "postback",
+                                    "title": "Vị trí 1",
+                                    "payload": "Vị trí 1"
+
+                                },
+                                {
+
+                                    "type": "postback",
+                                    "title": "Vị trí 2",
+                                    "payload": "Vị trí 2"
+
+                                },
+                                {
                                     "type": "web_url",
                                     "url": myUrl,
-                                    "title": "Open map"
+                                    "title": "Mở map chọn"
                                 }
+
                             ]
                         }
                     }
