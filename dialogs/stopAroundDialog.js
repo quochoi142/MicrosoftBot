@@ -15,7 +15,7 @@ const fetch = require("node-fetch");
 var encodeUrl = require('encodeurl');
 const utils = require('../firebaseConfig/utils');
 
-const randomstring=require('randomstring')
+const randomstring = require('randomstring')
 
 class StopArounDialog extends CancelAndHelpDialog {
     constructor(id) {
@@ -24,7 +24,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.getLocationStep.bind(this),
-                this.openMapStep.bind(this),
+                //  this.openMapStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -76,35 +76,47 @@ class StopArounDialog extends CancelAndHelpDialog {
 
         // return await stepContext.next(result.origin);
 
+        var result = stepContext.options;
+        const id = utils.getIdUser(stepContext.context);
+
+        if (!result.origin) {
+            var promise = new Promise(function (resolve, reject) {
+                var token;
+                var firebase = utils.getFirebase();
+                firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                    token = snap.val();
+                    var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                    setTimeout(function () {
+                        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                    }, 30000);
+                    resolve(url)
+
+                })
 
 
-        var promise = new Promise(function (resolve, reject) {
-            const id = utils.getIdUser(stepContext.context);
-            var token;
-            var firebase = utils.getFirebase();
-            firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
-                token = snap.val();
-                var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
-                setTimeout(function () {
-                    firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
-
-                }, 30000);
-                resolve(url)
-
+            });
+            var myUrl;
+            await promise.then(url => {
+                myUrl = url;
+            }).catch(err => {
+                console.log(err);
             })
 
+            const messageText = myUrl;
+            const msg = MessageFactory.text(messageText, messageText, InputHints.IgnoringInput);
+            await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
 
-        });
-        var myUrl;
-        await promise.then(url=>{
-            myUrl=url;
-        }).catch(err=>{
-            console.log(err);
-        })
+            var map = utils.openMap(id);
 
-        const messageText = myUrl;
-        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+            await map.then(geo => {
+
+                result.origin = geo;
+            })
+        }
+
+        return await stepContext.next(result.origin)
+
 
 
 
@@ -166,23 +178,35 @@ class StopArounDialog extends CancelAndHelpDialog {
 
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
-        const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
         var flag = true;
 
         try {
-            const response = await fetch(utf8.encode(urlRequestGeo));
-            const json = await response.json();
+            var result;
+            if (utils.isGeo(place) == true) {
 
-            if (json.candidates.length == 0) {
-                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-                flag = false;
+                result = utils.getGeo(place)
             } else {
-                //request get Geo(lat,lng)
-                const result = {};
-                result.address = json.candidates[0].formatted_address;
-                result.geo = json.candidates[0].geometry.location;
+                const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
 
-                //request get departures around the place
+                const response = await fetch(utf8.encode(urlRequestGeo));
+                const json = await response.json();
+
+                if (json.candidates.length == 0) {
+                    prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+                    flag = false;
+                } else {
+                    //request get Geo(lat,lng)
+                    result = {};
+                    result.address = json.candidates[0].formatted_address;
+                    result.geo = json.candidates[0].geometry.location;
+
+                    //request get departures around the place
+
+
+                }
+            }
+            if (flag == true) {
+                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng;
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
@@ -191,8 +215,6 @@ class StopArounDialog extends CancelAndHelpDialog {
                     headers: myHeaders,
                     redirect: 'follow'
                 };
-
-                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng;
                 const response = await fetch(url, requestOptions)
                 const data = await response.json();
 
@@ -223,7 +245,9 @@ class StopArounDialog extends CancelAndHelpDialog {
                         }
                     });
                 }
+
             }
+
         } catch (err) {
             console.log(err);
             prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
