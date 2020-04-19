@@ -152,7 +152,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                     setTimeout(function () {
                         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
 
-                    }, 30000);
+                    }, 5*60000);
                     resolve(url)
 
                 })
