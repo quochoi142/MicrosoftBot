@@ -175,10 +175,9 @@ class StopArounDialog extends CancelAndHelpDialog {
                             "template_type": "button",
                             "text": "Cho tôi biết nơi bạn muốn.",
                             "buttons": {
-                                "type": "web_url",
-                                "url": myUrl,
-                                "title": "Open map",
-                                "webview_height_ratio": "full"
+                                "type": "postback",
+                                "title": "View More 3",
+                                "payload": "View More"
                             }
                         }
                     }
