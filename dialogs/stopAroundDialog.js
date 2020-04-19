@@ -23,8 +23,8 @@ class StopArounDialog extends CancelAndHelpDialog {
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.getLocationStep.bind(this),
-                //  this.openMapStep.bind(this),
+                //this.getLocationStep.bind(this),
+                this.openMapStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -117,10 +117,6 @@ class StopArounDialog extends CancelAndHelpDialog {
 
         return await stepContext.next(result.origin)
 
-
-
-
-
     }
 
     //  async openMap(stepContext) {
@@ -143,34 +139,78 @@ class StopArounDialog extends CancelAndHelpDialog {
     //code here
     async openMapStep(stepContext) {
 
+        var result = stepContext.options;
+        const id = utils.getIdUser(stepContext.context);
+
+        if (!result.origin) {
+            var promise = new Promise(function (resolve, reject) {
+                var token;
+                var firebase = utils.getFirebase();
+                firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                    token = snap.val();
+                    var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                    setTimeout(function () {
+                        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                    }, 30000);
+                    resolve(url)
+
+                })
 
 
-        // "attachment":{
-        //     "type":"template",
-        //     "payload":{
-        //       "template_type":"button",
-        //       "text":"What do you want to do next?",
-        //       "buttons":[
-        //         {
-        //           "type":"web_url",
-        //           "url":"https://www.messenger.com",
-        //           "title":"Visit Messenger"
-        //         },
-        //         {
-        //           ...
-        //         },
-        //         {...}
-        //       ]
-        //     }
-        //   }
+            });
+            var myUrl;
+            await promise.then(url => {
+                myUrl = url;
+            }).catch(err => {
+                console.log(err);
+            })
 
+            //đã thêm button tại đây
+            await stepContext.context.sendActivity({
+                text: "Bạn cũng có thể nhập trực tiếp",
+                channelData: {
+                    "attachment": {
+                        "type": "template",
+                        "payload": {
+                            "template_type": "button",
+                            "text": "Chọn nơi bạn muốn tra cứu",
+                            "buttons": [
+                                {
 
-        const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
-        await stepContext.context.sendActivity({ attachments: [openMapCard] });
+                                    "type": "postback",
+                                    "title": "Vị trí 1",
+                                    "payload": "Vị trí 1"
 
-        const messageText = null; //set null Intro message
-        const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-        return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
+                                },
+                                {
+
+                                    "type": "postback",
+                                    "title": "Vị trí 2",
+                                    "payload": "Vị trí 2"
+
+                                },
+                                {
+                                    "type": "web_url",
+                                    "url": myUrl,
+                                    "title": "Mở map chọn"
+                                }
+
+                            ]
+                        }
+                    }
+                }
+            });
+
+            var map = utils.openMap(id);
+
+            await map.then(geo => {
+
+                result.origin = geo;
+            })
+        }
+
+        return await stepContext.next(result.origin)
     }
 
 
@@ -253,6 +293,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
             flag = false;
         }
+
         if (flag) {
             prompt = "Bạn cần giúp gì thêm không?";
         }
