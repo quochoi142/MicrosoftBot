@@ -6,7 +6,6 @@
 // Import required packages
 const path = require('path');
 const restify = require('restify');
-var bodyParser = require('body-parser')
 const setAccessToken = require('./API/oauth1');
 
 // Import required bot services.
