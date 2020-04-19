@@ -73,7 +73,7 @@
       margin-left: 12px;
       padding: 0 11px 0 13px;
       text-overflow: ellipsis;
-      width: 400px;
+      width: 100%;
     }
 
     #pac-input:focus {
@@ -125,7 +125,8 @@
         // disableDefaultUI: true,
         //disableDoubleClickZoom: true,
         streetViewControl: false,
-        fullscreenControl: false
+        fullscreenControl: false,
+        mapTypeControl: false,
 
 
       });
@@ -170,7 +171,7 @@
         });
         //map.panTo(latLng);
         mylocation = latLng;
-        map.setCenter(latLng);
+        //map.setCenter(latLng);
         showAddress(latLng, infowindow)
         //marker.setMap(null);
       });
@@ -250,9 +251,9 @@
       secondChild.id = 'you_location_img';
       firstChild.appendChild(secondChild);
 
-      google.maps.event.addListener(map, 'dragend', function () {
+      /* google.maps.event.addListener(map, 'dragend', function () {
         $('#you_location_img').css('background-position', '0px 0px');
-      });
+      }); */
 
       firstChild.addEventListener('click', function () {
         var imgX = '0';
@@ -274,7 +275,7 @@
               marker.setPosition(latlng);
               marker.setMap(map);
             }
-            map.setCenter(latlng);
+            //map.setCenter(latlng);
             showAddress(latlng, infowindow);
             mylocation = latlng;
             clearInterval(animationInterval);
@@ -304,7 +305,7 @@
       firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
       firstChild.style.cursor = 'pointer';
       firstChild.style.marginRight = '10px';
-      firstChild.style.marginTop = '5px';
+      firstChild.style.marginLeft = '10px';
       firstChild.style.padding = '0px';
       firstChild.title = 'Xác nhận';
       var text = document.createTextNode("Xác nhận");
@@ -322,7 +323,7 @@
           if (snap.val() === token) {
             const x = JSON.stringify(mylocation);
             const y = JSON.parse(x);
-            firebase.database().ref('users/' + id + '/location').set(y.lat + '|' + y.lng+'|'+myAddress);
+            firebase.database().ref('users/' + id + '/location').set(y.lat + '|' + y.lng + '|' + myAddress);
           }
         });
 
@@ -330,7 +331,7 @@
       });
 
       controlDiv.index = 1;
-      map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+      map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(controlDiv);
     }
 
     function getCurrentPosition(infowindow) {
@@ -348,7 +349,7 @@
             marker.setMap(map);
           }
 
-          map.setCenter(latlng);
+          // map.setCenter(latlng);
           mylocation = latlng;
           showAddress(latlng, infowindow);
         });
@@ -368,7 +369,7 @@
             infowindow.setContent('<div>' +
               place.formatted_address + '</div>');
             infowindow.open(map, marker);
-            myAddress=place.formatted_address;
+            myAddress = place.formatted_address;
           }
         }
       });
