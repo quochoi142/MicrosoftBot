@@ -30,6 +30,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
         this.initialDialogId = WATERFALL_DIALOG;
 
+
     }
 
     async test(stepContext) {
@@ -140,9 +141,11 @@ class StopArounDialog extends CancelAndHelpDialog {
     async openMapStep(stepContext) {
 
         var result = stepContext.options;
+
         const id = utils.getIdUser(stepContext.context);
 
         if (!result.origin) {
+            utils.setToken(stepContext.context);
             var promise = new Promise(function (resolve, reject) {
                 var token;
                 var firebase = utils.getFirebase();
@@ -152,7 +155,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                     setTimeout(function () {
                         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
 
-                    }, 5*60000);
+                    }, 5 * 60000);
                     resolve(url)
 
                 })
