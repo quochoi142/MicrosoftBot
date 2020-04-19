@@ -15,7 +15,7 @@ const fetch = require("node-fetch");
 var encodeUrl = require('encodeurl');
 const utils = require('../firebaseConfig/utils');
 
-const randomstring=require('randomstring')
+const randomstring = require('randomstring')
 
 class StopArounDialog extends CancelAndHelpDialog {
     constructor(id) {
@@ -23,8 +23,8 @@ class StopArounDialog extends CancelAndHelpDialog {
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.getLocationStep.bind(this),
                 this.openMapStep.bind(this),
+                this.getLocationStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -96,18 +96,15 @@ class StopArounDialog extends CancelAndHelpDialog {
 
         });
         var myUrl;
-        await promise.then(url=>{
-            myUrl=url;
-        }).catch(err=>{
+        await promise.then(url => {
+            myUrl = url;
+        }).catch(err => {
             console.log(err);
         })
 
         const messageText = myUrl;
         const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
         return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
-
-
-
 
     }
 
@@ -131,8 +128,23 @@ class StopArounDialog extends CancelAndHelpDialog {
     //code here
     async openMapStep(stepContext) {
 
-
-
+        await stepContext.context.sendActivity({
+            text: "Có thể nhập trực tiếp mà không cần mở map",
+            channelData: {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "button",
+                        "text": "Cho tôi biết nơi bạn muốn.",
+                        "buttons": {
+                            "type": "web_url",
+                            "url": "https://botbusvqh.herokuapp.com/map?id=",
+                            "title": "Open map"
+                        }
+                    }
+                }
+            }
+        });
         // "attachment":{
         //     "type":"template",
         //     "payload":{
@@ -153,8 +165,8 @@ class StopArounDialog extends CancelAndHelpDialog {
         //   }
 
 
-        const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
-        await stepContext.context.sendActivity({ attachments: [openMapCard] });
+        /* const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
+        await stepContext.context.sendActivity({ attachments: [openMapCard] }); */
 
         const messageText = null; //set null Intro message
         const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
