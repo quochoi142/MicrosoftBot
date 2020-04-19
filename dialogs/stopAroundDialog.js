@@ -167,27 +167,17 @@ class StopArounDialog extends CancelAndHelpDialog {
             })
 
             await stepContext.context.sendActivity({
-                text: "test",
+                text: "Bạn cũng có thể nhập trực tiếp",
                 channelData: {
                     "attachment": {
                         "type": "template",
                         "payload": {
                             "template_type": "button",
-                            "text": "What do you want to do next?",
+                            "text": "Chọn nơi bạn muốn tra cứu",
                             "buttons": [
                                 {
                                     "type": "postback",
                                     "title": "View More 1",
-                                    "payload": "View More"
-                                },
-                                {
-                                    "type": "postback",
-                                    "title": "View More 2",
-                                    "payload": "View More"
-                                },
-                                {
-                                    "type": "postback",
-                                    "title": "View More 3",
                                     "payload": "View More"
                                 }
                             ]
