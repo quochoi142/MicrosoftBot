@@ -176,9 +176,9 @@ class StopArounDialog extends CancelAndHelpDialog {
                             "text": "Chọn nơi bạn muốn tra cứu",
                             "buttons": [
                                 {
-                                    "type": "postback",
-                                    "title": "View More 1",
-                                    "payload": "View More"
+                                    "type": "web_url",
+                                    "url": myUrl,
+                                    "title": "Open map"
                                 }
                             ]
                         }
