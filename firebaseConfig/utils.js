@@ -19,7 +19,7 @@ const utils = {
         obj.time = Date.now();
 
         //save db, each user contain the 5 latest route, 
-        var refFirebase = firebase.database().ref('users/' + id+'/routes');
+        var refFirebase = firebase.database().ref('users/' + id + '/routes');
         refFirebase.once('value').then(function (snapshot) {
             const arr = snapshot.val();
             const leng = snapshot.numChildren();
@@ -46,7 +46,7 @@ const utils = {
         firebase.initializeApp(config);
         var arr = [];
 
-        return await firebase.database().ref('users/' + id+'/routes').orderByChild('time').once('value')
+        return await firebase.database().ref('users/' + id + '/routes').orderByChild('time').once('value')
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     arr.push(data.val());
@@ -148,20 +148,20 @@ const utils = {
         return firebase;
     },
 
-  
-    setToken:(context)=>{
+
+    setToken: (context) => {
         const activity = Object.assign({}, context)._activity;
         const id = activity.from.id;
-        firebase.database().ref('users/' + id+'/token').set(randomstring.generate(10));
+        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
     },
-    
 
-    openMap: () => {
-        var timeout, promise;
+
+    openMap: (id) => {
+        var promise;
 
         promise = new Promise(function (resolve, reject) {
             var i = false;
-            firebase.database().ref('flag').on('value', async function (snap) {
+            firebase.database().ref('users/' + id + '/location').on('value', async function (snap) {
 
                 if (i) {
                     resolve(snap.val());
@@ -175,6 +175,28 @@ const utils = {
         });
 
         return promise;
+    },
+    isGeo: (geo) => {
+
+        var tokens = geo.split('|');
+        if (tokens.length == 3 && tokens[0].includes('.') && tokens[1].includes('.')) {
+            return true;
+        }
+
+        return false;
+    },
+    getGeo: (geo) => {
+        var tokens = geo.split('|');
+        var myLocation = {
+            geo: {
+                lat: tokens[0],
+                lng: tokens[1]
+            },
+            address: tokens[2]
+        };
+
+        return myLocation;
+
     }
 }
 

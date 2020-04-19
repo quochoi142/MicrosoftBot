@@ -114,6 +114,7 @@
 
     var marker, map;
     var mylocation;
+    var myAddress;
 
     function initAutocomplete() {
       mylocation = { lat: 11.363017, lng: 107.526468 }
@@ -139,9 +140,10 @@
 
 
       addYourLocationButton(infowindow);
-      addDoneButton();
 
       getCurrentPosition(infowindow);
+      addDoneButton();
+
       // Create the search box and link it to the UI element.
       var input = document.getElementById('pac-input');
       var searchBox = new google.maps.places.SearchBox(input);
@@ -320,7 +322,7 @@
           if (snap.val() === token) {
             const x = JSON.stringify(mylocation);
             const y = JSON.parse(x);
-            firebase.database().ref('users/' + id + '/location').set(y.lat + ',' + y.lng);
+            firebase.database().ref('users/' + id + '/location').set(y.lat + '|' + y.lng+'|'+myAddress);
           }
         });
 
@@ -366,6 +368,7 @@
             infowindow.setContent('<div>' +
               place.formatted_address + '</div>');
             infowindow.open(map, marker);
+            myAddress=place.formatted_address;
           }
         }
       });

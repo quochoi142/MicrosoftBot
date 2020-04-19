@@ -13,7 +13,6 @@ class DialogAndWelcomeBot extends DialogBot {
         this.onMembersAdded(async (context, next) => {
             utils.setToken(context);
             
-            console.log('id: '+context.activity.recipient.id);
             const membersAdded = context.activity.membersAdded;
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
