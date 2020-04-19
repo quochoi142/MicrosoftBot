@@ -209,6 +209,7 @@
           })
           infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
             place.formatted_address + '</div>');
+          myAddress = place.formatted_address;
           infowindow.open(map, marker);
           mylocation = place.geometry.location;
           map.setZoom(16);
