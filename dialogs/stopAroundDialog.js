@@ -139,27 +139,6 @@ class StopArounDialog extends CancelAndHelpDialog {
     //code here
     async openMapStep(stepContext) {
 
-        await stepContext.context.sendActivity({
-            text: "Có thể nhập trực tiếp mà không cần mở map",
-            channelData: {
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "button",
-                        "text": "Cho tôi biết nơi bạn muốn.",
-                        "buttons": {
-                            "type": "web_url",
-                            "url": "https://botbusvqh.herokuapp.com/map?id=",
-                            "title": "Open map"
-                        }
-                    }
-                }
-            }
-        });
-      
-        /* const openMapCard = CardFactory.adaptiveCard(OpenMapCard);
-        await stepContext.context.sendActivity({ attachments: [openMapCard] }); */
-
         var result = stepContext.options;
         const id = utils.getIdUser(stepContext.context);
 
@@ -197,8 +176,9 @@ class StopArounDialog extends CancelAndHelpDialog {
                             "text": "Cho tôi biết nơi bạn muốn.",
                             "buttons": {
                                 "type": "web_url",
-                                "url": "https://botbusvqh.herokuapp.com/map?id=",
-                                "title": "Open map"
+                                "url": myUrl,
+                                "title": "Open map",
+                                "webview_height_ratio": "full"
                             }
                         }
                     }
@@ -296,6 +276,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
             flag = false;
         }
+
         if (flag) {
             prompt = "Bạn cần giúp gì thêm không?";
         }

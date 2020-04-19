@@ -116,95 +116,95 @@ class MainDialog extends ComponentDialog {
             }
             case 'Tìm_xe_bus': {
                 await stepContext.context.sendActivity({
-                text: "test",
+                    text: "test",
                     channelData: {
-                    "attachment": {
-                        "type": "template",
+                        "attachment": {
+                            "type": "template",
                             "payload": {
-                            "template_type": "button",
+                                "template_type": "button",
                                 "text": "What do you want to do next?",
-                                    "buttons": [
-                                        {
-                                            "type": "postback",
-                                            "title": "View More 1",
-                                            "payload": "View More"
-                                        },
-                                        {
-                                            "type": "postback",
-                                            "title": "View More 2",
-                                            "payload": "View More"
-                                        },
-                                        {
-                                            "type": "postback",
-                                            "title": "View More 3",
-                                            "payload": "View More"
-                                        }
-                                    ]
+                                "buttons": [
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 1",
+                                        "payload": "View More"
+                                    },
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 2",
+                                        "payload": "View More"
+                                    },
+                                    {
+                                        "type": "postback",
+                                        "title": "View More 3",
+                                        "payload": "View More"
+                                    }
+                                ]
+                            }
                         }
                     }
-                }
-            });
+                });
 
                 //chỉ hiện location card
                 return await stepContext.beginDialog('searchDialog', routeDetails);
-        }
+            }
             case 'Tìm_trạm': {
 
 
-            var location = {};
-            const result = luisResult
-            if (result.entities.$instance.Origin) {
-                location.origin = result.entities.$instance.Origin[0].text;
+                var location = {};
+                const result = luisResult
+                if (result.entities.$instance.Origin) {
+                    location.origin = result.entities.$instance.Origin[0].text;
+                }
+
+                return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
+
+
             }
-
-            return await stepContext.beginDialog(STOP_AROUND_DIALOG, location);
-
-
-        }
             case 'Kết_thúc': {
-            //chỉ hiện location card
-            return await stepContext.next();
-        }
+                //chỉ hiện location card
+                return await stepContext.next();
+            }
             default: {
 
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
             case 'Trợ_giúp': {
-    const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
-    await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
+                const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
+                await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
 
-}
+            }
 
         }
 
-return await stepContext.replaceDialog(this.initialDialogId);
+        return await stepContext.replaceDialog(this.initialDialogId);
     }
 
-async finalStep(stepContext) {
+    async finalStep(stepContext) {
 
-    if (stepContext.result == "Bạn cần giúp gì thêm không?") {
+        if (stepContext.result == "Bạn cần giúp gì thêm không?") {
 
-        return await stepContext.next(stepContext.result);
+            return await stepContext.next(stepContext.result);
+
+        }
+        else {
+
+            const byeMessageText = 'Chào tạm biệt...';
+            await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
+
+            return await stepContext.endDialog();
+        }
+    }
+
+    async confirmEndStep(stepContext) {
+
+        const prompt = stepContext.result;
+        await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
+
+        return await stepContext.replaceDialog(this.initialDialogId);
+
 
     }
-    else {
-
-        const byeMessageText = 'Chào tạm biệt...';
-        await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
-
-        return await stepContext.endDialog();
-    }
-}
-
-async confirmEndStep(stepContext) {
-
-    const prompt = stepContext.result;
-    await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
-
-    return await stepContext.replaceDialog(this.initialDialogId);
-
-
-}
 }
 module.exports.MainDialog = MainDialog;
