@@ -4,7 +4,7 @@
 const { CardFactory } = require('botbuilder-core');
 const { DialogBot } = require('./dialogBot');
 const WelcomeCard = require('../resources/welcomeCard.json');
-const utils=require('../firebaseConfig/utils')
+const utils = require('../firebaseConfig/utils')
 
 class DialogAndWelcomeBot extends DialogBot {
     constructor(conversationState, userState, dialog) {
@@ -12,12 +12,12 @@ class DialogAndWelcomeBot extends DialogBot {
 
         this.onMembersAdded(async (context, next) => {
             utils.setToken(context);
-           // await utils.sleep(5000);
+            await utils.sleep(5000);
             const membersAdded = context.activity.membersAdded;
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
                     //const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
-                   // await context.sendActivity({ attachments: [welcomeCard] });
+                    // await context.sendActivity({ attachments: [welcomeCard] });
                     await dialog.run(context, conversationState.createProperty('DialogState'));
                 }
             }
