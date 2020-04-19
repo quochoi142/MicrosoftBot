@@ -167,18 +167,30 @@ class StopArounDialog extends CancelAndHelpDialog {
             })
 
             await stepContext.context.sendActivity({
-                text: "Có thể nhập trực tiếp mà không cần mở map",
+                text: "test",
                 channelData: {
                     "attachment": {
                         "type": "template",
                         "payload": {
                             "template_type": "button",
-                            "text": "Cho tôi biết nơi bạn muốn.",
-                            "buttons": {
-                                "type": "postback",
-                                "title": "View More 3",
-                                "payload": "View More"
-                            }
+                            "text": "What do you want to do next?",
+                            "buttons": [
+                                {
+                                    "type": "postback",
+                                    "title": "View More 1",
+                                    "payload": "View More"
+                                },
+                                {
+                                    "type": "postback",
+                                    "title": "View More 2",
+                                    "payload": "View More"
+                                },
+                                {
+                                    "type": "postback",
+                                    "title": "View More 3",
+                                    "payload": "View More"
+                                }
+                            ]
                         }
                     }
                 }
