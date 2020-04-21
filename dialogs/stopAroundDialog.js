@@ -169,41 +169,69 @@ class StopArounDialog extends CancelAndHelpDialog {
                 console.log(err);
             })
 
-            //đã thêm button tại đây
-            await stepContext.context.sendActivity({
-                text: "Bạn cũng có thể nhập trực tiếp",
-                channelData: {
-                    "attachment": {
-                        "type": "template",
-                        "payload": {
-                            "template_type": "button",
-                            "text": "Chọn nơi bạn muốn tra cứu",
-                            "buttons": [
-                                {
+            // Moi them
+            // Get origin from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myInfo = await utils.readStop(id);
 
-                                    "type": "postback",
-                                    "title": "Vị trí 1",
-                                    "payload": "Vị trí 1"
+            } catch (error) {
+                console.log(error);
+            }
 
-                                },
-                                {
+            //Send card 
+            try {
+                await stepContext.context.sendActivity({
+                    text: "Bạn cũng có thể nhập trực tiếp",
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "button",
+                                "text": "Chọn nơi bạn muốn tra cứu",
+                                "buttons": [
+                                    {
 
-                                    "type": "postback",
-                                    "title": "Vị trí 2",
-                                    "payload": "Vị trí 2"
+                                        "type": "postback",
+                                        "title": myInfo,
+                                        "payload": myInfo
 
-                                },
-                                {
-                                    "type": "web_url",
-                                    "url": myUrl,
-                                    "title": "Mở map chọn"
-                                }
+                                    },
+                                    {
+                                        "type": "web_url",
+                                        "url": myUrl,
+                                        "title": "Mở map chọn"
+                                    }
 
-                            ]
+                                ]
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch (error) {
+                await stepContext.context.sendActivity({
+                    text: "Bạn cũng có thể nhập trực tiếp",
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "button",
+                                "text": "Chọn nơi bạn muốn tra cứu",
+                                "buttons": [
+
+                                    {
+                                        "type": "web_url",
+                                        "url": myUrl,
+                                        "title": "Mở map chọn"
+                                    }
+
+                                ]
+                            }
+                        }
+                    }
+                });
+            }
+
 
             var map = utils.openMap(id);
 

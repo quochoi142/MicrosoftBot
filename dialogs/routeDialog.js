@@ -57,26 +57,69 @@ class RouteDialog extends CancelAndHelpDialog {
     }
 
     async destinationStep(stepContext) {
-        // lấy thử values
-        try {
-            const id = await utils.getIdUser(stepContext.context);
-            console.log(id);
-            await stepContext.context.sendActivity(id, id, InputHints.IgnoringInput);
-            var test = await utils.readRoute(id);
-            console.log(test[0].destination);
-            await stepContext.context.sendActivity(test[0].destination, test[0].destination, InputHints.IgnoringInput);
-            
 
-        } catch (error) {
-            console.log(error);
-        }
         const route = stepContext.options;
+
         if (!route.destination) {
+
+            // Get destiantion from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myDestiantion = await utils.readRoute(id);
+
+            } catch (error) {
+                console.log(error);
+            }
+
             //Init card destination
+            var destinationCard = null;
+
+            try {
+                const destinationJson = {
+
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.0",
+                    "body": [
+                        {
+                            "type": "Image",
+                            "url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                            "width": "stretch",
+                            "style": "default"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": myDestiantion[0].destination,
+                            "data": myDestiantion[0].destination
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": myDestiantion[1].destination,
+                            "data": myDestiantion[1].destination
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": "Vị trí hiện tại",
+                            "data": "Vị trí hiện tại"
+
+                        }
+                    ]
+
+                };
+                destinationCard = CardFactory.adaptiveCard(destinationJson);
+
+            } catch (error) {
+                destinationCard = CardFactory.adaptiveCard(DestinationCard);
+            }
+
+            //Send message to user
             const destinationMessageText = 'Nơi bạn muốn đến là?';
             await stepContext.context.sendActivity(destinationMessageText, destinationMessageText, InputHints.IgnoringInput);
 
-            const destinationCard = CardFactory.adaptiveCard(DestinationCard);
             await stepContext.context.sendActivity({ attachments: [destinationCard] });
 
             const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
@@ -84,7 +127,6 @@ class RouteDialog extends CancelAndHelpDialog {
             await stepContext.context.sendActivity(destinationMessageText_Hint, destinationMessageText_Hint, InputHints.IgnoringInput);
             await stepContext.context.sendActivity(destinationMessageText_Example, destinationMessageText_Example, InputHints.IgnoringInput);
 
-            //const messageText = 'Nơi bạn muốn đến là?';
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -96,14 +138,67 @@ class RouteDialog extends CancelAndHelpDialog {
     async originStep(stepContext) {
         const route = stepContext.options;
         route.destination = stepContext.result;
+
         if (!route.origin) {
 
+            // Get origin from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myOrigin = await utils.readRoute(id);
+
+            } catch (error) {
+                console.log(error);
+            }
 
             //Init card destination
+            var originCard = null;
+
+            try {
+                const originJson = {
+
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.0",
+                    "body": [
+                        {
+                            "type": "Image",
+                            "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
+                            "width": "stretch",
+                            "style": "default"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": myOrigin[0].origin,
+                            "data": myOrigin[0].origin
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": myOrigin[1].origin,
+                            "data": myOrigin[1].origin,
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": "Vị trí hiện tại",
+                            "data": "Vị trí hiện tại"
+
+                        }
+                    ]
+
+                };
+                originCard = CardFactory.adaptiveCard(originJson);
+
+            } catch (error) {
+                originCard = CardFactory.adaptiveCard(OriginCard);
+            }
+
+            //Send message
             const originMessageText = 'Bạn sẽ đi từ đâu?';
             await stepContext.context.sendActivity(originMessageText, originMessageText, InputHints.IgnoringInput);
 
-            const originCard = CardFactory.adaptiveCard(OriginCard);
             await stepContext.context.sendActivity({ attachments: [originCard] });
 
             const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
@@ -297,7 +392,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 const id = utils.getIdUser(stepContext.context);
                 console.log(id);
-                utils.saveRoute(id, result.destination);
+                utils.saveOriDes(id, result.origin, result.destination);
                 prompt = "Tôi có thể giúp gì thêm cho bạn?";
             }
 
@@ -310,7 +405,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
         }
 
-        
+
 
         prompt = "Bạn cần giúp gì thêm không?";
         return await stepContext.endDialog(prompt);

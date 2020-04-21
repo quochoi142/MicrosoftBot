@@ -41,6 +41,64 @@ const utils = {
             }
         });
     },
+    
+    //Lưu cả điểm origin vs destination
+    saveOriDes: (id, origin, destination) => {
+        //initialize firebase
+        var db = firebase.database();
+
+        //initialize route
+        const obj = {};
+        obj.origin = origin
+        obj.destination = destination;
+        obj.time = Date.now();
+
+        //save db, each user contain the 5 latest route, 
+        var refFirebase = firebase.database().ref('users/' + id + '/routes');
+        refFirebase.once('value').then(function (snapshot) {
+            const arr = snapshot.val();
+            const leng = snapshot.numChildren();
+
+            if (arr && leng > 4) {
+                refFirebase.orderByChild('time').limitToFirst(1).once('value').then(function (data) {
+                    var key = '';
+                    data.forEach(function (childData) {
+                        key = childData.key;
+                    });
+
+                    console.log(key);
+                    firebase.database().ref('users/' + id).child(key).set(obj)
+                });
+            }
+            else {
+                const x = refFirebase.push();
+                x.set(obj);
+            }
+        });
+    },
+
+    readStop: async (id) => {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        else {
+            firebase.app();
+        }
+
+        var location;
+
+        return await firebase.database().ref('users/' + id + '/location').once('value')
+            .then(function (snapshot) {
+                snapshot.forEach(data => {
+                    location = data.val();
+
+
+                })
+                console.log(location);
+                return location;
+            });
+
+    },
 
     readRoute: async (id) => {
         if (!firebase.apps.length) {
@@ -56,7 +114,7 @@ const utils = {
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     arr.push(data.val());
-                   
+
 
                 })
                 console.log(arr);
@@ -157,7 +215,7 @@ const utils = {
 
 
     setToken: (context) => {
-        const activity = Object.assign({},context)._activity;
+        const activity = Object.assign({}, context)._activity;
         const id = activity.from.id;
         context.sendActivity(id);
         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
