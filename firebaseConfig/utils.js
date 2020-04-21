@@ -41,9 +41,22 @@ const utils = {
             }
         });
     },
-    
+
     //Lưu cả điểm origin vs destination
     saveOriDes: (id, origin, destination) => {
+        //Handle data in origin and destination
+        if (origin[0] == '"') {
+            origin = origin.replace('"','');
+            origin = origin.replace('"','');
+
+        }
+
+        if (destination[0] == '"') {
+            destination = destination.replace('"','');
+            destination = destination.replace('"','');
+
+        }
+
         //initialize firebase
         var db = firebase.database();
 
