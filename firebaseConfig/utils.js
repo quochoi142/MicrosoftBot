@@ -43,16 +43,23 @@ const utils = {
     },
 
     readRoute: async (id) => {
-        firebase.initializeApp(config);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        else {
+            firebase.app();
+        }
+
         var arr = [];
 
         return await firebase.database().ref('users/' + id + '/routes').orderByChild('time').once('value')
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     arr.push(data.val());
-
+                   
 
                 })
+                console.log(arr);
                 return arr.reverse();
             });
 

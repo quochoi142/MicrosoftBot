@@ -110,8 +110,6 @@ class MainDialog extends ComponentDialog {
                 const to = this.luisRecognizer.getToEntities(luisResult);
                 routeDetails.origin = from;
                 routeDetails.destination = to;
-                console.log(routeDetails.origin);
-                console.log(routeDetails.destination);
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {

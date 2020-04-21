@@ -57,6 +57,19 @@ class RouteDialog extends CancelAndHelpDialog {
     }
 
     async destinationStep(stepContext) {
+        // lấy thử values
+        try {
+            const id = await utils.getIdUser(stepContext.context);
+            console.log(id);
+            await stepContext.context.sendActivity(id, id, InputHints.IgnoringInput);
+            var test = await utils.readRoute(id);
+            console.log(test[0].destination);
+            await stepContext.context.sendActivity(test[0].destination, test[0].destination, InputHints.IgnoringInput);
+            
+
+        } catch (error) {
+            console.log(error);
+        }
         const route = stepContext.options;
         if (!route.destination) {
             //Init card destination
@@ -283,6 +296,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 // })
 
                 const id = utils.getIdUser(stepContext.context);
+                console.log(id);
                 utils.saveRoute(id, result.destination);
                 prompt = "Tôi có thể giúp gì thêm cho bạn?";
             }
@@ -295,6 +309,8 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         }
+
+        
 
         prompt = "Bạn cần giúp gì thêm không?";
         return await stepContext.endDialog(prompt);
