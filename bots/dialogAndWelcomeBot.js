@@ -4,15 +4,12 @@
 const { CardFactory } = require('botbuilder-core');
 const { DialogBot } = require('./dialogBot');
 const WelcomeCard = require('../resources/welcomeCard.json');
-const utils = require('../firebaseConfig/utils')
 
 class DialogAndWelcomeBot extends DialogBot {
     constructor(conversationState, userState, dialog) {
         super(conversationState, userState, dialog);
 
         this.onMembersAdded(async (context, next) => {
-            utils.setToken(context);
-            await utils.sleep(5000);
             const membersAdded = context.activity.membersAdded;
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
@@ -25,6 +22,8 @@ class DialogAndWelcomeBot extends DialogBot {
             // By calling next() you ensure that the next BotHandler is run.
             await next();
         });
+
+        
 
 
 
