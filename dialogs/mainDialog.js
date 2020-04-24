@@ -14,6 +14,7 @@ const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
 const { StopArounDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
+const SEARCH_DIALOG = 'searchDialog';
 
 class MainDialog extends ComponentDialog {
 
@@ -113,38 +114,46 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {
-                await stepContext.context.sendActivity({
-                    text: "test",
-                    channelData: {
-                        "attachment": {
-                            "type": "template",
-                            "payload": {
-                                "template_type": "button",
-                                "text": "What do you want to do next?",
-                                "buttons": [
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 1",
-                                        "payload": "View More"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 2",
-                                        "payload": "View More"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 3",
-                                        "payload": "View More"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                });
+                // await stepContext.context.sendActivity({
+                //     text: "test",
+                //     channelData: {
+                //         "attachment": {
+                //             "type": "template",
+                //             "payload": {
+                //                 "template_type": "button",
+                //                 "text": "What do you want to do next?",
+                //                 "buttons": [
+                //                     {
+                //                         "type": "postback",
+                //                         "title": "View More 1",
+                //                         "payload": "View More"
+                //                     },
+                //                     {
+                //                         "type": "postback",
+                //                         "title": "View More 2",
+                //                         "payload": "View More"
+                //                     },
+                //                     {
+                //                         "type": "postback",
+                //                         "title": "View More 3",
+                //                         "payload": "View More"
+                //                     }
+                //                 ]
+                //             }
+                //         }
+                //     }
+                // });
 
-                //chỉ hiện location card
-                return await stepContext.beginDialog('searchDialog', routeDetails);
+                // //chỉ hiện location card
+                // return await stepContext.beginDialog('searchDialog', routeDetails);
+
+                const StopDetail={};
+                const result = luisResult;
+                if (result.entities.$instance.Stop) {
+                    StopDetail.stop = result.entities.$instance.Stop[0].text;
+                }
+
+                return await stepContext.beginDialog(SEARCH_DIALOG, StopDetail);
             }
             case 'Tìm_trạm': {
 

@@ -15,6 +15,7 @@ const LOCATION = 'location_prompt';
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
+var encodeUrl = require('encodeurl')
 
 
 class SearchDialog extends CancelAndHelpDialog {
@@ -22,10 +23,9 @@ class SearchDialog extends CancelAndHelpDialog {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
-            .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.locationStep.bind(this),
-                this.finalStep.bind(this)
+                this.GetStopStep.bind(this),
+                this.SearchStep.bind(this)
 
 
             ]));
@@ -34,56 +34,108 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
     }
-    async locationValidator(promptContext) {
-        if (promptContext.recognized.succeeded) {
-            const obj = promptContext.recognized.value;
-            promptContext.context.sendActivity(JSON.stringify(obj));
-            return true;
-        }
-        else {
-            return false;
-        }
-        // var location = activity.entry[0];
-        // if (location != null) {
-        //     return true;
-        // }
-        // return false
-        // return promptContext.recognized.succeeded && promptContext.recognized.value > 0 && promptContext.recognized.value < 150;
-    }
 
 
-    async locationStep(stepContext) {
+
+    async GetStopStep(stepContext) {
         //code lấy vị trí để tra cứu trong đây
+        const result = stepContext.options;
+        if (!result.stop) {
+            const locationMessageText = 'Trạm bạn tra cứu là?';
+            await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
 
-        //Init card location
-        const locationMessageText = 'Trạm bạn tra cứu là?';
-        await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
+            const locationCard = CardFactory.adaptiveCard(LocationCard);
+            await stepContext.context.sendActivity({ attachments: [locationCard] });
 
-        const locationCard = CardFactory.adaptiveCard(LocationCard);
-        await stepContext.context.sendActivity({ attachments: [locationCard] });
+            const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
+            const locationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
+            await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
+            await stepContext.context.sendActivity(locationMessageText_Example, locationMessageText_Example, InputHints.IgnoringInput);
 
-        const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
-        const locationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
-        await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
-        await stepContext.context.sendActivity(locationMessageText_Example, locationMessageText_Example, InputHints.IgnoringInput);
+            const messageText = null;
+            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+        }
+        return await stepContext.next(result.stop);
 
-        const messageText = null;
-        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-        return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
     }
 
-    async finalStep(stepContext) {
+    async SearchStep(stepContext) {
 
-        // code tra cứu nằm trong đây
-        const messageText = 'chức năng chưa cài đặt';
-        const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+        const place = (stepContext.options.stop) ? stepContext.options.stop : stepContext.result;
+        var prompt = '';
+        var flag = true;
 
-        const prompt = "Bạn cần giúp gì thêm không?";
+        try {
+            var result;
+
+            const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
+
+            const response = await fetch(utf8.encode(urlRequestGeo));
+            const json = await response.json();
+
+            if (json.candidates && json.candidates.length == 0) {
+                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+                flag = false;
+            } else {
+                //request get Geo(lat,lng)
+                result = {};
+                result.address = json.candidates[0].formatted_address;
+                result.geo = json.candidates[0].geometry.location;
+
+                //request get departures around the place
+
+
+            }
+
+            if (flag == true) {
+                const url = 'https://transit.hereapi.com/v8/departures?lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+                const response = await fetch(encodeUrl(url), requestOptions)
+                const data = await response.json();
+
+                if (data.boards.length == 0) {
+                    prompt = 'Không tìm thấy trạm ' + place;
+                    flag = false;
+                } else {
+                    const boards=data.boards;
+                    for(var i=0;i<boards.length;i++){
+                       
+                        if(boards[i].place.name.toLowerCase()==place.toLowerCase()){
+                            const departures=boards[i].departures;
+                            var msg='';
+                            departures.forEach(e => {
+                                msg+=e.time+': Bus '+e.transport.name+'\n\n';
+                            });
+                            stepContext.context.sendActivity(msg,msg,InputHints.IgnoringInput);
+                        }
+                    }
+                }
+
+            }
+
+        } catch (err) {
+            console.log(err);
+            prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
+            flag = false;
+        }
+
+        if (flag) {
+            prompt = "Bạn cần giúp gì thêm không?";
+        }
         return await stepContext.endDialog(prompt);
-
     }
-
 
 }
+
+
+
 
 module.exports.SearchDialog = SearchDialog;
