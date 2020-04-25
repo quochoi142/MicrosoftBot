@@ -145,13 +145,13 @@ class MainDialog extends ComponentDialog {
                                         "buttons": [
                                             {
                                                 "type": "web_url",
-                                                "url": "https://petersfancybrownhats.com",
-                                                "title": "View Website"
+                                                "url": "https://image.thanhnien.vn/1080/uploaded/tuyenth/2019_08_05/f09fcb108d6019817a5c511744350e69d3c40682_rkcn.jpg",
+                                                "title": "Xem hình"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Start Chatting",
-                                                "payload": "DEVELOPER_DEFINED_PAYLOAD"
+                                                "title": "Khen cái nhẹ",
+                                                "payload": "hình đẹp thế"
                                             }
                                         ]
                                     },
@@ -161,13 +161,13 @@ class MainDialog extends ComponentDialog {
                                         "buttons": [
                                             {
                                                 "type": "web_url",
-                                                "url": "https://petersfancybrownhats.com",
-                                                "title": "View Website"
+                                                "url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
+                                                "title": "Xem hình"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Start Chatting",
-                                                "payload": "DEVELOPER_DEFINED_PAYLOAD"
+                                                "title": "Khen cái nhẹ",
+                                                "payload": "hình đẹp thế"
                                             }
                                         ]
                                     }
@@ -178,7 +178,7 @@ class MainDialog extends ComponentDialog {
 
                     }
                 });
-
+                //code của m vẫn ở đây nhớ
                 const StopDetail = {};
                 const result = luisResult;
                 if (result.entities.$instance.Stop) {
