@@ -126,6 +126,14 @@ class MainDialog extends ComponentDialog {
                                     {
                                         "title": "Welcome!",
                                         "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg"
+                                    },
+                                    {
+                                        "title": "Welcome!",
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg"
+                                    },
+                                    {
+                                        "title": "Welcome!",
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg"
                                     }
 
                                 ]
