@@ -125,7 +125,7 @@ class MainDialog extends ComponentDialog {
                                 "elements": [
                                     {
                                         "title": "Welcome!",
-                                        "image_url": "https://icapi.org/wp-content/uploads/2019/11/hinh-nen-lien-minh-1-1.jpg",
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
                                         "buttons": [
                                             {
                                                 "type": "web_url",
@@ -141,7 +141,7 @@ class MainDialog extends ComponentDialog {
                                     },
                                     {
                                         "title": "com1!",
-                                        "image_url": "https://img2.thuthuatphanmem.vn/uploads/2018/11/25/anh-dep-lol-sieu-pham_030638022.jpg",
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
                                         "buttons": [
                                             {
                                                 "type": "web_url",
@@ -157,7 +157,7 @@ class MainDialog extends ComponentDialog {
                                     },
                                     {
                                         "title": "com3!",
-                                        "image_url": "https://i.imgur.com/jiHskHJ.jpg",
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
                                         "buttons": [
                                             {
                                                 "type": "web_url",
