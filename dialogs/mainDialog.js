@@ -157,7 +157,7 @@ class MainDialog extends ComponentDialog {
                                     },
                                     {
                                         "title": "com3!",
-                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                                        "image_url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
                                         "buttons": [
                                             {
                                                 "type": "web_url",
