@@ -129,7 +129,7 @@ class MainDialog extends ComponentDialog {
                                         "buttons": [
                                             {
                                                 "type": "web_url",
-                                                "url": "ttps://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                                                "url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
                                                 "title": "Xem hình"
                                             },
                                             {
