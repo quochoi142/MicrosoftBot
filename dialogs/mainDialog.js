@@ -129,13 +129,13 @@ class MainDialog extends ComponentDialog {
                                         "buttons": [
                                             {
                                                 "type": "web_url",
-                                                "url": "https://petersfancybrownhats.com",
-                                                "title": "View Website"
+                                                "url": "ttps://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                                                "title": "Xem hình"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Start Chatting",
-                                                "payload": "DEVELOPER_DEFINED_PAYLOAD"
+                                                "title": "Khen cái nhẹ",
+                                                "payload": "hình đẹp thế"
                                             }
                                         ]
                                     },
