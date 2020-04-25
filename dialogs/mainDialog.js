@@ -14,6 +14,7 @@ const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
 const { StopArounDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
+const SEARCH_DIALOG = 'searchDialog';
 
 class MainDialog extends ComponentDialog {
 
@@ -141,9 +142,15 @@ class MainDialog extends ComponentDialog {
 
                     }
                 });
-                console.log('vo roi');
-                //chỉ hiện location card
-                await stepContext.beginDialog('searchDialog', routeDetails);
+
+                const StopDetail = {};
+                const result = luisResult;
+                if (result.entities.$instance.Stop) {
+                    StopDetail.stop = result.entities.$instance.Stop[0].text;
+                }
+
+                return await stepContext.beginDialog(SEARCH_DIALOG, StopDetail);
+
             }
             case 'Tìm_trạm': {
 

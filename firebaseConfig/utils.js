@@ -230,7 +230,6 @@ const utils = {
     setToken: (context) => {
         const activity = Object.assign({}, context)._activity;
         const id = activity.from.id;
-        context.sendActivity(id);
         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
     },
 
