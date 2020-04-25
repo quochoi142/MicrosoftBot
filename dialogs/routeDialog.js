@@ -57,18 +57,6 @@ class RouteDialog extends CancelAndHelpDialog {
     }
 
     async destinationStep(stepContext) {
-
-        var string = "\"abc\"";
-        console.log('trước');
-        console.log(string);
-
-        if (string[0] == '"') {
-            string = string.replace('"','');
-            string = string.replace('"','');
-
-        }
-        console.log('sau');
-        console.log(string);
         const route = stepContext.options;
 
         if (!route.destination) {

@@ -119,24 +119,9 @@ class MainDialog extends ComponentDialog {
                         "attachment": {
                             "type": "template",
                             "payload": {
-                                "template_type": "button",
-                                "text": "What do you want to do next?",
-                                "buttons": [
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 1",
-                                        "payload": "View More"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 2",
-                                        "payload": "View More"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "View More 3",
-                                        "payload": "View More"
-                                    }
+                                "template_type": "generic",
+                                "elements":[
+                                   
                                 ]
                             }
                         }
