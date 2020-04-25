@@ -113,23 +113,37 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {
-                await stepContext.context.sendActivity({
+                console.log('chua vo');
+                return await stepContext.context.sendActivity({
                     text: "test",
                     channelData: {
                         "attachment": {
                             "type": "template",
                             "payload": {
                                 "template_type": "generic",
-                                "elements":[
-                                   
+                                "elements": [
+                                    {
+                                        "title": "Welcome!",
+                                        "image_url": "https://petersfancybrownhats.com/company_image.png",
+                                        "subtitle": "We have the right hat for everyone.",
+                                        "default_action": {
+                                            "type": "web_url",
+                                            "url": "https://petersfancybrownhats.com/view?item=103",
+                                            "messenger_extensions": false,
+                                            "webview_height_ratio": "tall",
+                                            "fallback_url": "https://petersfancybrownhats.com/"
+                                        }
+                                    }
+
                                 ]
                             }
                         }
+
                     }
                 });
-
+                console.log('vo roi');
                 //chỉ hiện location card
-                return await stepContext.beginDialog('searchDialog', routeDetails);
+                await stepContext.beginDialog('searchDialog', routeDetails);
             }
             case 'Tìm_trạm': {
 
