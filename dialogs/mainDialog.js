@@ -125,15 +125,7 @@ class MainDialog extends ComponentDialog {
                                 "elements": [
                                     {
                                         "title": "Welcome!",
-                                        "image_url": "https://petersfancybrownhats.com/company_image.png",
-                                        "subtitle": "We have the right hat for everyone.",
-                                        "default_action": {
-                                            "type": "web_url",
-                                            "url": "https://petersfancybrownhats.com/view?item=103",
-                                            "messenger_extensions": false,
-                                            "webview_height_ratio": "tall",
-                                            "fallback_url": "https://petersfancybrownhats.com/"
-                                        }
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg"
                                     }
 
                                 ]
