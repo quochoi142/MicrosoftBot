@@ -125,7 +125,19 @@ class MainDialog extends ComponentDialog {
                                 "elements": [
                                     {
                                         "title": "Welcome!",
-                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg"
+                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                                        "buttons": [
+                                            {
+                                                "type": "web_url",
+                                                "url": "https://petersfancybrownhats.com",
+                                                "title": "View Website"
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Start Chatting",
+                                                "payload": "DEVELOPER_DEFINED_PAYLOAD"
+                                            }
+                                        ]
                                     },
                                     {
                                         "title": "com1!",
