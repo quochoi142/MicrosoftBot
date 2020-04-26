@@ -130,7 +130,7 @@ server.post('/api/messages', (req, res) => {
 
 server.get('/map', (req, res) => {
    
-    res.render('map', { 
+    res.render('./Views/map', { 
         id: req.params.id,
         token:req.params.token
      })
@@ -138,6 +138,12 @@ server.get('/map', (req, res) => {
 
 server.get('/route',(req,res)=>{
     res.render('./Views/route', { 
+        id: req.params.id,
+     })
+});
+
+server.get('/nearstop',(req,res)=>{
+    res.render('./Views/nearStop', { 
         id: req.params.id,
      })
 });

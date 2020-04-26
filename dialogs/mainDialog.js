@@ -114,70 +114,70 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tìm_xe_bus': {
-                console.log('chua vo');
-                return await stepContext.context.sendActivity({
-                    text: "test",
-                    channelData: {
-                        "attachment": {
-                            "type": "template",
-                            "payload": {
-                                "template_type": "generic",
-                                "elements": [
-                                    {
-                                        "title": "Welcome!",
-                                        "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
-                                        "buttons": [
-                                            {
-                                                "type": "web_url",
-                                                "url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
-                                                "title": "Xem hình"
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": "Khen cái nhẹ",
-                                                "payload": "hình đẹp thế"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "title": "com1!",
-                                        "image_url": "https://image.thanhnien.vn/1080/uploaded/tuyenth/2019_08_05/f09fcb108d6019817a5c511744350e69d3c40682_rkcn.jpg",
-                                        "buttons": [
-                                            {
-                                                "type": "web_url",
-                                                "url": "https://image.thanhnien.vn/1080/uploaded/tuyenth/2019_08_05/f09fcb108d6019817a5c511744350e69d3c40682_rkcn.jpg",
-                                                "title": "Xem hình"
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": "Khen cái nhẹ",
-                                                "payload": "hình đẹp thế"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "title": "com3!",
-                                        "image_url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
-                                        "buttons": [
-                                            {
-                                                "type": "web_url",
-                                                "url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
-                                                "title": "Xem hình"
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": "Khen cái nhẹ",
-                                                "payload": "hình đẹp thế"
-                                            }
-                                        ]
-                                    }
+               
+                // return await stepContext.context.sendActivity({
+                //     text: "test",
+                //     channelData: {
+                //         "attachment": {
+                //             "type": "template",
+                //             "payload": {
+                //                 "template_type": "generic",
+                //                 "elements": [
+                //                     {
+                //                         "title": "Welcome!",
+                //                         "image_url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                //                         "buttons": [
+                //                             {
+                //                                 "type": "web_url",
+                //                                 "url": "https://www.gocbao.com/wp-content/uploads/2020/04/anh-dep-hoa-huong-duong-va-mat-troi_022805970-1-1181x800-6.jpg",
+                //                                 "title": "Xem hình"
+                //                             },
+                //                             {
+                //                                 "type": "postback",
+                //                                 "title": "Khen cái nhẹ",
+                //                                 "payload": "hình đẹp thế"
+                //                             }
+                //                         ]
+                //                     },
+                //                     {
+                //                         "title": "com1!",
+                //                         "image_url": "https://image.thanhnien.vn/1080/uploaded/tuyenth/2019_08_05/f09fcb108d6019817a5c511744350e69d3c40682_rkcn.jpg",
+                //                         "buttons": [
+                //                             {
+                //                                 "type": "web_url",
+                //                                 "url": "https://image.thanhnien.vn/1080/uploaded/tuyenth/2019_08_05/f09fcb108d6019817a5c511744350e69d3c40682_rkcn.jpg",
+                //                                 "title": "Xem hình"
+                //                             },
+                //                             {
+                //                                 "type": "postback",
+                //                                 "title": "Khen cái nhẹ",
+                //                                 "payload": "hình đẹp thế"
+                //                             }
+                //                         ]
+                //                     },
+                //                     {
+                //                         "title": "com3!",
+                //                         "image_url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
+                //                         "buttons": [
+                //                             {
+                //                                 "type": "web_url",
+                //                                 "url": "https://gamek.mediacdn.vn/133514250583805952/2020/1/28/photo-1-1580179433165248928246.jpg",
+                //                                 "title": "Xem hình"
+                //                             },
+                //                             {
+                //                                 "type": "postback",
+                //                                 "title": "Khen cái nhẹ",
+                //                                 "payload": "hình đẹp thế"
+                //                             }
+                //                         ]
+                //                     }
 
-                                ]
-                            }
-                        }
+                //                 ]
+                //             }
+                //         }
 
-                    }
-                });
+                //     }
+                // });
                 //code của m vẫn ở đây nhớ
                 const StopDetail = {};
                 const result = luisResult;

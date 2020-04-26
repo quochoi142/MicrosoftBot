@@ -107,7 +107,6 @@ const utils = {
 
 
                 })
-                console.log(location);
                 return location;
             });
 
@@ -294,6 +293,17 @@ const utils = {
        
         promise = new Promise(function (resolve, reject) {
             firebase.database().ref('users/' + id + '/dataRoute').set(data).then(err=>{
+                resolve();
+            });
+        });
+
+        return promise;
+    },
+    saveNearestStop:(id,data)=>{
+        var promise;
+       
+        promise = new Promise(function (resolve, reject) {
+            firebase.database().ref('users/' + id + '/dataNearestStop').set(data).then(err=>{
                 resolve();
             });
         });
