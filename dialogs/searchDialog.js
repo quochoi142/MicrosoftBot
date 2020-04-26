@@ -112,9 +112,11 @@ class SearchDialog extends CancelAndHelpDialog {
                             const departures=boards[i].departures;
                             var msg='';
                             departures.forEach(e => {
-                                msg+=e.time+': Bus '+e.transport.name+'\n\n';
+                                msg+=e.time+': Bus '+e.transport.name+'\n';
                             });
-                            stepContext.context.sendActivity(msg,msg,InputHints.IgnoringInput);
+                          
+
+                            stepContext.context.sendActivity(msg);
                         }
                     }
                 }

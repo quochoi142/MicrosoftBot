@@ -136,6 +136,11 @@ server.get('/map', (req, res) => {
      })
 });
 
+server.get('/route',(req,res)=>{
+    res.render('./Views/route', { 
+        id: req.params.id,
+     })
+});
 
 
 

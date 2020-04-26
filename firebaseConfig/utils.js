@@ -46,14 +46,14 @@ const utils = {
     saveOriDes: (id, origin, destination) => {
         //Handle data in origin and destination
         if (origin[0] == '"') {
-            origin = origin.replace('"','');
-            origin = origin.replace('"','');
+            origin = origin.replace('"', '');
+            origin = origin.replace('"', '');
 
         }
 
         if (destination[0] == '"') {
-            destination = destination.replace('"','');
-            destination = destination.replace('"','');
+            destination = destination.replace('"', '');
+            destination = destination.replace('"', '');
 
         }
 
@@ -275,6 +275,30 @@ const utils = {
 
         return myLocation;
 
+    },
+    getPolylineGGMap: (polyline) => {
+        const raw = polylineTool.decode(polyline);
+        var result = [];
+        raw.polyline.forEach(e => {
+          const geo={};
+          geo.lat=e[0];
+          geo.lng=e[1];
+          result.push(geo);
+        })
+
+        return result;
+    },
+
+    savePolyline: (id,data)=>{
+        var promise;
+       
+        promise = new Promise(function (resolve, reject) {
+            firebase.database().ref('users/' + id + '/dataRoute').set(data).then(err=>{
+                resolve();
+            });
+        });
+
+        return promise;
     }
 }
 

@@ -284,6 +284,16 @@ class RouteDialog extends CancelAndHelpDialog {
                 var instuctions = [];
                 var indexGeo = 0;
 
+                var markers = [];
+                var polylines = [];
+                // markers.push({
+                //     instuction: result.origin,
+                //     geo: geoOrigin,
+                // });
+                // markers.push({
+                //     instuction: result.destination,
+                //     geo: geoDest,
+                // });
                 steps.forEach(step => {
                     var queryRoute = '';
                     if (index == 0 || index == steps.length - 1) {
@@ -291,7 +301,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     } else {
                         queryRoute = '&r0' + '=' + utils.convertPolylineX2(step.polyline);
                     }
-
+                    polylines.push(utils.getPolylineGGMap(step.polyline))
                     duration = duration + step.travelSummary.duration;
                     length = length + step.travelSummary.length;
                     var pivot = '';
@@ -303,65 +313,104 @@ class RouteDialog extends CancelAndHelpDialog {
                         var queryPoint1 = '', queryPoint2 = '';
                         if (index == 0) {
                             instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
-                            queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;' + result.origin;
-                            queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;' + result.origin;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
+                            markers.push({
+                                instuction: result.origin,
+                                geo: step.departure.place.location
+                            });
+
                         } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
                             instuction = 'Đi bộ đến ' + result.destination;
-                            queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ trạm:  ' + step.departure.place.name;
-                            queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;' + result.destination;
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ trạm:  ' + step.departure.place.name;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;' + result.destination;
+                            markers.push({
+                                instuction: result.destination,
+                                geo: step.arrival.place.location
+                            });
+                            markers.push({
+                                instuction: step.departure.place.name,
+                                geo: step.departure.place.location
+                            });
                         }
                         else if (pivot != '' && step.departure.place.name != pivot) {
                             instuction = 'Đi bộ đến ' + step.departure.place.name;
-                            pivot = '';
-                            queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
-                            queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
+                            // pivot = '';
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
+                            markers.push({
+                                instuction: step.departure.place.name,
+                                geo: step.departure.place.location
+                            });
+                            // markers.push({
+                            //     instuction: step.arrival.place.name,
+                            //     geo: step.arrival.place.location
+                            // });
                         }
-                        queryPoint = queryPoint1 + queryPoint2;
+                        //queryPoint = queryPoint1 + queryPoint2;
 
                     } else if (type === 'transit') {
-                        const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
-                        const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;Xuống trạm: ' + step.arrival.place.name;
-                        queryPoint = queryPoint1 + queryPoint2;
-                        pivot = step.arrival.place.name;
+                        // const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
+                        // const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;Xuống trạm: ' + step.arrival.place.name;
+                        // queryPoint = queryPoint1 + queryPoint2;
+                        // pivot = step.arrival.place.name;
                         instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
                         //   indexGeo++;
+                        markers.push({
+                            instuction: 'Xe bus ' + step.transport.name + ': Trạm ' + step.departure.place.name,
+                            geo: step.departure.place.location
+                        });
+                        // markers.push({
+                        //     instuction: step.arrival.place.name,
+                        //     geo: step.arrival.place.location
+                        // });
                     }
 
                     index++;
-                    const Image = urlImage + queryRoute + queryPoint;
+                    //const Image = urlImage + queryRoute + queryPoint;
 
                     if (instuction != '') {
-                        var object = {};
-                        object.instuction = instuction;
-                        object.urlImage = Image;
-                        instuctions.push(object);
+                        // var object = {};
+                        // object.instuction = instuction;
+                        //object.urlImage = Image;
+                        instuctions.push(instuction);
 
                     }
-                });
 
+                    // markers.push({
+                    //     instuction:'',
+                    //     geo:''
+                    // })
+                });
+                const dataRoute = {
+                    polylines: polylines,
+                    markers: markers
+                }
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
-                console.log(urlImage);
+                // console.log(urlImage);
                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                 for (var i = 0; i < instuctions.length; i++) {
                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
 
 
-                    const url = encodeUrl(instuctions[i].urlImage);
+                    // const url = encodeUrl(instuctions[i].urlImage);
 
-                    await stepContext.context.sendActivity({
-                        text: instuctions[i].instuction,
-                        channelData: {
-                            "attachment": {
-                                "type": "image",
-                                "payload": {
-                                    "url": url,
-                                    "is_reusable": true
-                                }
-                            }
-                        }
-                    });
+                    // await stepContext.context.sendActivity({
+                    //     text: instuctions[i].instuction,
+                    //     channelData: {
+                    //         "attachment": {
+                    //             "type": "image",
+                    //             "payload": {
+                    //                 "url": url,
+                    //                 "is_reusable": true
+                    //             }
+                    //         }
+                    //     }
+                    // });
 
                     // await utils.sleep(500);
+                    stepContext.context.sendActivity(instuctions[i])
+
                 }
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
@@ -390,9 +439,12 @@ class RouteDialog extends CancelAndHelpDialog {
                 // })
 
                 const id = utils.getIdUser(stepContext.context);
-                console.log(id);
+                await utils.savePolyline(id, dataRoute);
+                //console.log(id);
                 utils.saveOriDes(id, result.origin, result.destination);
-                prompt = "Tôi có thể giúp gì thêm cho bạn?";
+
+                var url = 'https://botbusvqh.herokuapp.com/route?id=' + id;
+                stepContext.context.sendActivity(url);
             }
 
 
