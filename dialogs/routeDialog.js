@@ -409,7 +409,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     // });
 
                     // await utils.sleep(500);
-                    stepContext.context.sendActivity(instuctions[i])
+                    await stepContext.context.sendActivity(instuctions[i])
 
                 }
                 // instuctions.forEach(async (element) => {
@@ -444,7 +444,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 utils.saveOriDes(id, result.origin, result.destination);
 
                 var url = 'https://botbusvqh.herokuapp.com/route?id=' + id;
-                stepContext.context.sendActivity(url);
+                await stepContext.context.sendActivity(url);
             }
 
 

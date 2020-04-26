@@ -297,6 +297,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                     var i = 0;
                     var dataStations = [];
                     const elements = [];
+                    const id = utils.getIdUser(stepContext.context)
+
                     for (i = 0; i < data.stations.length; i++) {
                         // const point = '&poix' + i + '=' + data.stations[i].place.location.lat + ',' + data.stations[i].place.location.lng + ';white;blue;25;' + data.stations[i].place.name;
                         // urlGetImage += point;
@@ -306,11 +308,19 @@ class StopArounDialog extends CancelAndHelpDialog {
                         })
                         elements.push({
                             title: data.stations[i].place.name,
-                            image_url: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ec2fa697-24a3-453e-98aa-9daa19ff5d78/d71vcxa-fac81fad-a040-4e7a-8a94-dea6b887d4b7.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2VjMmZhNjk3LTI0YTMtNDUzZS05OGFhLTlkYWExOWZmNWQ3OFwvZDcxdmN4YS1mYWM4MWZhZC1hMDQwLTRlN2EtOGE5NC1kZWE2Yjg4N2Q0YjcuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.pSs3E4-pFgzoVZ0BdT-bO60U7EulFSRvgVwPvL3OOaQ'
+                            image_url: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ec2fa697-24a3-453e-98aa-9daa19ff5d78/d71vcxa-fac81fad-a040-4e7a-8a94-dea6b887d4b7.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2VjMmZhNjk3LTI0YTMtNDUzZS05OGFhLTlkYWExOWZmNWQ3OFwvZDcxdmN4YS1mYWM4MWZhZC1hMDQwLTRlN2EtOGE5NC1kZWE2Yjg4N2Q0YjcuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.pSs3E4-pFgzoVZ0BdT-bO60U7EulFSRvgVwPvL3OOaQ',
+
+                            buttons: [
+                                {
+                                    "type": "web_url",
+                                    "url": 'https://botbusvqh.herokuapp.com/nearstop?id=' + id,
+                                    "title": "Vị trí"
+                                }
+
+                            ]
                         })
                     }
 
-                    const id = utils.getIdUser(stepContext.context)
                     await utils.saveNearestStop(id, dataStations);
                     const template = {
                         "attachment": {
@@ -323,12 +333,12 @@ class StopArounDialog extends CancelAndHelpDialog {
 
                     }
 
-                    stepContext.context.sendActivity({
+                    await stepContext.context.sendActivity({
                         text: "Các trạm xung quanh",
                         channelData: template
                     });
-                    const url = 'https://botbusvqh.herokuapp.com/nearstop?id=' + id;
-                    stepContext.context.sendActivity(url);
+                    // const url = 'https://botbusvqh.herokuapp.com/nearstop?id=' + id;
+                    // await stepContext.context.sendActivity(url);
 
                     // urlGetImage += '&poix' + i + '=' + result.geo.lat + ',' + result.geo.lng + ';white;blue;25;' + result.address.replace("700000", "");;
 
