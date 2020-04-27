@@ -210,7 +210,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 });
             } catch (error) {
                 await stepContext.context.sendActivity({
-                    text: "Bạn cũng có thể nhập trực tiếp",
+                    //text: "Bạn cũng có thể nhập trực tiếp",
                     channelData: {
                         "attachment": {
                             "type": "template",
@@ -331,6 +331,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
                     }
 
+                    //cần sửa
                     await stepContext.context.sendActivity({
                         text: "Các trạm xung quanh",
                         channelData: template
