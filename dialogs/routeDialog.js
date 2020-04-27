@@ -121,11 +121,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
             await stepContext.context.sendActivity({ attachments: [destinationCard] });
 
-            const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
+         /*    const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
             const destinationMessageText_Example = 'VD: tôi muốn đến suối tiên';
             await stepContext.context.sendActivity(destinationMessageText_Hint, destinationMessageText_Hint, InputHints.IgnoringInput);
             await stepContext.context.sendActivity(destinationMessageText_Example, destinationMessageText_Example, InputHints.IgnoringInput);
-
+ */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -200,11 +200,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
             await stepContext.context.sendActivity({ attachments: [originCard] });
 
-            const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
+          /*   const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
             const originMessageText_Example = 'VD: tôi muốn đi từ suối tiên';
             await stepContext.context.sendActivity(originMessageText_Hint, originMessageText_Hint, InputHints.IgnoringInput);
             await stepContext.context.sendActivity(originMessageText_Example, originMessageText_Example, InputHints.IgnoringInput);
-
+ */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
