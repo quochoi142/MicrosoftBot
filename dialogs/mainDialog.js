@@ -205,16 +205,18 @@ class MainDialog extends ComponentDialog {
                 //chỉ hiện location card
                 return await stepContext.next();
             }
+            case 'Trợ_giúp': {
+                const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
+                await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
+                return await stepContext.replaceDialog(this.initialDialogId);
+
+            }
             default: {
 
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
-            case 'Trợ_giúp': {
-                const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
-                await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
-
-            }
+           
 
         }
 

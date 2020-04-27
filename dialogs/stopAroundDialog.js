@@ -182,7 +182,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             //Send card 
             try {
                 await stepContext.context.sendActivity({
-                    text: "Bạn cũng có thể nhập trực tiếp",
+                    //text: "Bạn cũng có thể nhập trực tiếp",
                     channelData: {
                         "attachment": {
                             "type": "template",
@@ -233,8 +233,6 @@ class StopArounDialog extends CancelAndHelpDialog {
             }
 
 
-
-
             var map = utils.openMap(id);
 
             await map.then(geo => {
@@ -242,13 +240,6 @@ class StopArounDialog extends CancelAndHelpDialog {
                 result.origin = geo;
             })
         }
-        
-        if (stepContext.result == null) {
-            console.log(stepContext.result);
-            await stepContext.context.sendActivity(stepContext.result, stepContext.result,InputHints.IgnoringInput);
-            return await stepContext.beginDialog('STOP_AROUND_DIALOG', location);
-        }
-
         return await stepContext.next(result.origin)
     }
 
