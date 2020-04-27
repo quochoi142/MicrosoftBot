@@ -332,8 +332,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                     }
 
                     //cần sửa
+                    await stepContext.context.sendActivity('Các trạm xung quanh');
                     await stepContext.context.sendActivity({
-                        text: "Các trạm xung quanh",
                         channelData: template
                     });
                     // const url = 'https://botbusvqh.herokuapp.com/nearstop?id=' + id;
