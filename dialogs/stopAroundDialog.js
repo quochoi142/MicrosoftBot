@@ -331,7 +331,6 @@ class StopArounDialog extends CancelAndHelpDialog {
 
                     }
 
-                    //cần sửa
                     await stepContext.context.sendActivity('Các trạm xung quanh');
                     await stepContext.context.sendActivity({
                         channelData: template
