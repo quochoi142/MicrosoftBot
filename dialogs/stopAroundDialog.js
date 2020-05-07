@@ -276,7 +276,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 }
             }
             if (flag == true) {
-                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng;
+                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng+'&maxPlaces=7';
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 

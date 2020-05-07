@@ -128,11 +128,13 @@ server.post('/api/messages', (req, res) => {
 });
 
 
+
 server.get('/map', (req, res) => {
    
     res.render('./Views/map', { 
         id: req.params.id,
-        token:req.params.token
+        token:req.params.token,
+        steps: [{step:"a"},{step:"b"}]
      })
 });
 

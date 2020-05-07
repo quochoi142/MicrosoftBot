@@ -9,7 +9,7 @@
     /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
     #map {
-      height: 100%;
+      height: 80%;
     }
 
     /* Optional: Makes the sample page fill the window. */
@@ -24,6 +24,15 @@
 
 <body>
   <div id="map"></div>
+  <div>
+    <table id="steps" style="width:100%; height:20%, overflow=auto">
+      <tr>
+        <td id="summary"></td>
+      </tr>
+
+
+    </table>
+  </div>
   <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>
@@ -42,6 +51,7 @@
       });
     } */
     var myInfo, myMaker;
+    const polylines = [];
 
     function initMap() {
 
@@ -50,27 +60,75 @@
 
       firebase.database().ref('users/' + id + '/dataRoute').once('value').then(function (snapshot) {
         const data = snapshot.val();
-
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 16,
-          center: data.markers[0].geo,
+          center: data.markers[1].geo,
           mapTypeId: 'roadmap',
           disableDefaultUI: true,
         });
+
         addYourLocationButton();
+        //Set summary
+        const summary = document.getElementById('summary')
+        const summary_text = document.createElement('b');
+        summary_text.textContent = data.summary;
+        summary.appendChild(summary_text)
+
+        //set step
+        var trs = []
+        const leng = data.steps.length
+        for (var i = 0; i < leng; i++) {
+
+          var tr = document.createElement('tr');
+          var td = document.createElement('td');
+          td.textContent = data.steps[i];
+          tr.index = i
+          tr.appendChild(td);
+          tr.addEventListener('click', function () {
+            var index = this.index;
+            for (var i = 0; i < leng; i++) {
+              if (leng - index - 1 == i) {
+                polylines[i].setOptions({ strokeColor: '#80ff80', strokeOpacity: 1 });
+              } else {
+                polylines[i].setOptions({ strokeColor: '#FF0000', strokeOpacity: 0.75 });
+              }
+            }
+            map.setCenter(data.markers[leng - index - 1].geo)
+
+          })
+          trs.push(tr);
+
+        }
+        /* trs.forEach(e=>{
+           e.addEventListener('click',function(){
+             var index=e.index;
+             polylines[trs.length-index-1].setOptions({strokeColor: '#00FFaa'});
+           })
+         })*/
+
+        trs = trs.reverse()
+        var steps = document.getElementById('steps');
+        var i = 0;
+        trs.forEach(e => {
+          steps.appendChild(e);
+        })
+
 
         data.polylines.forEach(e => {
           var path = new google.maps.Polyline({
             path: e,
             geodesic: true,
             strokeColor: '#FF0000',
-            strokeOpacity: 1.0,
-            strokeWeight: 10
+            strokeOpacity: 0.75,
+            strokeWeight: 10,
+
           });
 
           path.setMap(map);
+          polylines.push(path)
 
         });
+
 
 
         data.markers.forEach(e => {
@@ -83,8 +141,6 @@
           infowindow.setContent('<div>' + e.instuction + '</div>');
           infowindow.open(map, marker);
         });
-
-
       });
     }
 
@@ -156,7 +212,7 @@
               myMaker.setPosition(latlng);
               myMaker.setMap(map);
             }
-            //map.setCenter(latlng);
+
             if (!myInfo) {
               myInfo = new google.maps.InfoWindow();
             }

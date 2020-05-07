@@ -299,6 +299,8 @@ const utils = {
 
         return promise;
     },
+    
+
     saveNearestStop:(id,data)=>{
         var promise;
        

@@ -382,12 +382,18 @@ class RouteDialog extends CancelAndHelpDialog {
                     //     geo:''
                     // })
                 });
-                const dataRoute = {
-                    polylines: polylines,
-                    markers: markers
-                }
+               
+
+                const Detailroute={};
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                 // console.log(urlImage);
+                const dataRoute = {
+                    polylines: polylines,
+                    markers: markers,
+                    summary:summary_direction,
+                    steps:instuctions
+                }
+               
                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                 for (var i = 0; i < instuctions.length; i++) {
                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
@@ -412,6 +418,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     await stepContext.context.sendActivity(instuctions[i])
 
                 }
+                
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
 
