@@ -25,8 +25,9 @@ function sleep(ms) {
 }
 
 class RouteDialog extends CancelAndHelpDialog {
-    constructor(id) {
+    constructor(luisRecognizer, id) {
         super(id);
+        this.luisRecognizer = luisRecognizer;
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -135,10 +136,24 @@ class RouteDialog extends CancelAndHelpDialog {
     }
 
     async originStep(stepContext) {
+
         const route = stepContext.options;
         route.destination = stepContext.result;
 
         if (!route.origin) {
+
+            // check From and To to Restart routeDialogs
+            const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
+            const from = this.luisRecognizer.getFromEntities(luisResult);
+            const to = this.luisRecognizer.getToEntities(luisResult);
+            console.log(from);
+            console.log(to);
+            if (from && to) {
+                const routeDetails = {};
+                routeDetails.origin = from;
+                routeDetails.destination = to;
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
 
             // Get origin from Firebase
             try {
@@ -382,18 +397,18 @@ class RouteDialog extends CancelAndHelpDialog {
                     //     geo:''
                     // })
                 });
-               
 
-                const Detailroute={};
+
+                const Detailroute = {};
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                 // console.log(urlImage);
                 const dataRoute = {
                     polylines: polylines,
                     markers: markers,
-                    summary:summary_direction,
-                    steps:instuctions
+                    summary: summary_direction,
+                    steps: instuctions
                 }
-               
+
                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                 for (var i = 0; i < instuctions.length; i++) {
                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
@@ -418,7 +433,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     await stepContext.context.sendActivity(instuctions[i])
 
                 }
-                
+
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
 

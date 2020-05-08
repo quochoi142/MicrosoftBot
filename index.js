@@ -80,7 +80,7 @@ const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint
 const luisRecognizer = new BusRecognizer(luisConfig);
 
 // Create the main dialog.
-const routeDialog = new RouteDialog(ROUTE_DIALOG);
+const routeDialog = new RouteDialog(luisRecognizer, ROUTE_DIALOG);
 const searchDialog = new SearchDialog(SEARCH_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
