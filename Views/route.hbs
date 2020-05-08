@@ -61,13 +61,44 @@
       firebase.database().ref('users/' + id + '/dataRoute').once('value').then(function (snapshot) {
         const data = snapshot.val();
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          center: data.markers[1].geo,
+          zoom: 15,
+          center: data.markers[0].geo,
           mapTypeId: 'roadmap',
           disableDefaultUI: true,
         });
 
         addYourLocationButton();
+
+        //draw polylines
+        data.polylines.forEach(e => {
+          var path = new google.maps.Polyline({
+            path: e,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1,
+            strokeWeight: 10,
+
+          });
+
+          path.setMap(map);
+          polylines.push(path)
+
+        });
+
+        //set markers
+
+        data.markers.forEach(e => {
+          var marker = new google.maps.Marker({
+            map: map,
+            animation: google.maps.Animation.DROP,
+            position: e.geo
+          })
+          var infowindow = new google.maps.InfoWindow();
+          infowindow.setContent('<div>' + e.instuction + '</div>');
+          infowindow.open(map, marker);
+        });
+
+
         //Set summary
         const summary = document.getElementById('summary')
         const summary_text = document.createElement('b');
@@ -76,12 +107,14 @@
 
         //set step
         var trs = []
-        const leng = data.steps.length
-        for (var i = 0; i < leng; i++) {
+        const leng = data.polylines.length
+        var steps = document.getElementById('steps');
+
+        /*for (var i = 0; i < leng; i++) {
 
           var tr = document.createElement('tr');
           var td = document.createElement('td');
-          td.textContent = data.steps[i];
+          td.textContent = data.steps[i].step;
           tr.index = i
           tr.appendChild(td);
           tr.addEventListener('click', function () {
@@ -96,9 +129,12 @@
             map.setCenter(data.markers[leng - index - 1].geo)
 
           })
-          trs.push(tr);
+          steps.appendChild(tr);
+          //trs.push(tr);
 
-        }
+        }*/
+
+
         /* trs.forEach(e=>{
            e.addEventListener('click',function(){
              var index=e.index;
@@ -106,41 +142,58 @@
            })
          })*/
 
-        trs = trs.reverse()
+        data.steps.forEach(e => {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td');
+          td.textContent = e.step;
+          tr.appendChild(td);
+          tr.addEventListener('click', function () {
+            var index = e.index;
+            for (var i = 0; i < leng; i++) {
+              if (index != i) {
+                //polylines[i].setOptions({ strokeColor: '#FF0000', strokeOpacity: 0.75 });
+                polylines[i].setMap(null)
+                polylines[i] = new google.maps.Polyline({
+                  path: data.polylines[i],
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 0.25,
+                  strokeWeight: 10,
+
+                });
+                polylines[i].setMap(map);
+              }
+            }
+
+            polylines[index].setMap(null)
+            polylines[index] = new google.maps.Polyline({
+              path: data.polylines[index],
+              geodesic: true,
+              strokeColor: '#FF0000',
+              strokeOpacity: 1,
+              strokeWeight: 10,
+
+            });
+            polylines[index].setMap(map);
+
+
+
+            map.setCenter(data.markers[index].geo)
+
+          })
+          steps.appendChild(tr);
+        })
+        /*trs = trs.reverse()
         var steps = document.getElementById('steps');
         var i = 0;
         trs.forEach(e => {
           steps.appendChild(e);
-        })
-
-
-        data.polylines.forEach(e => {
-          var path = new google.maps.Polyline({
-            path: e,
-            geodesic: true,
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.75,
-            strokeWeight: 10,
-
-          });
-
-          path.setMap(map);
-          polylines.push(path)
-
-        });
+        })*/
 
 
 
-        data.markers.forEach(e => {
-          var marker = new google.maps.Marker({
-            map: map,
-            animation: google.maps.Animation.DROP,
-            position: e.geo
-          })
-          var infowindow = new google.maps.InfoWindow();
-          infowindow.setContent('<div>' + e.instuction + '</div>');
-          infowindow.open(map, marker);
-        });
+
+
       });
     }
 

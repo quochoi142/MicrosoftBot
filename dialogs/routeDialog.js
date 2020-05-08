@@ -373,7 +373,10 @@ class RouteDialog extends CancelAndHelpDialog {
                         // var object = {};
                         // object.instuction = instuction;
                         //object.urlImage = Image;
-                        instuctions.push(instuction);
+                        instuctions.push({
+                            step:instuction,
+                            index:polylines.length-1
+                        });
 
                     }
 
@@ -384,7 +387,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 });
                
 
-                const Detailroute={};
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                 // console.log(urlImage);
                 const dataRoute = {
@@ -394,7 +396,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     steps:instuctions
                 }
                
-                await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+               /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                 for (var i = 0; i < instuctions.length; i++) {
                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
 
@@ -417,7 +419,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     // await utils.sleep(500);
                     await stepContext.context.sendActivity(instuctions[i])
 
-                }
+                }*/
                 
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
