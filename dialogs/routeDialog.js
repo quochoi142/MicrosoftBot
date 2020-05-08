@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
+const { LuisRecognizer } = require('botbuilder-ai');
 const { InputHints, MessageFactory, ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
@@ -25,8 +25,9 @@ function sleep(ms) {
 }
 
 class RouteDialog extends CancelAndHelpDialog {
-    constructor(id) {
+    constructor(luisRecognizer, id) {
         super(id);
+        this.luisRecognizer = luisRecognizer;
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -121,11 +122,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
             await stepContext.context.sendActivity({ attachments: [destinationCard] });
 
-         /*    const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
-            const destinationMessageText_Example = 'VD: tôi muốn đến suối tiên';
-            await stepContext.context.sendActivity(destinationMessageText_Hint, destinationMessageText_Hint, InputHints.IgnoringInput);
-            await stepContext.context.sendActivity(destinationMessageText_Example, destinationMessageText_Example, InputHints.IgnoringInput);
- */
+            /*    const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
+               const destinationMessageText_Example = 'VD: tôi muốn đến suối tiên';
+               await stepContext.context.sendActivity(destinationMessageText_Hint, destinationMessageText_Hint, InputHints.IgnoringInput);
+               await stepContext.context.sendActivity(destinationMessageText_Example, destinationMessageText_Example, InputHints.IgnoringInput);
+    */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -135,10 +136,24 @@ class RouteDialog extends CancelAndHelpDialog {
     }
 
     async originStep(stepContext) {
+
         const route = stepContext.options;
         route.destination = stepContext.result;
 
         if (!route.origin) {
+
+            // check From and To to Restart routeDialogs
+            const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
+            const from = this.luisRecognizer.getFromEntities(luisResult);
+            const to = this.luisRecognizer.getToEntities(luisResult);
+            console.log(from);
+            console.log(to);
+            if (from && to) {
+                const routeDetails = {};
+                routeDetails.origin = from;
+                routeDetails.destination = to;
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
 
             // Get origin from Firebase
             try {
@@ -200,11 +215,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
             await stepContext.context.sendActivity({ attachments: [originCard] });
 
-          /*   const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
-            const originMessageText_Example = 'VD: tôi muốn đi từ suối tiên';
-            await stepContext.context.sendActivity(originMessageText_Hint, originMessageText_Hint, InputHints.IgnoringInput);
-            await stepContext.context.sendActivity(originMessageText_Example, originMessageText_Example, InputHints.IgnoringInput);
- */
+            /*   const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
+              const originMessageText_Example = 'VD: tôi muốn đi từ suối tiên';
+              await stepContext.context.sendActivity(originMessageText_Hint, originMessageText_Hint, InputHints.IgnoringInput);
+              await stepContext.context.sendActivity(originMessageText_Example, originMessageText_Example, InputHints.IgnoringInput);
+   */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -385,15 +400,14 @@ class RouteDialog extends CancelAndHelpDialog {
                     //     geo:''
                     // })
                 });
-               
 
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                 // console.log(urlImage);
                 const dataRoute = {
                     polylines: polylines,
                     markers: markers,
-                    summary:summary_direction,
-                    steps:instuctions
+                    summary: summary_direction,
+                    steps: instuctions
                 }
                
                /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
