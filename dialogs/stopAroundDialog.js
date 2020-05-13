@@ -370,6 +370,8 @@ class StopArounDialog extends CancelAndHelpDialog {
         if (flag) {
             prompt = "Bạn cần giúp gì thêm không?";
         }
+        stepContext.context.sendActivity(prompt,'',InputHints.IgnoringInput);
+        stepContext.context.sendActivity(1,'',InputHints.IgnoringInput);
         return await stepContext.endDialog(prompt);
     }
 }

@@ -98,7 +98,7 @@ class MainDialog extends ComponentDialog {
                             {
                                 "title": welcome,
                                 "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
-                                "subtitle": "",
+                                "subtitle": "Bạn hãy chọn 1 trong các chức năng:",
                                 "buttons": [
                                     {
                                         "type": "postback",
