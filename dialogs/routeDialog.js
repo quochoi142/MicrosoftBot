@@ -9,6 +9,7 @@ const OriginCard = require('../resources/originCard.json');
 const DestinationCard = require('../resources/destinationCard.json');
 const ConfirmODCard = require('../resources/confirmODCard.json');
 const WrongCard = require('../resources/wrongCard.json');
+const { BusRecognizer } = require('../dialogs/BusRecognizer');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
@@ -24,10 +25,12 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+
+
 class RouteDialog extends CancelAndHelpDialog {
-    constructor(luisRecognizer, id) {
+    constructor(id) {
         super(id);
-        this.luisRecognizer = luisRecognizer;
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -141,19 +144,31 @@ class RouteDialog extends CancelAndHelpDialog {
         route.destination = stepContext.result;
 
         if (!route.origin) {
+            const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+            const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+            const luis = new BusRecognizer(luisConfig);
 
             // check From and To to Restart routeDialogs
-            const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
-            const from = this.luisRecognizer.getFromEntities(luisResult);
-            const to = this.luisRecognizer.getToEntities(luisResult);
+
+
+            const luisResult = await luis.executeLuisQuery(stepContext.context);
+            const from = luis.getFromEntities(luisResult);
+            const to = luis.getToEntities(luisResult);
+
+            const routeDetails = {};
             if (from && to) {
-                const routeDetails = {};
                 routeDetails.origin = from;
                 routeDetails.destination = to;
-                const rp = "Bạn cần giúp gì thêm không?";
-                await stepContext.endDialog(rp);
+                await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
+            else if (from) {
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
+
+
 
             // Get origin from Firebase
             try {
@@ -227,15 +242,39 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         }
+
         return await stepContext.next(route.origin);
     }
 
     async finalStep(stepContext) {
 
+
+
         // code tìm đường nằm trong đây
         //if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
         var result = stepContext.options;
         result.origin = stepContext.result;
+
+
+        // check From and To to Restart routeDialogs
+        const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+        const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+        const luis = new BusRecognizer(luisConfig);
+
+        const luisResult = await luis.executeLuisQuery(stepContext.context);
+        const from = luis.getFromEntities(luisResult);
+        const to = luis.getToEntities(luisResult);
+        console.log(to);
+        console.log(from);
+        const routeDetails = {};
+        if (to && !from) {
+            routeDetails.destination = result.destination;
+            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('routeDialog', routeDetails);
+        }
+
+
 
         //cho người dùng biết 2 điểm O-D
         const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";
@@ -384,11 +423,15 @@ class RouteDialog extends CancelAndHelpDialog {
                     index++;
                     //const Image = urlImage + queryRoute + queryPoint;
 
+
                     if (instuction != '') {
                         // var object = {};
                         // object.instuction = instuction;
                         //object.urlImage = Image;
-                        instuctions.push(instuction);
+                        instuctions.push({
+                            step: instuction,
+                            index: polylines.length - 1
+                        });
 
                     }
 
@@ -398,8 +441,6 @@ class RouteDialog extends CancelAndHelpDialog {
                     // })
                 });
 
-
-                const Detailroute = {};
                 const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
                 // console.log(urlImage);
                 const dataRoute = {
@@ -409,30 +450,30 @@ class RouteDialog extends CancelAndHelpDialog {
                     steps: instuctions
                 }
 
-                await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-                for (var i = 0; i < instuctions.length; i++) {
-                    // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
-
-
-                    // const url = encodeUrl(instuctions[i].urlImage);
-
-                    // await stepContext.context.sendActivity({
-                    //     text: instuctions[i].instuction,
-                    //     channelData: {
-                    //         "attachment": {
-                    //             "type": "image",
-                    //             "payload": {
-                    //                 "url": url,
-                    //                 "is_reusable": true
-                    //             }
-                    //         }
-                    //     }
-                    // });
-
-                    // await utils.sleep(500);
-                    await stepContext.context.sendActivity(instuctions[i])
-
-                }
+                /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                 for (var i = 0; i < instuctions.length; i++) {
+                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
+ 
+ 
+                     // const url = encodeUrl(instuctions[i].urlImage);
+ 
+                     // await stepContext.context.sendActivity({
+                     //     text: instuctions[i].instuction,
+                     //     channelData: {
+                     //         "attachment": {
+                     //             "type": "image",
+                     //             "payload": {
+                     //                 "url": url,
+                     //                 "is_reusable": true
+                     //             }
+                     //         }
+                     //     }
+                     // });
+ 
+                     // await utils.sleep(500);
+                     await stepContext.context.sendActivity(instuctions[i])
+ 
+                 }*/
 
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
@@ -477,13 +518,14 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         }
-
-
-
         prompt = "Bạn cần giúp gì thêm không?";
         return await stepContext.endDialog(prompt);
     }
 
 }
+
+
+
+
 
 module.exports.RouteDialog = RouteDialog;
