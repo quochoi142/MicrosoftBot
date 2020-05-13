@@ -106,8 +106,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         },
                         {
                             "type": "Action.Submit",
-                            "title": "Vị trí hiện tại",
-                            "data": "Vị trí hiện tại"
+                            "title": myDestiantion[2].destination,
+                            "data": myDestiantion[2].destination
 
                         }
                     ]
@@ -211,8 +211,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         },
                         {
                             "type": "Action.Submit",
-                            "title": "Vị trí hiện tại",
-                            "data": "Vị trí hiện tại"
+                            "title": myOrigin[2].origin,
+                            "data": myOrigin[2].origin
 
                         }
                     ]
