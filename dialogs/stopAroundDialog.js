@@ -232,24 +232,28 @@ class StopArounDialog extends CancelAndHelpDialog {
                 });
             }
 
+            try {
+                var map = utils.openMap(id);
 
-            var map = utils.openMap(id);
+                await map.then(geo => {
 
-            await map.then(geo => {
+                    result.origin = geo;
+                })
+            } catch (error) {
+                stepContext.context.sendActivity('ở đây', '', InputHints.IgnoringInput);
+            }
 
-                result.origin = geo;
-            })
         }
         return await stepContext.next(result.origin)
     }
 
 
     async searchStopsStep(stepContext) {
-
+        stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         var flag = true;
-
+        stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
         try {
             var result;
             if (utils.isGeo(place) == true) {
@@ -276,7 +280,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 }
             }
             if (flag == true) {
-                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng+'&maxPlaces=7';
+                const url = 'https://transit.hereapi.com/v8/stations?in=' + result.geo.lat + ',' + result.geo.lng + '&maxPlaces=7';
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
@@ -370,8 +374,8 @@ class StopArounDialog extends CancelAndHelpDialog {
         if (flag) {
             prompt = "Bạn cần giúp gì thêm không?";
         }
-        stepContext.context.sendActivity(prompt,'',InputHints.IgnoringInput);
-        stepContext.context.sendActivity(1,'',InputHints.IgnoringInput);
+        stepContext.context.sendActivity(prompt, '', InputHints.IgnoringInput);
+        stepContext.context.sendActivity(1, '', InputHints.IgnoringInput);
         return await stepContext.endDialog(prompt);
     }
 }
