@@ -29,7 +29,7 @@ function sleep(ms) {
 
 
 class RouteDialog extends CancelAndHelpDialog {
-    constructor( id) {
+    constructor(id) {
         super(id);
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
@@ -106,8 +106,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         },
                         {
                             "type": "Action.Submit",
-                            "title": "Vị trí hiện tại",
-                            "data": "Vị trí hiện tại"
+                            "title": myDestiantion[2].destination,
+                            "data": myDestiantion[2].destination
 
                         }
                     ]
@@ -149,20 +149,26 @@ class RouteDialog extends CancelAndHelpDialog {
             const luis = new BusRecognizer(luisConfig);
 
             // check From and To to Restart routeDialogs
+
+
             const luisResult = await luis.executeLuisQuery(stepContext.context);
             const from = luis.getFromEntities(luisResult);
             const to = luis.getToEntities(luisResult);
 
-
-            console.log(from);
-            console.log(to);
+            const routeDetails = {};
             if (from && to) {
-                const routeDetails = {};
                 routeDetails.origin = from;
                 routeDetails.destination = to;
-                this.isFull = true;
+                await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
+            else if (from) {
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
+
+
 
             // Get origin from Firebase
             try {
@@ -205,8 +211,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         },
                         {
                             "type": "Action.Submit",
-                            "title": "Vị trí hiện tại",
-                            "data": "Vị trí hiện tại"
+                            "title": myOrigin[2].origin,
+                            "data": myOrigin[2].origin
 
                         }
                     ]
@@ -236,156 +242,158 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         }
-        this.isFull = false;
+
         return await stepContext.next(route.origin);
     }
 
     async finalStep(stepContext) {
 
-        if (this.isFull != true) {
 
 
-            // code tìm đường nằm trong đây
-            //if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
-            var result = stepContext.options;
-            result.origin = stepContext.result;
-
-            //cho người dùng biết 2 điểm O-D
-            const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";
-            stepContext.context.sendActivity(confirmMsg, confirmMsg, InputHints.IgnoringInput);
-
-            const http_request = process.env.GgAPI + "&origin=" + result.origin + ' tphcm' + "&destination=" + result.destination + ' tphcm';
-            var prompt = '';
-
-            try {
-                const response = await fetch(utf8.encode(http_request));
-
-                const json = await response.json();
-                if (response.status != 200 || json.routes.length == 0) {
-                    prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-
-                }
-                else {
-
-                    const route = json.routes[0].legs[0];
+        // code tìm đường nằm trong đây
+        //if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
+        var result = stepContext.options;
+        result.origin = stepContext.result;
 
 
-                    const geoOrigin = route.start_location.lat + ',' + route.start_location.lng;
-                    const geoDest = route.end_location.lat + ',' + route.end_location.lng;
+        // check From and To to Restart routeDialogs
+        const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+        const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+        const luis = new BusRecognizer(luisConfig);
 
-                    // const start_address = route.start_address;
-                    // const end_address = route.end_address;
+        const luisResult = await luis.executeLuisQuery(stepContext.context);
+        const from = luis.getFromEntities(luisResult);
+        const to = luis.getToEntities(luisResult);
+        console.log(to);
+        console.log(from);
+        const routeDetails = {};
+        if (to && !from) {
+            routeDetails.destination = result.destination;
+            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('routeDialog', routeDetails);
+        }
 
-                    const urls = [];
-                    urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
-                    urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                    var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
 
-                    var myHeaders = new fetch.Headers();
-                    myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+        //cho người dùng biết 2 điểm O-D
+        const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";
+        stepContext.context.sendActivity(confirmMsg, confirmMsg, InputHints.IgnoringInput);
 
-                    var requestOptions = {
-                        method: 'GET',
-                        headers: myHeaders,
-                        redirect: 'follow'
-                    };
+        const http_request = process.env.GgAPI + "&origin=" + result.origin + ' tphcm' + "&destination=" + result.destination + ' tphcm';
+        var prompt = '';
 
-                    var data;
-                    for (var i = 0; i < urls.length; i++) {
-                        const response = await fetch(urls[i], requestOptions)
-                        data = await response.json();
-                        if (data.routes.length) {
-                            break;
-                        }
+        try {
+            const response = await fetch(utf8.encode(http_request));
+
+            const json = await response.json();
+            if (response.status != 200 || json.routes.length == 0) {
+                prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+
+            }
+            else {
+
+                const route = json.routes[0].legs[0];
+
+
+                const geoOrigin = route.start_location.lat + ',' + route.start_location.lng;
+                const geoDest = route.end_location.lat + ',' + route.end_location.lng;
+
+                // const start_address = route.start_address;
+                // const end_address = route.end_address;
+
+                const urls = [];
+                urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+
+                var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
+
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+
+                var data;
+                for (var i = 0; i < urls.length; i++) {
+                    const response = await fetch(urls[i], requestOptions)
+                    data = await response.json();
+                    if (data.routes.length) {
+                        break;
                     }
+                }
 
 
-                    console.log(JSON.stringify(data));
-                    const steps = data.routes[0].sections;
+                console.log(JSON.stringify(data));
+                const steps = data.routes[0].sections;
 
-                    var duration = 0;
-                    var length = 0;
-                    var index = 0;
+                var duration = 0;
+                var length = 0;
+                var index = 0;
 
-                    var time = 0;
-                    var instuctions = [];
-                    var indexGeo = 0;
+                var time = 0;
+                var instuctions = [];
+                var indexGeo = 0;
 
-                    var markers = [];
-                    var polylines = [];
-                    // markers.push({
-                    //     instuction: result.origin,
-                    //     geo: geoOrigin,
-                    // });
-                    // markers.push({
-                    //     instuction: result.destination,
-                    //     geo: geoDest,
-                    // });
-                    steps.forEach(step => {
-                        var queryRoute = '';
-                        if (index == 0 || index == steps.length - 1) {
-                            queryRoute = '&r0' + '=' + utils.convertPolylineX1(step.polyline);
-                        } else {
-                            queryRoute = '&r0' + '=' + utils.convertPolylineX2(step.polyline);
-                        }
-                        polylines.push(utils.getPolylineGGMap(step.polyline))
-                        duration = duration + step.travelSummary.duration;
-                        length = length + step.travelSummary.length;
-                        var pivot = '';
+                var markers = [];
+                var polylines = [];
+                // markers.push({
+                //     instuction: result.origin,
+                //     geo: geoOrigin,
+                // });
+                // markers.push({
+                //     instuction: result.destination,
+                //     geo: geoDest,
+                // });
+                steps.forEach(step => {
+                    var queryRoute = '';
+                    if (index == 0 || index == steps.length - 1) {
+                        queryRoute = '&r0' + '=' + utils.convertPolylineX1(step.polyline);
+                    } else {
+                        queryRoute = '&r0' + '=' + utils.convertPolylineX2(step.polyline);
+                    }
+                    polylines.push(utils.getPolylineGGMap(step.polyline))
+                    duration = duration + step.travelSummary.duration;
+                    length = length + step.travelSummary.length;
+                    var pivot = '';
 
-                        var instuction = '';
-                        const type = step.type;
-                        var queryPoint = ''
-                        if (type === "pedestrian") {
-                            var queryPoint1 = '', queryPoint2 = '';
-                            if (index == 0) {
-                                instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
-                                // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;' + result.origin;
-                                // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
-                                markers.push({
-                                    instuction: result.origin,
-                                    geo: step.departure.place.location
-                                });
-
-                            } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
-                                instuction = 'Đi bộ đến ' + result.destination;
-                                // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ trạm:  ' + step.departure.place.name;
-                                // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;' + result.destination;
-                                markers.push({
-                                    instuction: result.destination,
-                                    geo: step.arrival.place.location
-                                });
-                                markers.push({
-                                    instuction: step.departure.place.name,
-                                    geo: step.departure.place.location
-                                });
-                            }
-                            else if (pivot != '' && step.departure.place.name != pivot) {
-                                instuction = 'Đi bộ đến ' + step.departure.place.name;
-                                // pivot = '';
-                                // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
-                                // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
-                                markers.push({
-                                    instuction: step.departure.place.name,
-                                    geo: step.departure.place.location
-                                });
-                                // markers.push({
-                                //     instuction: step.arrival.place.name,
-                                //     geo: step.arrival.place.location
-                                // });
-                            }
-                            //queryPoint = queryPoint1 + queryPoint2;
-
-                        } else if (type === 'transit') {
-                            // const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
-                            // const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;Xuống trạm: ' + step.arrival.place.name;
-                            // queryPoint = queryPoint1 + queryPoint2;
-                            // pivot = step.arrival.place.name;
-                            instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
-                            //   indexGeo++;
+                    var instuction = '';
+                    const type = step.type;
+                    var queryPoint = ''
+                    if (type === "pedestrian") {
+                        var queryPoint1 = '', queryPoint2 = '';
+                        if (index == 0) {
+                            instuction = 'Từ ' + result.origin + ' đi bộ đến trạm ' + step.arrival.place.name;
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;' + result.origin;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
                             markers.push({
-                                instuction: 'Xe bus ' + step.transport.name + ': Trạm ' + step.departure.place.name,
+                                instuction: result.origin,
+                                geo: step.departure.place.location
+                            });
+
+                        } else if (index == steps.length - 1 && step.arrival.place.type == 'place') {
+                            instuction = 'Đi bộ đến ' + result.destination;
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ trạm:  ' + step.departure.place.name;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;' + result.destination;
+                            markers.push({
+                                instuction: result.destination,
+                                geo: step.arrival.place.location
+                            });
+                            markers.push({
+                                instuction: step.departure.place.name,
+                                geo: step.departure.place.location
+                            });
+                        }
+                        else if (pivot != '' && step.departure.place.name != pivot) {
+                            instuction = 'Đi bộ đến ' + step.departure.place.name;
+                            // pivot = '';
+                            // queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Đi bộ từ ' + 'trạm: ' + step.departure.place.name;
+                            // queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;đến trạm: ' + step.arrival.place.name;
+                            markers.push({
+                                instuction: step.departure.place.name,
                                 geo: step.departure.place.location
                             });
                             // markers.push({
@@ -393,111 +401,131 @@ class RouteDialog extends CancelAndHelpDialog {
                             //     geo: step.arrival.place.location
                             // });
                         }
+                        //queryPoint = queryPoint1 + queryPoint2;
 
-                        index++;
-                        //const Image = urlImage + queryRoute + queryPoint;
-
-                        if (instuction != '') {
-                            // var object = {};
-                            // object.instuction = instuction;
-                            //object.urlImage = Image;
-                            instuctions.push({
-                                step: instuction,
-                                index: polylines.length - 1
-                            });
-
-                        }
-
+                    } else if (type === 'transit') {
+                        // const queryPoint1 = '&poix0' + '=' + step.departure.place.location.lat + ',' + step.departure.place.location.lng + ';white;blue;25;Buýt ' + step.transport.name + ': Trạm ' + step.departure.place.name;
+                        // const queryPoint2 = '&poix1' + '=' + step.arrival.place.location.lat + ',' + step.arrival.place.location.lng + ';white;blue;25;Xuống trạm: ' + step.arrival.place.name;
+                        // queryPoint = queryPoint1 + queryPoint2;
+                        // pivot = step.arrival.place.name;
+                        instuction = 'Bắt xe số ' + step.transport.name + ' đi đến trạm ' + step.arrival.place.name
+                        //   indexGeo++;
+                        markers.push({
+                            instuction: 'Xe bus ' + step.transport.name + ': Trạm ' + step.departure.place.name,
+                            geo: step.departure.place.location
+                        });
                         // markers.push({
-                        //     instuction:'',
-                        //     geo:''
-                        // })
-                    });
-
-                    const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
-                    // console.log(urlImage);
-                    const dataRoute = {
-                        polylines: polylines,
-                        markers: markers,
-                        summary: summary_direction,
-                        steps: instuctions
+                        //     instuction: step.arrival.place.name,
+                        //     geo: step.arrival.place.location
+                        // });
                     }
 
-                    /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
-                     for (var i = 0; i < instuctions.length; i++) {
-                         // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
-     
-     
-                         // const url = encodeUrl(instuctions[i].urlImage);
-     
-                         // await stepContext.context.sendActivity({
-                         //     text: instuctions[i].instuction,
-                         //     channelData: {
-                         //         "attachment": {
-                         //             "type": "image",
-                         //             "payload": {
-                         //                 "url": url,
-                         //                 "is_reusable": true
-                         //             }
-                         //         }
-                         //     }
-                         // });
-     
-                         // await utils.sleep(500);
-                         await stepContext.context.sendActivity(instuctions[i])
-     
-                     }*/
-
-                    // instuctions.forEach(async (element) => {
-                    //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
-
-                    //     const json = {
-
-                    //         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                    //         "type": "AdaptiveCard",
-                    //         "version": "1.0",
-                    //         "body": [
-                    //             {
-                    //                 "type": "Image",
-                    //                 "url": element.urlImage,
-                    //                 "width": "stretch",
-                    //                 "style": "default"
-                    //             }
-                    //         ],
+                    index++;
+                    //const Image = urlImage + queryRoute + queryPoint;
 
 
-                    //     };
+                    if (instuction != '') {
+                        // var object = {};
+                        // object.instuction = instuction;
+                        //object.urlImage = Image;
+                        instuctions.push({
+                            step: instuction,
+                            index: polylines.length - 1
+                        });
 
-                    //     console.log(element.urlImage);
-                    //     await stepContext.context.sendActivity({ attachments: [json] });
+                    }
 
-                    //     await utils.sleep(500);
+                    // markers.push({
+                    //     instuction:'',
+                    //     geo:''
                     // })
+                });
 
-                    const id = utils.getIdUser(stepContext.context);
-                    await utils.savePolyline(id, dataRoute);
-                    //console.log(id);
-                    utils.saveOriDes(id, result.origin, result.destination);
-
-                    var url = 'https://botbusvqh.herokuapp.com/route?id=' + id;
-                    await stepContext.context.sendActivity(url);
+                const summary_direction = "Tổng quãng đường là " + parseFloat(length / 1000).toFixed(1) + "km đi mất khoảng " + utils.convertDuration(duration);
+                // console.log(urlImage);
+                const dataRoute = {
+                    polylines: polylines,
+                    markers: markers,
+                    summary: summary_direction,
+                    steps: instuctions
                 }
 
+                /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                 for (var i = 0; i < instuctions.length; i++) {
+                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
+ 
+ 
+                     // const url = encodeUrl(instuctions[i].urlImage);
+ 
+                     // await stepContext.context.sendActivity({
+                     //     text: instuctions[i].instuction,
+                     //     channelData: {
+                     //         "attachment": {
+                     //             "type": "image",
+                     //             "payload": {
+                     //                 "url": url,
+                     //                 "is_reusable": true
+                     //             }
+                     //         }
+                     //     }
+                     // });
+ 
+                     // await utils.sleep(500);
+                     await stepContext.context.sendActivity(instuctions[i])
+ 
+                 }*/
 
+                // instuctions.forEach(async (element) => {
+                //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
+
+                //     const json = {
+
+                //         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                //         "type": "AdaptiveCard",
+                //         "version": "1.0",
+                //         "body": [
+                //             {
+                //                 "type": "Image",
+                //                 "url": element.urlImage,
+                //                 "width": "stretch",
+                //                 "style": "default"
+                //             }
+                //         ],
+
+
+                //     };
+
+                //     console.log(element.urlImage);
+                //     await stepContext.context.sendActivity({ attachments: [json] });
+
+                //     await utils.sleep(500);
+                // })
+
+                const id = utils.getIdUser(stepContext.context);
+                await utils.savePolyline(id, dataRoute);
+                //console.log(id);
+                utils.saveOriDes(id, result.origin, result.destination);
+
+                var url = 'https://botbusvqh.herokuapp.com/route?id=' + id;
+                await stepContext.context.sendActivity(url);
             }
-            catch (error) {
-                prompt = error.message;
-                console.log(error.message);
 
-
-            }
 
         }
-        this.isFull = true;
+        catch (error) {
+            prompt = error.message;
+            console.log(error.message);
+
+
+        }
         prompt = "Bạn cần giúp gì thêm không?";
         return await stepContext.endDialog(prompt);
     }
 
 }
+
+
+
+
 
 module.exports.RouteDialog = RouteDialog;
