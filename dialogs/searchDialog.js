@@ -25,6 +25,7 @@ class SearchDialog extends CancelAndHelpDialog {
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.GetStopStep.bind(this),
+                this.GetBusNum.bind(this),
                 this.SearchStep.bind(this)
 
 
@@ -60,9 +61,22 @@ class SearchDialog extends CancelAndHelpDialog {
 
     }
 
-    async SearchStep(stepContext) {
+    async GetBusNum(stepContext) {
+        const result = stepContext.options;
+        result.stop = stepContext.result;
+        if (!result.stop) {
+            //return await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.ExpectingInput);
+            const messageText = "Bạn muốn bắt xe bus số mấy?"
+            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+        }
+        return stepContext.next(result.bus);
+    }
 
-        const place = (stepContext.options.stop) ? stepContext.options.stop : stepContext.result;
+    async SearchStep(stepContext) {
+        const result0 = stepContext.options
+        result0.bus = stepContext.result
+        const place = result0.stop
         var prompt = '';
         var flag = true;
 
@@ -105,19 +119,44 @@ class SearchDialog extends CancelAndHelpDialog {
                     prompt = 'Không tìm thấy trạm ' + place;
                     flag = false;
                 } else {
-                    const boards=data.boards;
-                    for(var i=0;i<boards.length;i++){
-                       
-                        if(boards[i].place.name.toLowerCase()==place.toLowerCase()){
-                            const departures=boards[i].departures;
-                            var msg='';
-                            departures.forEach(e => {
-                                msg+=e.time+': Bus '+e.transport.name+'\n';
-                            });
-                          
+                    const boards = data.boards;
+                    for (var i = 0; i < boards.length; i++) {
+                        var msg = '';
 
-                            stepContext.context.sendActivity(msg);
+                        if (boards[i].place.name.toLowerCase() == place.toLowerCase()) {
+                            const departures = boards[i].departures;
+
+
+                            for (var j = 0; j < departures.length; j++) {
+                                if (result0.bus.includes(departures[i].transport.name)) {
+                                    var time = departures[i].time;
+                                    const moment = require('moment')
+                                    var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+
+                                    time = moment.utc(moment(time, "YYYY-MM-DDTHH:mm:ssZ").diff(now)).format('HH:mm')
+                                    const tokens = time.split(":");
+                                    const h = tokens[0]
+                                    const m = tokens[1]
+                                    time = "";
+                                    if (h != 0) {
+                                        time += parseInt(h) + "h";
+                                    }
+                                    if (m != 0) {
+                                        time += parseInt(m) + "'";
+                                    }
+                                    time = (time == "") ? "1'" : time;
+
+                                    msg = "Xe bus số " + departures[i].transport.name + " xuất phát từ " + departures[i].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+                                    break;
+                                }
+                            }
+
+
                         }
+                        if (msg !== "") {
+                            await stepContext.context.sendActivity(msg);
+                        }
+
                     }
                 }
 
