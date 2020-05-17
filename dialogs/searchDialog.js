@@ -120,6 +120,7 @@ class SearchDialog extends CancelAndHelpDialog {
                     flag = false;
                 } else {
                     const boards = data.boards;
+                    var isExistsBus =false;
                     for (var i = 0; i < boards.length; i++) {
                         var msg = '';
 
@@ -128,7 +129,8 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
                             for (var j = 0; j < departures.length; j++) {
-                                if (result0.bus.includes(departures[i].transport.name)) {
+                                if (result0.bus.match('(\\d+)')[0]== departures[i].transport.name) {
+                                    isExistsBus=true
                                     var time = departures[i].time;
                                     const moment = require('moment')
                                     var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
@@ -157,6 +159,9 @@ class SearchDialog extends CancelAndHelpDialog {
                             await stepContext.context.sendActivity(msg);
                         }
 
+                    }
+                    if(!isExistsBus){
+                        await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
                     }
                 }
 
