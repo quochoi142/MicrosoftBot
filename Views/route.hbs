@@ -141,11 +141,13 @@
              polylines[trs.length-index-1].setOptions({strokeColor: '#00FFaa'});
            })
          })*/
-
+        var idIncrease = 0;
         data.steps.forEach(e => {
           var tr = document.createElement('tr');
           var td = document.createElement('td');
           td.textContent = e.step;
+          td.id = idIncrease + "";
+          idIncrease++
           tr.appendChild(td);
           tr.addEventListener('click', function () {
             var index = e.index;
@@ -165,6 +167,21 @@
               }
             }
 
+            for (var i = 0; i < data.steps.length; i++) {
+              const idIndex = this.childNodes[0].attributes.id.nodeValue
+              if (i == idIndex) {
+                const selectedId = document.getElementById(idIndex)
+                selectedId.textContent = data.steps[i].step + " (quãng đường " + data.steps[i].length + "km mất khoảng " + data.steps[i].duration + ")"
+                selectedId.style.color = 'red'
+              } else {
+
+                const selectedId = document.getElementById(i+"")
+                selectedId.textContent = data.steps[i].step
+                selectedId.style.color = 'black'
+              }
+
+
+            }
             polylines[index].setMap(null)
             polylines[index] = new google.maps.Polyline({
               path: data.polylines[index],

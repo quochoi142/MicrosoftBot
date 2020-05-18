@@ -323,10 +323,10 @@ class RouteDialog extends CancelAndHelpDialog {
                 // const end_address = route.end_address;
 
                 const urls = [];
-                urls.push('https://transit.router.hereapi.com/v1/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
-                urls.push('https://transit.router.hereapi.com/v1/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                urls.push('https://transit.router.hereapi.com/v8/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
+                urls.push('https://transit.router.hereapi.com/v8/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
+                //var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
 
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
@@ -454,7 +454,9 @@ class RouteDialog extends CancelAndHelpDialog {
                         //object.urlImage = Image;
                         instuctions.push({
                             step: instuction,
-                            index: polylines.length - 1
+                            index: polylines.length - 1,
+                            duration: utils.convertDuration(step.travelSummary.duration),
+                            length: parseFloat(step.travelSummary.length / 1000).toFixed(1)
                         });
 
                     }
@@ -474,30 +476,12 @@ class RouteDialog extends CancelAndHelpDialog {
                     steps: instuctions
                 }
 
-                /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                  for (var i = 0; i < instuctions.length; i++) {
-                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
+                     
+                     await stepContext.context.sendActivity(instuctions[i].step)
  
- 
-                     // const url = encodeUrl(instuctions[i].urlImage);
- 
-                     // await stepContext.context.sendActivity({
-                     //     text: instuctions[i].instuction,
-                     //     channelData: {
-                     //         "attachment": {
-                     //             "type": "image",
-                     //             "payload": {
-                     //                 "url": url,
-                     //                 "is_reusable": true
-                     //             }
-                     //         }
-                     //     }
-                     // });
- 
-                     // await utils.sleep(500);
-                     await stepContext.context.sendActivity(instuctions[i])
- 
-                 }*/
+                 }
 
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
