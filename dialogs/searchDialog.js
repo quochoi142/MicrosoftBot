@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
+const { LuisRecognizer } = require('botbuilder-ai');
+const { BusRecognizer } = require('../dialogs/BusRecognizer');
 const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
@@ -48,11 +49,6 @@ class SearchDialog extends CancelAndHelpDialog {
             const locationCard = CardFactory.adaptiveCard(LocationCard);
             await stepContext.context.sendActivity({ attachments: [locationCard] });
 
-            const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
-            const locationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
-            await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
-            await stepContext.context.sendActivity(locationMessageText_Example, locationMessageText_Example, InputHints.IgnoringInput);
-
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -64,7 +60,33 @@ class SearchDialog extends CancelAndHelpDialog {
     async GetBusNum(stepContext) {
         const result = stepContext.options;
         result.stop = stepContext.result;
-        if (!result.stop) {
+
+        if (!result.bus) {
+
+            const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+            const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+            const luis = new BusRecognizer(luisConfig);
+
+            // check From and To to Restart searchDialogs
+
+            const luisResult = await luis.executeLuisQuery(stepContext.context);
+            const bus = luisResult.entities.$instance.Bus[0].text;
+            const stop = luisResult.entities.$instance.Stop[0].text;
+
+            const StopDetail = {};
+            if (bus && stop) {
+                StopDetail.stop = stop;
+                StopDetail.bus = bus;
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('searchDialog', StopDetail);
+            }
+            else if (bus) {
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('searchDialog', StopDetail);
+            }
+
+
             //return await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.ExpectingInput);
             const messageText = "Bạn muốn bắt xe bus số mấy?"
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -169,8 +191,10 @@ class SearchDialog extends CancelAndHelpDialog {
         }
 
         if (flag) {
+
             prompt = "Bạn cần giúp gì thêm không?";
         }
+        
         return await stepContext.endDialog(prompt);
     }
 

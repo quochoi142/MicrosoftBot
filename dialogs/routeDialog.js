@@ -141,7 +141,7 @@ class RouteDialog extends CancelAndHelpDialog {
     async originStep(stepContext) {
 
         const route = stepContext.options;
-        route.destination = stepContext.result;
+
 
         if (!route.origin) {
             const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
@@ -155,6 +155,8 @@ class RouteDialog extends CancelAndHelpDialog {
             const from = luis.getFromEntities(luisResult);
             const to = luis.getToEntities(luisResult);
 
+            console.log(to);
+            console.log(from);
             const routeDetails = {};
             if (from && to) {
                 routeDetails.origin = from;
@@ -162,11 +164,18 @@ class RouteDialog extends CancelAndHelpDialog {
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-            else if (from) {
+            else if (from && !to) {
                 await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
+            else if (!from && to) {
+                route.destination = to;
+            }
+            else if (!from && !to) {
+                route.destination = stepContext.result;
+            }
+
 
 
 
@@ -251,9 +260,6 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
         // code tìm đường nằm trong đây
-        //if ('Đúng' == stepContext.result || 'đúng' == stepContext.result || "\"Đúng\"" == stepContext.result) {
-        var result = stepContext.options;
-        result.origin = stepContext.result;
 
 
         // check From and To to Restart routeDialogs
@@ -264,15 +270,28 @@ class RouteDialog extends CancelAndHelpDialog {
         const luisResult = await luis.executeLuisQuery(stepContext.context);
         const from = luis.getFromEntities(luisResult);
         const to = luis.getToEntities(luisResult);
-        console.log(to);
-        console.log(from);
+
         const routeDetails = {};
-        if (to && !from) {
+        var result = stepContext.options;
+
+        if (from && to) {
+            result.origin = from;
+            result.destination = to;
+        }
+        else if (to && !from) {
             routeDetails.destination = result.destination;
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
             return await stepContext.beginDialog('routeDialog', routeDetails);
         }
+        else if (from && !to) {
+            result.origin = from;
+        }
+        else if (!from && !to) {
+
+            result.origin = stepContext.result;
+        }
+
 
 
 
@@ -285,7 +304,8 @@ class RouteDialog extends CancelAndHelpDialog {
 
         try {
             const response = await fetch(utf8.encode(http_request));
-
+            
+           
             const json = await response.json();
             if (response.status != 200 || json.routes.length == 0) {
                 prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không?';
@@ -318,9 +338,12 @@ class RouteDialog extends CancelAndHelpDialog {
                 };
 
                 var data;
+                
                 for (var i = 0; i < urls.length; i++) {
                     const response = await fetch(urls[i], requestOptions)
                     data = await response.json();
+                    console.log('lỗi');
+                    console.log(data);////////////
                     if (data.routes.length) {
                         break;
                     }
@@ -357,6 +380,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     }
                     polylines.push(utils.getPolylineGGMap(step.polyline))
                     duration = duration + step.travelSummary.duration;
+                    
                     length = length + step.travelSummary.length;
                     var pivot = '';
 
