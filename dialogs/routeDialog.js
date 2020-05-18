@@ -304,8 +304,8 @@ class RouteDialog extends CancelAndHelpDialog {
 
         try {
             const response = await fetch(utf8.encode(http_request));
-            
-           
+
+
             const json = await response.json();
             if (response.status != 200 || json.routes.length == 0) {
                 prompt = 'Không tìm thấy đường đi bạn có thể cung cấp địa chỉ cụ thể hơn không?';
@@ -326,7 +326,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 urls.push('https://transit.router.hereapi.com/v8/routes?changes=1&pedestrian[speed]=0.5&lang=vi&modes=bus&pedestrian[maxDistance]=1000&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
                 urls.push('https://transit.router.hereapi.com/v8/routes?pedestrian[speed]=0.5&lang=vi&modes=bus&origin=' + geoOrigin + '&destination=' + geoDest + '&return=intermediate,polyline,travelSummary');
 
-                //var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
+                var urlImage = 'https://image.maps.ls.hereapi.com/mia/1.6/route?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
 
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
@@ -338,12 +338,12 @@ class RouteDialog extends CancelAndHelpDialog {
                 };
 
                 var data;
-                
+
                 for (var i = 0; i < urls.length; i++) {
                     const response = await fetch(urls[i], requestOptions)
                     data = await response.json();
                     console.log('lỗi');
-                    console.log(data);////////////
+                    console.log(data);
                     if (data.routes.length) {
                         break;
                     }
@@ -380,7 +380,7 @@ class RouteDialog extends CancelAndHelpDialog {
                     }
                     polylines.push(utils.getPolylineGGMap(step.polyline))
                     duration = duration + step.travelSummary.duration;
-                    
+
                     length = length + step.travelSummary.length;
                     var pivot = '';
 
@@ -476,12 +476,30 @@ class RouteDialog extends CancelAndHelpDialog {
                     steps: instuctions
                 }
 
-                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                /* await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                  for (var i = 0; i < instuctions.length; i++) {
-                     
-                     await stepContext.context.sendActivity(instuctions[i].step)
+                     // await stepContext.context.sendActivity(instuctions[i].instuction, instuctions[i].instuction, InputHints.IgnoringInput);
  
-                 }
+ 
+                     // const url = encodeUrl(instuctions[i].urlImage);
+ 
+                     // await stepContext.context.sendActivity({
+                     //     text: instuctions[i].instuction,
+                     //     channelData: {
+                     //         "attachment": {
+                     //             "type": "image",
+                     //             "payload": {
+                     //                 "url": url,
+                     //                 "is_reusable": true
+                     //             }
+                     //         }
+                     //     }
+                     // });
+ 
+                     // await utils.sleep(500);
+                     await stepContext.context.sendActivity(instuctions[i])
+ 
+                 }*/
 
                 // instuctions.forEach(async (element) => {
                 //     await stepContext.context.sendActivity(element.instuction, element.instuction, InputHints.IgnoringInput);
@@ -508,6 +526,11 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 //     await utils.sleep(500);
                 // })
+                
+                await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
+                for (var i = 0; i < instuctions.length; i++) {
+                    await stepContext.context.sendActivity(instuctions[i].step)
+                }
 
                 const id = utils.getIdUser(stepContext.context);
                 await utils.savePolyline(id, dataRoute);
