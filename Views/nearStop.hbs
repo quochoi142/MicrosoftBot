@@ -24,9 +24,9 @@
 
 <body>
   <div id="map"></div>
-  <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.25.3/moment.min.js"></script>
+
   <script>
 
     // This example creates a 2-pixel-wide red polyline showing the path of
@@ -41,57 +41,71 @@
         console.log(snapshot.val())
       });
     } */
-    var myInfo, myMaker;
+    var myInfo, myMaker, marker, info, content;
 
     function initMap() {
 
-      initFireBase();
-      const id = '{{id}}';
 
-      firebase.database().ref('users/' + id + '/dataNearestStop').once('value').then(function (snapshot) {
-        const data = snapshot.val();
+      $.ajax(
+        {
+          url: "https://transit.hereapi.com/v8/departures?lang=vi&ids={{id}}",
+          type: 'GET',
+          headers: { "Authorization": 'Bearer {{token}}' },
+          error: function (err) {
+            console.log('Error!', err)
+          },
+          success: function (res) {
+            const data = res.boards[0];
 
-        map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          center: data[0].geo,
-          mapTypeId: 'roadmap',
-          disableDefaultUI: true,
+            map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 17,
+              center: data.place.location,
+              mapTypeId: 'roadmap',
+              disableDefaultUI: true,
+              clickableIcons: false
+            });
+            var mapOptions = {
+              styles: [
+                {
+                  featureType: "transit.station.bus",
+                  stylers: [
+                    { visibility: "off" }
+                  ]
+                }
+              ]
+            };
+            map.setOptions(mapOptions);
+            addYourLocationButton();
+
+            marker = new google.maps.Marker({
+              map: map,
+              animation: google.maps.Animation.DROP,
+              position: data.place.location
+            })
+            info = new google.maps.InfoWindow();
+            content = '<div><b>Trạm ' + data.place.name + '</b><br>';
+            data.departures.forEach(e => {
+              var time = moment(e.time, "YYYY-MM-DDTHH:mm:ssZ").format("HH:mm")
+              content += '<span><b>' + time + '</b>  Bus ' + e.transport.name + '</span><br>'
+            })
+            content = content.substring(0, content.length - 5) + '</div>'
+            info.setContent(content);
+            info.open(map, marker);
+
+            marker.addListener('click', function () {
+                
+              info.open(map, marker);
+
+            });
+
+            // console.log(moment())
+          }
         });
-        addYourLocationButton();
-
-       
 
 
-        data.forEach(e => {
-          var marker = new google.maps.Marker({
-            map: map,
-            animation: google.maps.Animation.DROP,
-            position: e.geo
-          })
-          var infowindow = new google.maps.InfoWindow();
-          infowindow.setContent('<div>' + e.name + '</div>');
-          infowindow.open(map, marker);
-        });
-
-
-      });
     }
 
 
-    function initFireBase() {
-      const firebaseConfig = {
-        apiKey: "AIzaSyBDVEejsbGSQW8pxMIT22ZxkJUg859LKRo",
-        authDomain: "botbus-a0a7e.firebaseapp.com",
-        databaseURL: "https://botbus-a0a7e.firebaseio.com",
-        projectId: "botbus-a0a7e",
-        storageBucket: "botbus-a0a7e.appspot.com",
-        messagingSenderId: "380831720444",
-        appId: "1:380831720444:web:9604e3824585138816c879",
-        measurementId: "G-26WE7HBV9G"
-      };
-      firebase.initializeApp(firebaseConfig);
-
-    }
 
     function addYourLocationButton() {
       var controlDiv = document.createElement('div');
@@ -167,10 +181,14 @@
       controlDiv.index = 1;
       map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
     }
+
+
+
   </script>
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&callback=initMap">
     </script>
+
 </body>
 
 </html>

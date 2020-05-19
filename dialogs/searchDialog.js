@@ -129,9 +129,9 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
                             for (var j = 0; j < departures.length; j++) {
-                                if (result0.bus.match('(\\d+)')[0]== departures[i].transport.name) {
+                                if (result0.bus.match('(\\d+)')[0]== departures[j].transport.name) {
                                     isExistsBus=true
-                                    var time = departures[i].time;
+                                    var time = departures[j].time;
                                     const moment = require('moment')
                                     var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
 
@@ -148,7 +148,7 @@ class SearchDialog extends CancelAndHelpDialog {
                                     }
                                     time = (time == "") ? "1'" : time;
 
-                                    msg = "Xe bus số " + departures[i].transport.name + " xuất phát từ " + departures[i].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
                                     break;
                                 }
                             }

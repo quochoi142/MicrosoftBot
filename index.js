@@ -147,6 +147,7 @@ server.get('/route',(req,res)=>{
 server.get('/nearstop',(req,res)=>{
     res.render('./Views/nearStop', { 
         id: req.params.id,
+        token:process.env.token
      })
 });
 

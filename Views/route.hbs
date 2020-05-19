@@ -67,6 +67,17 @@
           disableDefaultUI: true,
         });
 
+        var mapOptions = {
+          styles: [
+            {
+              featureType: "transit.station.bus",
+              stylers: [
+                { visibility: "off" }
+              ]
+            }
+          ]
+        };
+        map.setOptions(mapOptions);
         addYourLocationButton();
 
         //draw polylines
@@ -175,7 +186,7 @@
                 selectedId.style.color = 'red'
               } else {
 
-                const selectedId = document.getElementById(i+"")
+                const selectedId = document.getElementById(i + "")
                 selectedId.textContent = data.steps[i].step
                 selectedId.style.color = 'black'
               }
