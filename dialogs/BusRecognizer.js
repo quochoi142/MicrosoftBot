@@ -56,6 +56,24 @@ class BusRecognizer {
         return toValue;
     }
 
+    getBusEntities(result) {
+        let busValue;
+        if (result.entities.$instance.To) {
+            busValue = result.entities.$instance.Bus[0].text;
+        }
+
+        return busValue;
+    }
+
+    getStopEntities(result) {
+        let stopValue;
+        if (result.entities.$instance.To) {
+            stopValue = result.entities.$instance.Stop[0].text;
+        }
+
+        return stopValue;
+    }
+
     /**
      * This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
      * TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.

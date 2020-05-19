@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
+const { LuisRecognizer } = require('botbuilder-ai');
+const { BusRecognizer } = require('../dialogs/BusRecognizer');
 const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
@@ -48,11 +49,6 @@ class SearchDialog extends CancelAndHelpDialog {
             const locationCard = CardFactory.adaptiveCard(LocationCard);
             await stepContext.context.sendActivity({ attachments: [locationCard] });
 
-            const locationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
-            const locationMessageText_Example = 'VD: tra cứu xe bus tại trạm suối tiên';
-            await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.IgnoringInput);
-            await stepContext.context.sendActivity(locationMessageText_Example, locationMessageText_Example, InputHints.IgnoringInput);
-
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -63,8 +59,39 @@ class SearchDialog extends CancelAndHelpDialog {
 
     async GetBusNum(stepContext) {
         const result = stepContext.options;
-        result.stop = stepContext.result;
-        if (!result.stop) {
+
+
+        if (!result.bus) {
+
+            const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+            const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+            const luis = new BusRecognizer(luisConfig);
+
+            // check From and To to Restart searchDialogs 
+            const luisResult = await luis.executeLuisQuery(stepContext.context);
+            const bus = luis.getBusEntities(luisResult);
+            const stop = luis.getStopEntities(luisResult);
+
+            const StopDetail = {};
+            if (bus && stop) {
+                StopDetail.stop = stop;
+                StopDetail.bus = bus;
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('searchDialog', StopDetail);
+            }
+            else if (bus && !stop) {
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết tên trạm thay vì số xe', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('searchDialog', StopDetail);
+            }
+            else if (!bus && stop) {
+                result.stop = stop;
+            }
+            else if (!bus && !stop) {
+                result.stop = stepContext.result;
+            }
+
+
             //return await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.ExpectingInput);
             const messageText = "Bạn muốn bắt xe bus số mấy?"
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -75,8 +102,37 @@ class SearchDialog extends CancelAndHelpDialog {
 
     async SearchStep(stepContext) {
         const result0 = stepContext.options
-        result0.bus = stepContext.result
-        const place = result0.stop
+
+        const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+        const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+        const luis = new BusRecognizer(luisConfig);
+
+        // check From and To to Restart searchDialogs 
+        const luisResult = await luis.executeLuisQuery(stepContext.context);
+        const bus = luis.getBusEntities(luisResult);
+        const stop = luis.getStopEntities(luisResult);
+
+        const StopDetail = {};
+        if (bus && stop) {
+            StopDetail.stop = stop;
+            StopDetail.bus = bus;
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('searchDialog', StopDetail);
+        }
+        else if (!bus && stop) {
+            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết số xe thay vì tên trạm', '', InputHints.IgnoringInput);
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('searchDialog', StopDetail);
+        }
+        else if (bus && !stop) {
+            result0.bus = bus;
+        }
+        else if (!bus && !stop) {
+            result0.bus = stepContext.result;
+        }
+
+
+        const place = result0.stop;
         var prompt = '';
         var flag = true;
 
@@ -101,7 +157,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
             }
-
+            console.log(flag);
             if (flag == true) {
                 const url = 'https://transit.hereapi.com/v8/departures?lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
                 var myHeaders = new fetch.Headers();
@@ -120,10 +176,9 @@ class SearchDialog extends CancelAndHelpDialog {
                     flag = false;
                 } else {
                     const boards = data.boards;
-                    var isExistsBus =false;
+                    var isExistsBus = false;
                     for (var i = 0; i < boards.length; i++) {
                         var msg = '';
-
                         if (boards[i].place.name.toLowerCase() == place.toLowerCase()) {
                             const departures = boards[i].departures;
 
@@ -148,7 +203,7 @@ class SearchDialog extends CancelAndHelpDialog {
                                     }
                                     time = (time == "") ? "1'" : time;
 
-                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[j].place.name;
                                     break;
                                 }
                             }
@@ -160,7 +215,7 @@ class SearchDialog extends CancelAndHelpDialog {
                         }
 
                     }
-                    if(!isExistsBus){
+                    if (!isExistsBus) {
                         await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
                     }
                 }
@@ -174,8 +229,10 @@ class SearchDialog extends CancelAndHelpDialog {
         }
 
         if (flag) {
+
             prompt = "Bạn cần giúp gì thêm không?";
         }
+
         return await stepContext.endDialog(prompt);
     }
 
