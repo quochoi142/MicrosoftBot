@@ -151,6 +151,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 var firebase = utils.getFirebase();
                 firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
                     token = snap.val();
+                    this.token = token;
                     var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
                     setTimeout(function () {
                         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
@@ -236,8 +237,15 @@ class StopArounDialog extends CancelAndHelpDialog {
                 var map = utils.openMap(id);
 
                 await map.then(geo => {
+                    firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                        if(this.token==snap.val()){
+                            result.origin = geo;
+                            this.isSelected=true;
+                        }
+                        
 
-                    result.origin = geo;
+                    })
+                   
                 })
             } catch (error) {
                 stepContext.context.sendActivity('ở đây', '', InputHints.IgnoringInput);
@@ -249,6 +257,9 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
     async searchStopsStep(stepContext) {
+        if(this.isSelected==false){
+            return await stepContext.endDialog();
+        }
         stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
@@ -315,14 +326,14 @@ class StopArounDialog extends CancelAndHelpDialog {
                             buttons: [
                                 {
                                     "type": "web_url",
-                                    "url": 'https://botbusvqh.herokuapp.com/nearstop?id='+data.stations[i].place.id,
+                                    "url": 'https://botbusvqh.herokuapp.com/nearstop?id=' + data.stations[i].place.id,
                                     "title": "Vị trí"
                                 }
 
                             ]
                         })
 
-                    
+
                     }
 
                     await utils.saveNearestStop(id, stepContext.options.origin);

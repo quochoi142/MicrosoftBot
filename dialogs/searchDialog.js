@@ -138,7 +138,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
         try {
             var result;
-
+            var No_bus;
             const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
 
             const response = await fetch(utf8.encode(urlRequestGeo));
@@ -159,7 +159,7 @@ class SearchDialog extends CancelAndHelpDialog {
             }
             console.log(flag);
             if (flag == true) {
-                const url = 'https://transit.hereapi.com/v8/departures?lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
+                const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
                 var myHeaders = new fetch.Headers();
                 myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
@@ -184,8 +184,9 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
                             for (var j = 0; j < departures.length; j++) {
-                                if (result0.bus.match('(\\d+)')[0]== departures[j].transport.name) {
-                                    isExistsBus=true
+                                if (result0.bus.match('(\\d+)')[0] == parseInt( departures[j].transport.name)) {
+                                    isExistsBus = true
+                                    No_bus=departures[j].transport.name;
                                     var time = departures[j].time;
                                     const moment = require('moment')
                                     var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
@@ -221,6 +222,16 @@ class SearchDialog extends CancelAndHelpDialog {
                 }
 
             }
+            if(!No_bus){
+                No_bus=result0.bus;
+            }
+            const dataDeparture = {
+                bus: No_bus,
+                departure: result0.stop
+            }
+            const idUser=utils.getIdUser(stepContext.context);
+            await utils.saveDepartures(idUser, dataDeparture);
+
 
         } catch (err) {
             console.log(err);
