@@ -86,7 +86,7 @@ class MainDialog extends ComponentDialog {
         //để dành chạy ở local
         /* const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] }); */
-        
+       
 
         await stepContext.context.sendActivity({
             channelData: {
@@ -190,7 +190,6 @@ class MainDialog extends ComponentDialog {
 
             }
             default: {
-
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
@@ -208,6 +207,9 @@ class MainDialog extends ComponentDialog {
             return await stepContext.next(stepContext.result);
 
         }
+        if (stepContext.result == "") {
+            return await stepContext.endDialog();
+        }
         else {
 
             const byeMessageText = 'Chào tạm biệt...';
@@ -221,7 +223,7 @@ class MainDialog extends ComponentDialog {
 
         const prompt = stepContext.result;
         welcome = prompt;
-        
+
         //để dành chạy ở local
         //await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
 

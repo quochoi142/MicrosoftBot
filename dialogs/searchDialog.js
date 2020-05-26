@@ -204,7 +204,7 @@ class SearchDialog extends CancelAndHelpDialog {
                                     }
                                     time = (time == "") ? "1'" : time;
 
-                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[j].place.name;
+                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
                                     break;
                                 }
                             }
