@@ -151,21 +151,22 @@ class StopArounDialog extends CancelAndHelpDialog {
                 var firebase = utils.getFirebase();
                 firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
                     token = snap.val();
-                    this.token = token;
                     var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
                     setTimeout(function () {
                         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
 
                     }, 5 * 60000);
-                    resolve(url)
+                    resolve({ url, token })
 
                 })
 
 
             });
             var myUrl;
-            await promise.then(url => {
-                myUrl = url;
+            var myToken;
+            await promise.then(res => {
+                myUrl = res.url;
+                myToken = res.token
             }).catch(err => {
                 console.log(err);
             })
@@ -234,18 +235,18 @@ class StopArounDialog extends CancelAndHelpDialog {
             }
 
             try {
-                var map = utils.openMap(id);
+                var map = utils.openMap(id, myToken);
 
-                await map.then(geo => {
-                    firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
-                        if(this.token==snap.val()){
-                            result.origin = geo;
-                            this.isSelected=true;
-                        }
-                        
+                await map.then( async res => {
 
-                    })
-                   
+                    var token = await utils.getTokenbyId(id)
+                    if (res.token != token) {
+                        result.origin = null;
+                    }else{
+                        result.origin = res.location;
+                    }
+
+
                 })
             } catch (error) {
                 stepContext.context.sendActivity('ở đây', '', InputHints.IgnoringInput);
@@ -257,14 +258,15 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
     async searchStopsStep(stepContext) {
-        if(this.isSelected==false){
+        if (stepContext.result == null) {
             return await stepContext.endDialog();
         }
-        stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
+
+        //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         var flag = true;
-        stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
+        //stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
         try {
             var result;
             if (utils.isGeo(place) == true) {

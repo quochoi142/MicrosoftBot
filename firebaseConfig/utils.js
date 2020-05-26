@@ -111,6 +111,14 @@ const utils = {
             });
 
     },
+    getTokenbyId: async (id) => {
+        return await firebase.database().ref('users/' + id + '/token').once('value')
+            .then(function (snap) {
+                
+                return snap.val();
+            });
+    }
+    ,
 
     readRoute: async (id) => {
         if (!firebase.apps.length) {
@@ -233,7 +241,7 @@ const utils = {
     },
 
 
-    openMap: (id) => {
+    openMap: (id, token) => {
         var promise;
 
         promise = new Promise(function (resolve, reject) {
@@ -241,7 +249,7 @@ const utils = {
             firebase.database().ref('users/' + id + '/location').on('value', async function (snap) {
 
                 if (i) {
-                    resolve(snap.val());
+                    resolve({ location: snap.val(), token });
 
                 }
                 i = true;
@@ -302,71 +310,71 @@ const utils = {
 
 
     saveNearestStop: (id, data) => {
-              //initialize firebase
-              var db = firebase.database();
+        //initialize firebase
+        var db = firebase.database();
 
-              //initialize route
-              const obj = {};
-              obj.location = data;
-              obj.time = Date.now();
-      
-              //save db, each user contain the 5 latest route, 
-              var refFirebase = firebase.database().ref('users/' + id + '/stops');
-              refFirebase.once('value').then(function (snapshot) {
-                  const arr = snapshot.val();
-                  const leng = snapshot.numChildren();
-      
-                  if (arr && leng > 4) {
-                      refFirebase.orderByChild('time').limitToFirst(1).once('value').then(function (data) {
-                          var key = '';
-                          data.forEach(function (childData) {
-                              key = childData.key;
-                          });
-      
-                          console.log(key);
-                          firebase.database().ref('users/' + id).child(key).set(obj)
-                      });
-                  }
-                  else {
-                      const x = refFirebase.push();
-                      x.set(obj);
-                  }
-              });
+        //initialize route
+        const obj = {};
+        obj.location = data;
+        obj.time = Date.now();
 
-        
+        //save db, each user contain the 5 latest route, 
+        var refFirebase = firebase.database().ref('users/' + id + '/stops');
+        refFirebase.once('value').then(function (snapshot) {
+            const arr = snapshot.val();
+            const leng = snapshot.numChildren();
+
+            if (arr && leng > 4) {
+                refFirebase.orderByChild('time').limitToFirst(1).once('value').then(function (data) {
+                    var key = '';
+                    data.forEach(function (childData) {
+                        key = childData.key;
+                    });
+
+                    console.log(key);
+                    firebase.database().ref('users/' + id).child(key).set(obj)
+                });
+            }
+            else {
+                const x = refFirebase.push();
+                x.set(obj);
+            }
+        });
+
+
     },
 
-    saveDepartures:(id, data)=>{
-          //initialize firebase
-          var db = firebase.database();
+    saveDepartures: (id, data) => {
+        //initialize firebase
+        var db = firebase.database();
 
-          //initialize route
-          const obj = {};
-          obj.data = data;
-          obj.time = Date.now();
-  
-          //save db, each user contain the 5 latest route, 
-          var refFirebase = firebase.database().ref('users/' + id + '/departures');
-          refFirebase.once('value').then(function (snapshot) {
-              const arr = snapshot.val();
-              const leng = snapshot.numChildren();
-  
-              if (arr && leng > 4) {
-                  refFirebase.orderByChild('time').limitToFirst(1).once('value').then(function (data) {
-                      var key = '';
-                      data.forEach(function (childData) {
-                          key = childData.key;
-                      });
-  
-                      console.log(key);
-                      firebase.database().ref('users/' + id).child(key).set(obj)
-                  });
-              }
-              else {
-                  const x = refFirebase.push();
-                  x.set(obj);
-              }
-          });
+        //initialize route
+        const obj = {};
+        obj.data = data;
+        obj.time = Date.now();
+
+        //save db, each user contain the 5 latest route, 
+        var refFirebase = firebase.database().ref('users/' + id + '/departures');
+        refFirebase.once('value').then(function (snapshot) {
+            const arr = snapshot.val();
+            const leng = snapshot.numChildren();
+
+            if (arr && leng > 4) {
+                refFirebase.orderByChild('time').limitToFirst(1).once('value').then(function (data) {
+                    var key = '';
+                    data.forEach(function (childData) {
+                        key = childData.key;
+                    });
+
+                    console.log(key);
+                    firebase.database().ref('users/' + id).child(key).set(obj)
+                });
+            }
+            else {
+                const x = refFirebase.push();
+                x.set(obj);
+            }
+        });
     }
 
 
