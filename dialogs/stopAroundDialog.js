@@ -237,12 +237,12 @@ class StopArounDialog extends CancelAndHelpDialog {
             try {
                 var map = utils.openMap(id, myToken);
 
-                await map.then( async res => {
+                await map.then(async res => {
 
                     var token = await utils.getTokenbyId(id)
                     if (res.token != token) {
                         result.origin = null;
-                    }else{
+                    } else {
                         result.origin = res.location;
                     }
 
@@ -272,6 +272,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             if (utils.isGeo(place) == true) {
 
                 result = utils.getGeo(place)
+
             } else {
                 const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
 
@@ -309,6 +310,11 @@ class StopArounDialog extends CancelAndHelpDialog {
                     prompt = 'Không tìm thấy trạm xung quanh vị trí ' + result.address;
                     flag = false;
                 } else {
+                    if (utils.isGeo(place) == true) {
+
+                        await stepContext.context.sendActivity(result.address)
+
+                    }
                     var urlGetImage = 'https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
                     var i = 0;
                     //var dataStations = [];
