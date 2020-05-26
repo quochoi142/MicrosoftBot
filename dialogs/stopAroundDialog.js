@@ -259,7 +259,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     async searchStopsStep(stepContext) {
         if (stepContext.result == null) {
-            return await stepContext.endDialog();
+            return await stepContext.endDialog("");
         }
 
         //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
