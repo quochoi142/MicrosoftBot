@@ -6,7 +6,7 @@ const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
-const LocationCard = require('../resources/locationCard.json');
+const StopCard = require('../resources/locationCard.json');
 const ConfirmLocationCard = require('../resources/confirmLocationCard.json');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
@@ -43,11 +43,67 @@ class SearchDialog extends CancelAndHelpDialog {
         //code lấy vị trí để tra cứu trong đây
         const result = stepContext.options;
         if (!result.stop) {
-            const locationMessageText = 'Trạm bạn tra cứu là?';
-            await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
 
-            const locationCard = CardFactory.adaptiveCard(LocationCard);
-            await stepContext.context.sendActivity({ attachments: [locationCard] });
+            // Get origin from Firebase
+            try {
+
+                const id = await utils.getIdUser(stepContext.context);
+                var myStop = await utils.readStop(id);
+            } catch (error) {
+                console.log(error);
+            }
+
+            //Init card destination
+            var stopCard = null;
+
+
+            try {
+                const StopJson = {
+
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.0",
+                    "body": [
+                        {
+                            "type": "Image",
+                            "url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                            "width": "stretch",
+                            "style": "default"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": myStop[0].origin,
+                            "data": myStop[0].origin
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": myStop[1].origin,
+                            "data": myStop[1].origin,
+
+                        },
+                        {
+                            "type": "Action.Submit",
+                            "title": myStop[2].origin,
+                            "data": myStop[2].origin
+
+                        }
+                    ]
+
+                };
+                stopCard = CardFactory.adaptiveCard(StopJson);
+
+            } catch (error) {
+                stopCard = CardFactory.adaptiveCard(StopCard);
+            }
+
+            //Send message
+            const stopMessageText = 'Trạm bạn tra cứu là?';
+            await stepContext.context.sendActivity(stopMessageText, stopMessageText, InputHints.IgnoringInput);
+
+            await stepContext.context.sendActivity({ attachments: [stopCard] });
 
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -157,7 +213,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
             }
-            console.log(flag);
+
             if (flag == true) {
                 const url = 'https://transit.hereapi.com/v8/departures?lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
                 var myHeaders = new fetch.Headers();
@@ -184,8 +240,8 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
                             for (var j = 0; j < departures.length; j++) {
-                                if (result0.bus.match('(\\d+)')[0]== departures[j].transport.name) {
-                                    isExistsBus=true
+                                if (result0.bus.match('(\\d+)')[0] == departures[j].transport.name) {
+                                    isExistsBus = true
                                     var time = departures[j].time;
                                     const moment = require('moment')
                                     var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
