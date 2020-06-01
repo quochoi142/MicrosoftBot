@@ -175,6 +175,7 @@ server.get('/api/notify', async (req, res) => {
         await adapter.continueConversation(conversationReference, async turnContext => {
             const fetch = require("node-fetch");
             var encodeUrl = require('encodeurl');
+            var stringSimilarity = require('string-similarity');
             const geo = req.params.geo
             const place = req.params.place
             const bus = req.params.bus
@@ -198,7 +199,7 @@ server.get('/api/notify', async (req, res) => {
                 var isExistsBus = false;
                 for (var i = 0; i < boards.length; i++) {
                     var msg = '';
-                    if (boards[i].place.name.toLowerCase() == place.toLowerCase()) {
+                    if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
                         const departures = boards[i].departures;
 
 

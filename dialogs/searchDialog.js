@@ -17,7 +17,7 @@ const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
 var encodeUrl = require('encodeurl')
-
+var stringSimilarity = require('string-similarity');
 
 class SearchDialog extends CancelAndHelpDialog {
     constructor(id) {
@@ -180,7 +180,7 @@ class SearchDialog extends CancelAndHelpDialog {
                     var isExistsBus = false;
                     for (var i = 0; i < boards.length; i++) {
                         var msg = '';
-                        if (boards[i].place.name.toLowerCase() == place.toLowerCase()) {
+                        if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
                             const departures = boards[i].departures;
 
 
@@ -219,6 +219,7 @@ class SearchDialog extends CancelAndHelpDialog {
                     }
                     if (!isExistsBus) {
                         await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
+                        return await stepContext.next(false)
                     }
                 }
 
@@ -270,10 +271,11 @@ class SearchDialog extends CancelAndHelpDialog {
                     time = 172200000;
                     break;
             }
-            setTimeout(utils.notify, time, this.geo, this.place,this.bus, id)
+            setTimeout(utils.notify, time, this.geo, this.place, this.bus, id)
             fb.database().ref('users/' + id).child("/noti").set(true)
+            await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
         }
-        await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
+
         const prompt = "Bạn cần giúp gì thêm không?";
 
         return await stepContext.endDialog(prompt);
