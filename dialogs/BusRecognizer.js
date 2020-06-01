@@ -58,7 +58,7 @@ class BusRecognizer {
 
     getBusEntities(result) {
         let busValue;
-        if (result.entities.$instance.To) {
+        if (result.entities.$instance.Bus) {
             busValue = result.entities.$instance.Bus[0].text;
         }
 
@@ -67,7 +67,7 @@ class BusRecognizer {
 
     getStopEntities(result) {
         let stopValue;
-        if (result.entities.$instance.To) {
+        if (result.entities.$instance.Stop) {
             stopValue = result.entities.$instance.Stop[0].text;
         }
 

@@ -114,7 +114,7 @@ const utils = {
     getTokenbyId: async (id) => {
         return await firebase.database().ref('users/' + id + '/token').once('value')
             .then(function (snap) {
-                
+
                 return snap.val();
             });
     }
@@ -375,6 +375,30 @@ const utils = {
                 x.set(obj);
             }
         });
+    },
+
+    notify:  (geo, place, bus, id) => {
+        var encodeUrl = require('encodeurl');
+        var refFirebase = firebase.database().ref('users/' + id + '/noti');
+        refFirebase.once('value').then(function (snapshot) {
+            if (snapshot.val() == true) {
+                const date = new Date()
+                const day = date.getDay();
+                if (day > 0 && day < 6) {
+                    const fetch = require("node-fetch");
+                    var requestOptions = {
+                        method: 'GET',
+                    };
+                    fetch(encodeUrl("http://localhost:3978/api/notify?geo=" + geo.lat + ',' + geo.lng + "&place=" + place + "&bus=" + bus), requestOptions)
+                    
+                    var time = (day == 5) ? 258600000 : 85800000;
+                    setTimeout(utils.notify, time, geo, place, bus, id)
+                }
+
+            }
+        })
+       
+
     }
 
 

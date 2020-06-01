@@ -3,7 +3,7 @@
 const { LuisRecognizer } = require('botbuilder-ai');
 const { BusRecognizer } = require('../dialogs/BusRecognizer');
 const { InputHints, MessageFactory } = require('botbuilder');
-const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const { TextPrompt, WaterfallDialog, ConfirmPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
 const LocationCard = require('../resources/locationCard.json');
@@ -12,7 +12,7 @@ const ConfirmLocationCard = require('../resources/confirmLocationCard.json');
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
 const LOCATION = 'location_prompt';
-
+const CONFIRM = "confirm_prompt"
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
@@ -24,11 +24,12 @@ class SearchDialog extends CancelAndHelpDialog {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ConfirmPrompt(CONFIRM))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.GetStopStep.bind(this),
                 this.GetBusNum.bind(this),
-                this.SearchStep.bind(this)
-
+                this.SearchStep.bind(this),
+                this.confirmNotify.bind(this)
 
             ]));
 
@@ -114,10 +115,8 @@ class SearchDialog extends CancelAndHelpDialog {
 
         const StopDetail = {};
         if (bus && stop) {
-            StopDetail.stop = stop;
-            StopDetail.bus = bus;
-            await stepContext.endDialog();
-            return await stepContext.beginDialog('searchDialog', StopDetail);
+            result0.stop = stop;
+            result0.bus = bus;
         }
         else if (!bus && stop) {
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết số xe thay vì tên trạm', '', InputHints.IgnoringInput);
@@ -152,7 +151,9 @@ class SearchDialog extends CancelAndHelpDialog {
                 result = {};
                 result.address = json.candidates[0].formatted_address;
                 result.geo = json.candidates[0].geometry.location;
-
+                this.geo = result.geo
+                this.place = place
+                this.bus = result0.bus
                 //request get departures around the place
 
 
@@ -184,9 +185,9 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
                             for (var j = 0; j < departures.length; j++) {
-                                if (result0.bus.match('(\\d+)')[0] == parseInt( departures[j].transport.name)) {
+                                if (result0.bus.match('(\\d+)')[0] == parseInt(departures[j].transport.name)) {
                                     isExistsBus = true
-                                    No_bus=departures[j].transport.name;
+                                    No_bus = departures[j].transport.name;
                                     var time = departures[j].time;
                                     const moment = require('moment')
                                     var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
@@ -222,14 +223,14 @@ class SearchDialog extends CancelAndHelpDialog {
                 }
 
             }
-            if(!No_bus){
-                No_bus=result0.bus;
+            if (!No_bus) {
+                No_bus = result0.bus;
             }
             const dataDeparture = {
                 bus: No_bus,
                 departure: result0.stop
             }
-            const idUser=utils.getIdUser(stepContext.context);
+            const idUser = utils.getIdUser(stepContext.context);
             await utils.saveDepartures(idUser, dataDeparture);
 
 
@@ -243,6 +244,37 @@ class SearchDialog extends CancelAndHelpDialog {
 
             prompt = "Bạn cần giúp gì thêm không?";
         }
+
+        //return await stepContext.endDialog(prompt);
+        return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
+    }
+
+    async confirmNotify(stepContext) {
+        const result = stepContext.result;
+        if (result == true) {
+            const fb = utils.getFirebase();
+            const id = utils.getIdUser(stepContext.context)
+            var time;
+            switch (new Date().getDay()) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    time = 85800000;
+                    break;
+                case 5:
+                    time = 258600000;
+                    break;
+                case 6:
+                    time = 172200000;
+                    break;
+            }
+            setTimeout(utils.notify, time, this.geo, this.place,this.bus, id)
+            fb.database().ref('users/' + id).child("/noti").set(true)
+        }
+        await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
+        const prompt = "Bạn cần giúp gì thêm không?";
 
         return await stepContext.endDialog(prompt);
     }
