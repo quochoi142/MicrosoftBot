@@ -156,15 +156,17 @@ class StopArounDialog extends CancelAndHelpDialog {
                         firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
 
                     }, 5 * 60000);
-                    resolve(url)
+                    resolve({ url, token })
 
                 })
 
 
             });
             var myUrl;
-            await promise.then(url => {
-                myUrl = url;
+            var myToken;
+            await promise.then(res => {
+                myUrl = res.url;
+                myToken = res.token
             }).catch(err => {
                 console.log(err);
             })
@@ -233,11 +235,18 @@ class StopArounDialog extends CancelAndHelpDialog {
             }
 
             try {
-                var map = utils.openMap(id);
+                var map = utils.openMap(id, myToken);
 
-                await map.then(geo => {
+                await map.then(async res => {
 
-                    result.origin = geo;
+                    var token = await utils.getTokenbyId(id)
+                    if (res.token != token) {
+                        result.origin = null;
+                    } else {
+                        result.origin = res.location;
+                    }
+
+
                 })
             } catch (error) {
                 stepContext.context.sendActivity('ở đây', '', InputHints.IgnoringInput);
@@ -249,16 +258,21 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
     async searchStopsStep(stepContext) {
-        stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
+        if (stepContext.result == null) {
+            return await stepContext.endDialog("");
+        }
+
+        //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         var flag = true;
-        stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
+        //stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
         try {
             var result;
             if (utils.isGeo(place) == true) {
 
                 result = utils.getGeo(place)
+
             } else {
                 const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
 
@@ -296,6 +310,11 @@ class StopArounDialog extends CancelAndHelpDialog {
                     prompt = 'Không tìm thấy trạm xung quanh vị trí ' + result.address;
                     flag = false;
                 } else {
+                    if (utils.isGeo(place) == true) {
+
+                        await stepContext.context.sendActivity(result.address)
+
+                    }
                     var urlGetImage = 'https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=a0EUQVr4TtxyS9ZkBWKSR1xonz0FUZIuSBrRIDl7UiY&h=2048&w=2048&ml=vie&ppi=250&q=100'
                     var i = 0;
                     //var dataStations = [];
@@ -315,14 +334,14 @@ class StopArounDialog extends CancelAndHelpDialog {
                             buttons: [
                                 {
                                     "type": "web_url",
-                                    "url": 'https://botbusvqh.herokuapp.com/nearstop?id='+data.stations[i].place.id,
+                                    "url": 'https://botbusvqh.herokuapp.com/nearstop?id=' + data.stations[i].place.id,
                                     "title": "Vị trí"
                                 }
 
                             ]
                         })
 
-                    
+
                     }
 
                     await utils.saveNearestStop(id, stepContext.options.origin);

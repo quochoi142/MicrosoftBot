@@ -25,8 +25,8 @@
         },
         {
             "type": "Action.Submit",
-            "title": "Suối tiên",
-            "data": "Suối tiên"
+            "title": "Vị trí hiện tại",
+            "data": "Vị trí hiện tại"
             
         }
     ]

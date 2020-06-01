@@ -152,11 +152,15 @@ class RouteDialog extends CancelAndHelpDialog {
 
 
             const luisResult = await luis.executeLuisQuery(stepContext.context);
-            const from = luis.getFromEntities(luisResult);
-            const to = luis.getToEntities(luisResult);
+            
+            var from = null;
+            var to = null;
+    
+            if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+                from = luis.getFromEntities(luisResult);
+                to = luis.getToEntities(luisResult);
+            }
 
-            console.log(to);
-            console.log(from);
             const routeDetails = {};
             if (from && to) {
                 routeDetails.origin = from;
@@ -175,9 +179,6 @@ class RouteDialog extends CancelAndHelpDialog {
             else if (!from && !to) {
                 route.destination = stepContext.result;
             }
-
-
-
 
             // Get origin from Firebase
             try {
@@ -220,8 +221,8 @@ class RouteDialog extends CancelAndHelpDialog {
                         },
                         {
                             "type": "Action.Submit",
-                            "title": myOrigin[2].origin,
-                            "data": myOrigin[2].origin
+                            "title": "Vị trí hiện tại",
+                            "data": "Vị trí hiện tại"
 
                         }
                     ]
@@ -258,42 +259,80 @@ class RouteDialog extends CancelAndHelpDialog {
     async finalStep(stepContext) {
 
 
+        var result = stepContext.options;
 
-        // code tìm đường nằm trong đây
-
-
-        // check From and To to Restart routeDialogs
         const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
         const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
         const luis = new BusRecognizer(luisConfig);
 
         const luisResult = await luis.executeLuisQuery(stepContext.context);
-        const from = luis.getFromEntities(luisResult);
-        const to = luis.getToEntities(luisResult);
+      
+        var from = null;
+        var to = null;
+
+        if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+            from = luis.getFromEntities(luisResult);
+            to = luis.getToEntities(luisResult);
+        }
 
         const routeDetails = {};
-        var result = stepContext.options;
+        if (from == "đây" || from == "nơi đây" || from == "chổ này" || from == "nơi này" || stepContext.result == "Vị trí hiện tại" || stepContext.result == "\"Vị trí hiện tại\"" || LuisRecognizer.topIntent(luisResult) == "Tại_đây") {
+            try {
+                const id = await utils.getIdUser(stepContext.context);
 
-        if (from && to) {
-            result.origin = from;
-            result.destination = to;
+                var myToken;
+                await promise.then(res => {
+                    myUrl = res.url;
+                    myToken = res.token
+                }).catch(err => {
+                    console.log(err);
+                })
+
+                var map = utils.openMap(id, myToken);
+
+                await map.then(async res => {
+
+                    var token = await utils.getTokenbyId(id)
+                    if (res.token != token) {
+                        result.origin = null;
+                    } else {
+                        result.origin = res.location;
+                    }
+
+
+                })
+            } catch (error) {
+                stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+
+                const routeDetails = {};
+                routeDetails.destination = result.destination;
+                
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
         }
-        else if (to && !from) {
-            routeDetails.destination = result.destination;
-            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
-            await stepContext.endDialog();
-            return await stepContext.beginDialog('routeDialog', routeDetails);
+        else {
+
+            // check From and To to Restart routeDialogs
+            if (from && to) {
+                result.origin = from;
+                result.destination = to;
+            }
+            else if (to && !from) {
+                routeDetails.destination = result.destination;
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('routeDialog', routeDetails);
+            }
+            else if (from && !to) {
+                result.origin = from;
+            }
+            else if (!from && !to) {
+
+                result.origin = stepContext.result;
+            }
+
         }
-        else if (from && !to) {
-            result.origin = from;
-        }
-        else if (!from && !to) {
-
-            result.origin = stepContext.result;
-        }
-
-
-
 
         //cho người dùng biết 2 điểm O-D
         const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";
@@ -342,8 +381,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 for (var i = 0; i < urls.length; i++) {
                     const response = await fetch(urls[i], requestOptions)
                     data = await response.json();
-                    console.log('lỗi');
-                    console.log(data);
                     if (data.routes.length) {
                         break;
                     }
@@ -526,7 +563,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 //     await utils.sleep(500);
                 // })
-                
+
                 await stepContext.context.sendActivity(summary_direction, summary_direction, InputHints.IgnoringInput);
                 for (var i = 0; i < instuctions.length; i++) {
                     await stepContext.context.sendActivity(instuctions[i].step)

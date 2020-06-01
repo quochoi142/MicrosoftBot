@@ -16,6 +16,7 @@ const { StopArounDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
 const SEARCH_DIALOG = 'searchDialog';
 var welcome = 'Welcome!';
+var isWelcome = true;
 
 class MainDialog extends ComponentDialog {
 
@@ -86,47 +87,50 @@ class MainDialog extends ComponentDialog {
         //để dành chạy ở local
         /* const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
         await stepContext.context.sendActivity({ attachments: [welcomeCard] }); */
-        
 
-        await stepContext.context.sendActivity({
-            channelData: {
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "generic",
-                        "elements": [
-                            {
-                                "title": welcome,
-                                "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
-                                "subtitle": "Bạn hãy chọn 1 trong các chức năng:",
-                                "buttons": [
-                                    {
-                                        "type": "postback",
-                                        "title": "Tìm đường",
-                                        "payload": "Tìm đường"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "Tìm trạm",
-                                        "payload": "Tìm trạm"
-                                    },
-                                    {
-                                        "type": "postback",
-                                        "title": "Tìm xe bus",
-                                        "payload": "Tìm xe bus"
-                                    }
-                                ]
-                            }
-                        ]
+        if (isWelcome) {
+
+            await stepContext.context.sendActivity({
+                channelData: {
+                    "attachment": {
+                        "type": "template",
+                        "payload": {
+                            "template_type": "generic",
+                            "elements": [
+                                {
+                                    "title": welcome,
+                                    "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                    "subtitle": "Bạn hãy chọn 1 trong các chức năng:",
+                                    "buttons": [
+                                        {
+                                            "type": "postback",
+                                            "title": "Tìm đường",
+                                            "payload": "Tìm đường"
+                                        },
+                                        {
+                                            "type": "postback",
+                                            "title": "Tìm trạm",
+                                            "payload": "Tìm trạm"
+                                        },
+                                        {
+                                            "type": "postback",
+                                            "title": "Khi nào xe bus đến trạm",
+                                            "payload": "Khi nào xe bus đến trạm"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            });
 
 
-        const messageText = null; //set null Intro message
-        const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-        return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
+            const messageText = null; //set null Intro message
+            const promptMessage = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+            return await stepContext.prompt('TextPrompt', { prompt: promptMessage });
+        }
+        return await stepContext.next(stepContext.result);
     }
 
     /**
@@ -134,11 +138,13 @@ class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     async actStep(stepContext) {
+        isWelcome = true;
         const routeDetails = {};
 
 
         if (!this.luisRecognizer.isConfigured) {
             // LUIS is not configured, we just run the BookingDialog path.
+
             return await stepContext.beginDialog('routeDialog', routeDetails);
         }
 
@@ -152,7 +158,7 @@ class MainDialog extends ComponentDialog {
                 routeDetails.destination = to;
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-            case 'Tìm_xe_bus': {
+            case 'Khi_nào_xe_bus_đến_trạm': {
                 const StopDetail = {};
                 const result = luisResult;
                 if (result.entities.$instance.Stop) {
@@ -180,7 +186,6 @@ class MainDialog extends ComponentDialog {
 
             }
             case 'Kết_thúc': {
-                //chỉ hiện location card
                 return await stepContext.next();
             }
             case 'Trợ_giúp': {
@@ -190,7 +195,6 @@ class MainDialog extends ComponentDialog {
 
             }
             default: {
-
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             }
@@ -208,6 +212,9 @@ class MainDialog extends ComponentDialog {
             return await stepContext.next(stepContext.result);
 
         }
+        if (stepContext.result == "") {
+            return await stepContext.endDialog();
+        }
         else {
 
             const byeMessageText = 'Chào tạm biệt...';
@@ -221,7 +228,7 @@ class MainDialog extends ComponentDialog {
 
         const prompt = stepContext.result;
         welcome = prompt;
-        
+
         //để dành chạy ở local
         //await stepContext.context.sendActivity(prompt, prompt, InputHints.IgnoringInput);
 
