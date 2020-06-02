@@ -170,80 +170,84 @@ server.get('/api/notify', async (req, res) => {
     //     });
     // }
     // }, 5*60*1000);
-    res.send(200)
-    for (const conversationReference of Object.values(conversationReferences)) {
-        await adapter.continueConversation(conversationReference, async turnContext => {
-            const fetch = require("node-fetch");
-            var encodeUrl = require('encodeurl');
-            var stringSimilarity = require('string-similarity');
-            const geo = req.params.geo
-            const place = req.params.place
-            const bus = req.params.bus
-            const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + geo + ';r=1000&name=' + place;
-            var myHeaders = new fetch.Headers();
-            myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+    const geo = req.params.geo
+    const place = req.params.place
+    const bus = req.params.bus
+    if (geo && place && bus) {
+        res.send(200)
+        for (const conversationReference of Object.values(conversationReferences)) {
+            await adapter.continueConversation(conversationReference, async turnContext => {
+                const fetch = require("node-fetch");
+                var encodeUrl = require('encodeurl');
+                var stringSimilarity = require('string-similarity');
 
-            var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-            const response = await fetch(encodeUrl(url), requestOptions)
-            const data = await response.json();
+                const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + geo + ';r=1000&name=' + place;
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
-            if (data.boards.length == 0) {
-                prompt = 'Không tìm thấy trạm ' + place;
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+                const response = await fetch(encodeUrl(url), requestOptions)
+                const data = await response.json();
 
-            } else {
-                const boards = data.boards;
-                var isExistsBus = false;
-                for (var i = 0; i < boards.length; i++) {
-                    var msg = '';
-                    if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
-                        const departures = boards[i].departures;
+                if (data.boards.length == 0) {
+                    prompt = 'Không tìm thấy trạm ' + place;
+
+                } else {
+                    const boards = data.boards;
+                    var isExistsBus = false;
+                    for (var i = 0; i < boards.length; i++) {
+                        var msg = '';
+                        if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
+                            const departures = boards[i].departures;
 
 
-                        for (var j = 0; j < departures.length; j++) {
-                            if (bus.match('(\\d+)')[0] == parseInt(departures[j].transport.name)) {
-                                isExistsBus = true
-                                var time = departures[j].time;
-                                const moment = require('moment')
-                                var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+                            for (var j = 0; j < departures.length; j++) {
+                                if (bus.match('(\\d+)')[0] == parseInt(departures[j].transport.name)) {
+                                    isExistsBus = true
+                                    var time = departures[j].time;
+                                    const moment = require('moment')
+                                    var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
 
-                                time = moment.utc(moment(time, "YYYY-MM-DDTHH:mm:ssZ").diff(now)).format('HH:mm')
-                                const tokens = time.split(":");
-                                const h = tokens[0]
-                                const m = tokens[1]
-                                time = "";
-                                if (h != 0) {
-                                    time += parseInt(h) + "h";
+                                    time = moment.utc(moment(time, "YYYY-MM-DDTHH:mm:ssZ").diff(now)).format('HH:mm')
+                                    const tokens = time.split(":");
+                                    const h = tokens[0]
+                                    const m = tokens[1]
+                                    time = "";
+                                    if (h != 0) {
+                                        time += parseInt(h) + "h";
+                                    }
+                                    if (m != 0) {
+                                        time += parseInt(m) + "'";
+                                    }
+                                    time = (time == "") ? "1'" : time;
+
+                                    msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+                                    break;
                                 }
-                                if (m != 0) {
-                                    time += parseInt(m) + "'";
-                                }
-                                time = (time == "") ? "1'" : time;
-
-                                msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
-                                break;
                             }
+
+
+                        }
+                        if (msg !== "") {
+                            //await stepContext.context.sendActivity(msg);
+                            await turnContext.sendActivity(msg);
                         }
 
-
                     }
-                    if (msg !== "") {
-                        //await stepContext.context.sendActivity(msg);
-                        await turnContext.sendActivity(msg);
+                    if (!isExistsBus) {
+                        await turnContext.sendActivity("Có vẻ như xe bus này không đi qua trạm");
+                        //await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
                     }
-
                 }
-                if (!isExistsBus) {
-                    await turnContext.sendActivity("Có vẻ như xe bus này không đi qua trạm");
-                    //await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
-                }
-            }
-        });
+            });
+        }
+    }else{
+        res.send(400)
     }
-
 
 
 
