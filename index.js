@@ -174,7 +174,7 @@ server.get('/api/notify', async (req, res) => {
     const place = req.params.place
     const bus = req.params.bus
     if (geo && place && bus) {
-        res.send(200)
+        //res.send(200)
         for (const conversationReference of Object.values(conversationReferences)) {
             await adapter.continueConversation(conversationReference, async turnContext => {
                 const fetch = require("node-fetch");
@@ -245,10 +245,11 @@ server.get('/api/notify', async (req, res) => {
                 }
             });
         }
-    }else{
-        res.send(400)
     }
-
+    res.setHeader('Content-Type', 'text/html');
+    res.writeHead(200);
+    res.write('<html><body><h1>Proactive messages have been sent.</h1></body></html>');
+    res.end();
 
 
 });
