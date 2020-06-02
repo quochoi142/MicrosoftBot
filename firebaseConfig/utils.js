@@ -391,7 +391,7 @@ const utils = {
                     };
                     fetch(encodeUrl("http://localhost:3978/api/notify?geo=" + geo.lat + ',' + geo.lng + "&place=" + place + "&bus=" + bus), requestOptions)
                     
-                    var time = (day == 5) ? 258600000 : 85800000;
+                    var time = (day == 5) ? 258600 : 85800;
                     setTimeout(utils.notify, time, geo, place, bus, id)
                 }
 

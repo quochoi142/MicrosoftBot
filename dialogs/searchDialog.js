@@ -262,13 +262,13 @@ class SearchDialog extends CancelAndHelpDialog {
                 case 2:
                 case 3:
                 case 4:
-                    time = 85800000;
+                    time = 85800;
                     break;
                 case 5:
-                    time = 258600000;
+                    time = 258600;
                     break;
                 case 6:
-                    time = 172200000;
+                    time = 172200;
                     break;
             }
             setTimeout(utils.notify, time, this.geo, this.place, this.bus, id)
