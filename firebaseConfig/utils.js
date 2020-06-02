@@ -389,7 +389,7 @@ const utils = {
                     var requestOptions = {
                         method: 'GET',
                     };
-                    fetch(encodeUrl("https://botbusvqh.herokuapp.com/api/notify?geo=" + geo.lat + ',' + geo.lng + "&place=" + place + "&bus=" + bus), requestOptions)
+                    fetch(encodeUrl("http://botbusvqh.herokuapp.com/api/notify?geo=" + geo.lat + ',' + geo.lng + "&place=" + place + "&bus=" + bus), requestOptions)
                     
                     var time = (day == 5) ? 258600 : 85800;
                     setTimeout(utils.notify, time, geo, place, bus, id)
