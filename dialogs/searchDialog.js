@@ -145,6 +145,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
             if (json.candidates && json.candidates.length == 0) {
                 prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+                await stepContext.context.sendActivity(prompt)
                 flag = false;
             } else {
                 //request get Geo(lat,lng)
@@ -170,10 +171,14 @@ class SearchDialog extends CancelAndHelpDialog {
                     redirect: 'follow'
                 };
                 const response = await fetch(encodeUrl(url), requestOptions)
+                if(response.code!=200){
+                    throw -1
+                }
                 const data = await response.json();
 
                 if (data.boards.length == 0) {
                     prompt = 'Không tìm thấy trạm ' + place;
+                    await stepContext.context.sendActivity(prompt)
                     flag = false;
                 } else {
                     const boards = data.boards;
@@ -219,11 +224,27 @@ class SearchDialog extends CancelAndHelpDialog {
                     }
                     if (!isExistsBus) {
                         await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
-                        return await stepContext.next(false)
+                        flag = false
                     }
                 }
 
             }
+
+
+
+        } catch (err) {
+            console.log(err);
+            prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
+            await stepContext.endDialog(prompt);
+            flag = false;
+        }
+
+        if (!flag) {
+
+            prompt = "Bạn cần giúp gì thêm không?";
+            return await stepContext.endDialog(prompt);
+
+        } else {
             if (!No_bus) {
                 No_bus = result0.bus;
             }
@@ -234,20 +255,15 @@ class SearchDialog extends CancelAndHelpDialog {
             const idUser = utils.getIdUser(stepContext.context);
             await utils.saveDepartures(idUser, dataDeparture);
 
-
-        } catch (err) {
-            console.log(err);
-            prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
-            flag = false;
+            const id = utils.getIdUser(stepContext.context);
+            const isNoti = await utils.isTurnOnNotify(id)
+            if (isNoti == true) {
+                return await stepContext.next(false)
+            }
+            //return await stepContext.endDialog(prompt);
+            return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
         }
 
-        if (flag) {
-
-            prompt = "Bạn cần giúp gì thêm không?";
-        }
-
-        //return await stepContext.endDialog(prompt);
-        return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
     }
 
     async confirmNotify(stepContext) {
