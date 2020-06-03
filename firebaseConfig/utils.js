@@ -496,7 +496,7 @@ const utils = {
 
 
 
-                    var time = (day == 5) ? 258600 : 85800;
+                    var time = (day == 5) ? 258600000 : 85800000;
                     setTimeout(utils.notify, time, geo, place, bus, id)
                 }
 
