@@ -143,7 +143,7 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (json.candidates && json.candidates.length == 0) {
+            if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
                 prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
                 await stepContext.context.sendActivity(prompt)
                 flag = false;
@@ -171,7 +171,7 @@ class SearchDialog extends CancelAndHelpDialog {
                     redirect: 'follow'
                 };
                 const response = await fetch(encodeUrl(url), requestOptions)
-                if(response.code!=200){
+                if (response.status != 200) {
                     throw -1
                 }
                 const data = await response.json();
