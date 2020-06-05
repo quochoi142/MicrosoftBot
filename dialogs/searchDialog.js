@@ -272,7 +272,8 @@ class SearchDialog extends CancelAndHelpDialog {
             const fb = utils.getFirebase();
             const id = utils.getIdUser(stepContext.context)
             var time;
-            switch (new Date().getDay()) {
+            const day = new Date().getDay()
+            switch (day) {
                 case 0:
                 case 1:
                 case 2:
@@ -288,7 +289,8 @@ class SearchDialog extends CancelAndHelpDialog {
                     break;
             }
             setTimeout(utils.notify, time, this.geo, this.place, this.bus, id)
-            fb.database().ref('users/' + id).child("/noti").set(true)
+            fb.database().ref('users/' + id).child("/noti/isOn").set(true)
+            fb.database().ref('users/' + id).child("/noti/TimeSet").set(day+"-------"+time)
             await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
         }
 

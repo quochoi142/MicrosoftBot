@@ -430,7 +430,7 @@ const utils = {
                     //var encodeUrl = require('encodeurl');
                     var stringSimilarity = require('string-similarity');
 
-                    const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + geo.lat+","+geo.lng + ';r=1000&name=' + place;
+                    const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + geo.lat + "," + geo.lng + ';r=1000&name=' + place;
                     var myHeaders = new fetch.Headers();
                     myHeaders.append("Authorization", 'Bearer ' + process.env.token);
 
@@ -496,8 +496,10 @@ const utils = {
 
 
 
+
                     var time = (day == 5) ? 258600000 : 85800000;
                     setTimeout(utils.notify, time, geo, place, bus, id)
+                    firebase.database().ref('users/' + id).child("/noti/TimeOut").set(day + "-------" + time)
                 }
 
             }
@@ -507,10 +509,10 @@ const utils = {
     },
 
     isTurnOnNotify: async (id) => {
-        return await firebase.database().ref('users/' + id+"/noti" ).once('value')
+        return await firebase.database().ref('users/' + id + "/noti").once('value')
             .then(function (snapshot) {
                 //console.log(snapshot.val())
-              return snapshot.val();
+                return snapshot.val();
             });
 
         // const promise= new Promise(function (resolve,reject){
