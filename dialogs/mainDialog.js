@@ -114,8 +114,8 @@ class MainDialog extends ComponentDialog {
                                         },
                                         {
                                             "type": "postback",
-                                            "title": "Tra_cứu_xe",
-                                            "payload": "Tra_cứu_xe"
+                                            "title": "Tra cứu xe",
+                                            "payload": "Tra cứu xe"
                                         }
                                     ]
                                 }

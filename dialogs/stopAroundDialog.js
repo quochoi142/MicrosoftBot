@@ -224,7 +224,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                                     {
                                         "title": "Bạn muốn tìm xung quanh trạm nào?",
                                         "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
-                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "subtitle": "Bạn chỉ có thể chọn, không được nhập trực tiếp",
                                         "buttons": [
 
                                             {

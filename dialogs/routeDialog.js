@@ -197,8 +197,8 @@ class RouteDialog extends CancelAndHelpDialog {
                 }
 
             }
-            else if (LuisRecognizer.topIntent(luisResult) == "None") {
-                
+            else if (LuisRecognizer.topIntent(luisResult) == "None" && flat != 1) {
+
                 await stepContext.context.sendActivity('Câu trả lời không hợp lệ.', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
@@ -280,9 +280,9 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
                                             },
                                             {
-                                                "type": "postback",
-                                                "title": "Vị trí hiện tại",
-                                                "payload": "Vị trí hiện tại"
+                                                "type": "web_url",
+                                                "url": myUrl,
+                                                "title": "Mở map",
                                             }
                                         ]
                                     }
@@ -352,14 +352,14 @@ class RouteDialog extends CancelAndHelpDialog {
                 routeDetails.destination = result.destination;
                 flat = 1;
                 await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
-                await stepContext.endDialog('Vị trí hiện tại');
+                await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
 
             }
         }
         else if (LuisRecognizer.topIntent(luisResult) == "None") {
             routeDetails.destination = result.destination;
-
+            flat = 1;
             await stepContext.endDialog();
             return await stepContext.beginDialog('routeDialog', routeDetails);
         }
