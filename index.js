@@ -80,7 +80,7 @@ const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint
 const luisRecognizer = new BusRecognizer(luisConfig);
 
 // Create the main dialog.
-const routeDialog = new RouteDialog( ROUTE_DIALOG);
+const routeDialog = new RouteDialog(ROUTE_DIALOG);
 const searchDialog = new SearchDialog(SEARCH_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
 //const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
@@ -89,7 +89,7 @@ const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
 const { ProactiveBot } = require('./bots/proactiveBot');
 const conversationReferences = {};
 //const botDiaglog = new ProactiveBot(conversationReferences);
-const bot = new ProactiveBot(conversationReferences,conversationState, userState, dialog);
+const bot = new ProactiveBot(conversationReferences, conversationState, userState, dialog);
 
 //Initialize Firebase
 const Firebase = require('./firebaseConfig/utils')
@@ -136,41 +136,29 @@ server.post('/api/messages', (req, res) => {
 
 
 server.get('/map', (req, res) => {
-   
-    res.render('./Views/map', { 
+
+    res.render('./Views/map', {
         id: req.params.id,
-        token:req.params.token,
-        steps: [{step:"a"},{step:"b"}]
-     })
+        token: req.params.token,
+        steps: [{ step: "a" }, { step: "b" }]
+    })
 });
 
-server.get('/route',(req,res)=>{
-    res.render('./Views/route', { 
+server.get('/route', (req, res) => {
+    res.render('./Views/route', {
         id: req.params.id,
-     })
+    })
 });
 
-server.get('/nearstop',(req,res)=>{
-    res.render('./Views/nearStop', { 
+server.get('/nearstop', (req, res) => {
+    res.render('./Views/nearStop', {
         id: req.params.id,
-        token:process.env.token
-     })
+        token: process.env.token
+    })
 });
 
 
 
-server.get('/api/notify', async (req, res) => {
-    const time = req.time;
-    setTimeout( async()=>{ 
-		for (const conversationReference of Object.values(conversationReferences)) {
-        await adapter.continueConversation(conversationReference, async turnContext => {
-            // If you encounter permission-related errors when sending this message, see
-            // https://aka.ms/BotTrustServiceUrl
-            await turnContext.sendActivity('proactive hello');
-        });
-    }
-	}, time);
-});
 
 // Listen for Upgrade requests for Streaming.
 server.on('upgrade', (req, socket, head) => {

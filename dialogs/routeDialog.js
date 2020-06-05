@@ -83,7 +83,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "elements": [
                                     {
                                         "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -119,7 +119,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "elements": [
                                     {
                                         "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -230,7 +230,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "elements": [
                                     {
                                         "title": "Bạn muốn đi từ đâu?",
-                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -266,7 +266,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                 "elements": [
                                     {
                                         "title": "Bạn muốn đi từ đâu?",
-                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {

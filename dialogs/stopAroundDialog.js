@@ -189,22 +189,25 @@ class StopArounDialog extends CancelAndHelpDialog {
                         "attachment": {
                             "type": "template",
                             "payload": {
-                                "template_type": "button",
-                                "text": "Chọn nơi bạn muốn tìm",
-                                "buttons": [
+                                "template_type": "generic",
+                                "elements": [
                                     {
-
-                                        "type": "postback",
-                                        "title": myInfo,
-                                        "payload": myInfo
-
-                                    },
-                                    {
-                                        "type": "web_url",
-                                        "url": myUrl,
-                                        "title": "Mở map chọn"
+                                        "title": "Bạn muốn tìm xung quanh trạm nào?",
+                                        "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myInfo,
+                                                "payload": myInfo
+                                            },
+                                            {
+                                                "type": "web_url",
+                                                "url": myUrl,
+                                                "title": "Mở map",
+                                            }
+                                        ]
                                     }
-
                                 ]
                             }
                         }
@@ -212,21 +215,25 @@ class StopArounDialog extends CancelAndHelpDialog {
                 });
             } catch (error) {
                 await stepContext.context.sendActivity({
-                    //text: "Bạn cũng có thể nhập trực tiếp",
                     channelData: {
                         "attachment": {
                             "type": "template",
                             "payload": {
-                                "template_type": "button",
-                                "text": "Chọn nơi bạn muốn tra cứu",
-                                "buttons": [
-
+                                "template_type": "generic",
+                                "elements": [
                                     {
-                                        "type": "web_url",
-                                        "url": myUrl,
-                                        "title": "Mở map chọn"
-                                    }
+                                        "title": "Bạn muốn tìm xung quanh trạm nào?",
+                                        "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
 
+                                            {
+                                                "type": "web_url",
+                                                "url": myUrl,
+                                                "title": "Mở map",
+                                            }
+                                        ]
+                                    }
                                 ]
                             }
                         }

@@ -34,6 +34,7 @@
         "request": "^2.88.2",
         "restify": "^8.5.1",
         "restify-render-middleware": "^2.0.2",
+        "string-similarity": "^4.0.1",
         "swig-templates": "^2.0.3",
         "utf8": "^3.0.0"
     },

@@ -3,7 +3,7 @@
 const { LuisRecognizer } = require('botbuilder-ai');
 const { BusRecognizer } = require('../dialogs/BusRecognizer');
 const { InputHints, MessageFactory } = require('botbuilder');
-const { TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const { TextPrompt, WaterfallDialog, ConfirmPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
 const StopCard = require('../resources/locationCard.json');
@@ -12,23 +12,24 @@ const ConfirmLocationCard = require('../resources/confirmLocationCard.json');
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
 const WATERFALL_DIALOG = 'waterfallDialog_RouteDetail';
 const LOCATION = 'location_prompt';
-
+const CONFIRM = "confirm_prompt"
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
 var encodeUrl = require('encodeurl')
-
+var stringSimilarity = require('string-similarity');
 
 class SearchDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ConfirmPrompt(CONFIRM))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.GetStopStep.bind(this),
                 this.GetBusNum.bind(this),
-                this.SearchStep.bind(this)
-
+                this.SearchStep.bind(this),
+                this.confirmNotify.bind(this)
 
             ]));
 
@@ -44,66 +45,88 @@ class SearchDialog extends CancelAndHelpDialog {
         const result = stepContext.options;
         if (!result.stop) {
 
-            // Get origin from Firebase
+            // Get departures from Firebase
             try {
 
                 const id = await utils.getIdUser(stepContext.context);
-                var myStop = await utils.readStop(id);
+                var myDep = await utils.readDeparture(id);
             } catch (error) {
                 console.log(error);
             }
 
-            //Init card destination
-            var stopCard = null;
-
-
+            //Send message
             try {
-                const StopJson = {
-
-                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                    "type": "AdaptiveCard",
-                    "version": "1.0",
-                    "body": [
-                        {
-                            "type": "Image",
-                            "url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
-                            "width": "stretch",
-                            "style": "default"
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Trạm bạn muốn hỏi?",
+                                        "image_url": "https://image.freepik.com/free-vector/flat-bus-stop-concept_23-2147846117.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[0],
+                                                "payload": myDep[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[1],
+                                                "payload": myDep[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[2],
+                                                "payload": myDep[2]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    ],
-                    "actions": [
-                        {
-                            "type": "Action.Submit",
-                            "title": myStop[0].origin,
-                            "data": myStop[0].origin
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": myStop[1].origin,
-                            "data": myStop[1].origin,
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": myStop[2].origin,
-                            "data": myStop[2].origin
-
-                        }
-                    ]
-
-                };
-                stopCard = CardFactory.adaptiveCard(StopJson);
+                    }
+                });
 
             } catch (error) {
-                stopCard = CardFactory.adaptiveCard(StopCard);
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Trạm bạn muốn hỏi?",
+                                        "image_url": "https://image.freepik.com/free-vector/flat-bus-stop-concept_23-2147846117.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
+                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
+                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Suối tiên",
+                                                "payload": "Suối tiên"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
             }
-
-            //Send message
-            const stopMessageText = 'Trạm bạn tra cứu là?';
-            await stepContext.context.sendActivity(stopMessageText, stopMessageText, InputHints.IgnoringInput);
-
-            await stepContext.context.sendActivity({ attachments: [stopCard] });
 
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -127,7 +150,7 @@ class SearchDialog extends CancelAndHelpDialog {
             const luisResult = await luis.executeLuisQuery(stepContext.context);
             var bus = null;
             var stop = null;
-    
+
             if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
                 bus = luis.getBusEntities(luisResult);
                 stop = luis.getStopEntities(luisResult);
@@ -152,9 +175,90 @@ class SearchDialog extends CancelAndHelpDialog {
                 result.stop = stepContext.result;
             }
 
+            // Get Bus from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myBus = await utils.readBus(id);
 
-            //return await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.ExpectingInput);
-            const messageText = "Bạn muốn bắt xe bus số mấy?"
+            } catch (error) {
+                console.log(error);
+            }
+
+            //Send message
+            try {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn hỏi xe bus số mấy?",
+                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[0],
+                                                "payload": myBus[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[1],
+                                                "payload": myBus[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[2],
+                                                "payload": myBus[2]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn hỏi xe bus số mấy?",
+                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "08",
+                                                "payload": "08"
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "19",
+                                                "payload": "19"
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "33",
+                                                "payload": "33"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+            }
+
+            const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
@@ -181,8 +285,8 @@ class SearchDialog extends CancelAndHelpDialog {
 
         const StopDetail = {};
         if (bus && stop) {
-            StopDetail.stop = stop;
-            StopDetail.bus = bus;
+            result0.stop = stop;
+            result0.bus = bus;
         }
         else if (!bus && stop) {
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết số xe thay vì tên trạm', '', InputHints.IgnoringInput);
@@ -209,15 +313,18 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (json.candidates && json.candidates.length == 0) {
+            if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
                 prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+                await stepContext.context.sendActivity(prompt)
                 flag = false;
             } else {
                 //request get Geo(lat,lng)
                 result = {};
                 result.address = json.candidates[0].formatted_address;
                 result.geo = json.candidates[0].geometry.location;
-
+                this.geo = result.geo
+                this.place = place
+                this.bus = result0.bus
                 //request get departures around the place
 
 
@@ -234,17 +341,21 @@ class SearchDialog extends CancelAndHelpDialog {
                     redirect: 'follow'
                 };
                 const response = await fetch(encodeUrl(url), requestOptions)
+                if (response.status != 200) {
+                    throw -1
+                }
                 const data = await response.json();
 
                 if (data.boards.length == 0) {
                     prompt = 'Không tìm thấy trạm ' + place;
+                    await stepContext.context.sendActivity(prompt)
                     flag = false;
                 } else {
                     const boards = data.boards;
                     var isExistsBus = false;
                     for (var i = 0; i < boards.length; i++) {
                         var msg = '';
-                        if (boards[i].place.name.toLowerCase() == place.toLowerCase()) {
+                        if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
                             const departures = boards[i].departures;
 
 
@@ -283,10 +394,26 @@ class SearchDialog extends CancelAndHelpDialog {
                     }
                     if (!isExistsBus) {
                         await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
+                        flag = false
                     }
                 }
 
             }
+
+
+        } catch (err) {
+            console.log(err);
+            prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
+            await stepContext.endDialog(prompt);
+            flag = false;
+        }
+
+        if (!flag) {
+
+            prompt = "Bạn cần giúp gì thêm không?";
+            return await stepContext.endDialog(prompt);
+
+        } else {
             if (!No_bus) {
                 No_bus = result0.bus;
             }
@@ -297,17 +424,44 @@ class SearchDialog extends CancelAndHelpDialog {
             const idUser = utils.getIdUser(stepContext.context);
             await utils.saveDepartures(idUser, dataDeparture);
 
-
-        } catch (err) {
-            console.log(err);
-            prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
-            flag = false;
+            const id = utils.getIdUser(stepContext.context);
+            const isNoti = await utils.isTurnOnNotify(id)
+            if (isNoti == true) {
+                return await stepContext.next(false)
+            }
+            //return await stepContext.endDialog(prompt);
+            return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
         }
 
-        if (flag) {
+    }
 
-            prompt = "Bạn cần giúp gì thêm không?";
+    async confirmNotify(stepContext) {
+        const result = stepContext.result;
+        if (result == true) {
+            const fb = utils.getFirebase();
+            const id = utils.getIdUser(stepContext.context)
+            var time;
+            switch (new Date().getDay()) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    time = 85800000;
+                    break;
+                case 5:
+                    time = 258600000;
+                    break;
+                case 6:
+                    time = 172200000;
+                    break;
+            }
+            setTimeout(utils.notify, time, this.geo, this.place, this.bus, id)
+            fb.database().ref('users/' + id).child("/noti").set(true)
+            await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
         }
+
+        const prompt = "Bạn cần giúp gì thêm không?";
 
         return await stepContext.endDialog(prompt);
     }

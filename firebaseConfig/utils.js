@@ -524,6 +524,150 @@ const utils = {
                 x.set(obj);
             }
         });
+    },
+
+    sendMsgFb: (msg, id) => {
+        const request = require('request')
+        const PAGE_ACCESS_TOKEN = "EAADGyAwheb8BANMhZBGY88gm4KTmelQ8a0VZCOarWPsBelQS5uZAgYp4b3XyZClJiTWgKZCg0PNTAn4a0ReyxQwJlvbVqj9bSiBCLw9Elvn7sU3ZCQtBLE1caYaRsdNphRiJLw8HkWqdQxZBZBs1Q3eNNRwO5CrcocdFS0aLkiZCN3FMa5C3HktPz"
+        var messageData = {
+            "recipient": {
+                "id": id
+            },
+            "message": {
+                "text": msg
+            },
+            "messaging_type": "MESSAGE_TAG",
+            "tag": "ACCOUNT_UPDATE"
+
+        };
+
+        // Start the request
+        request({
+            url: 'https://graph.facebook.com/v7.0/me/messages?access_token=' + PAGE_ACCESS_TOKEN,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            form: messageData
+        },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    // Print out the response body
+                    console.log(body);
+
+                } else {
+                    // TODO: Handle errors
+                    console.log(body);
+                }
+            });
+    },
+
+    notify: async (geo, place, bus, id) => {
+        var encodeUrl = require('encodeurl');
+        const fetch = require("node-fetch");
+        var refFirebase = firebase.database().ref('users/' + id + '/noti');
+        refFirebase.once('value').then(async function (snapshot) {
+            if (snapshot.val() == true) {
+                const date = new Date()
+                const day = date.getDay();
+                if (day > 0 && day < 6) {
+                    // var requestOptions = {
+                    //     method: 'GET',
+                    // };
+                    // fetch(encodeUrl("https://localhost:3978/api/notify?geo=" + geo.lat + ',' + geo.lng + "&place=" + place + "&bus=" + bus), requestOptions)
+
+
+                    //const fetch = require("node-fetch");
+                    //var encodeUrl = require('encodeurl');
+                    var stringSimilarity = require('string-similarity');
+
+                    const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + geo.lat+","+geo.lng + ';r=1000&name=' + place;
+                    var myHeaders = new fetch.Headers();
+                    myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                    var requestOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                        redirect: 'follow'
+                    };
+                    const response = await fetch(encodeUrl(url), requestOptions)
+                    const data = await response.json();
+
+                    if (data.boards.length == 0) {
+                        prompt = 'Không tìm thấy trạm ' + place;
+
+                    } else {
+                        const boards = data.boards;
+                        var isExistsBus = false;
+                        for (var i = 0; i < boards.length; i++) {
+                            var msg = '';
+                            if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
+                                const departures = boards[i].departures;
+
+
+                                for (var j = 0; j < departures.length; j++) {
+                                    if (bus.match('(\\d+)')[0] == parseInt(departures[j].transport.name)) {
+                                        isExistsBus = true
+                                        var time = departures[j].time;
+                                        const moment = require('moment')
+                                        var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+
+                                        time = moment.utc(moment(time, "YYYY-MM-DDTHH:mm:ssZ").diff(now)).format('HH:mm')
+                                        const tokens = time.split(":");
+                                        const h = tokens[0]
+                                        const m = tokens[1]
+                                        time = "";
+                                        if (h != 0) {
+                                            time += parseInt(h) + "h";
+                                        }
+                                        if (m != 0) {
+                                            time += parseInt(m) + "'";
+                                        }
+                                        time = (time == "") ? "1'" : time;
+
+                                        msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+                                        break;
+                                    }
+                                }
+
+
+                            }
+                            if (msg !== "") {
+                                //await stepContext.context.sendActivity(msg);
+                                utils.sendMsgFb(msg, id)
+                            }
+
+                        }
+                        if (!isExistsBus) {
+                            //await turnContext.sendActivity("Có vẻ như xe bus này không đi qua trạm");
+                            //await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
+                            utils.sendMsgFb(msg, id)
+                        }
+                    }
+
+
+
+                    var time = (day == 5) ? 258600000 : 85800000;
+                    setTimeout(utils.notify, time, geo, place, bus, id)
+                }
+
+            }
+        })
+
+
+    },
+
+    isTurnOnNotify: async (id) => {
+        return await firebase.database().ref('users/' + id+"/noti" ).once('value')
+            .then(function (snapshot) {
+                //console.log(snapshot.val())
+              return snapshot.val();
+            });
+
+        // const promise= new Promise(function (resolve,reject){
+        //     firebase.database().ref('users/' + id+"/noti" ).once('value').then(function (snap){
+        //         resolve(snap.val());
+        //     })
+        // })
+        // return promise
     }
 
 
