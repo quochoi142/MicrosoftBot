@@ -6,7 +6,7 @@ const { InputHints, MessageFactory } = require('botbuilder');
 const { TextPrompt, WaterfallDialog, ConfirmPrompt } = require('botbuilder-dialogs');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { CardFactory } = require('botbuilder-core');
-const LocationCard = require('../resources/locationCard.json');
+const StopCard = require('../resources/locationCard.json');
 const ConfirmLocationCard = require('../resources/confirmLocationCard.json');
 
 const TEXT_PROMPT = 'TextPrompt_RouteDetail';
@@ -44,11 +44,89 @@ class SearchDialog extends CancelAndHelpDialog {
         //code lấy vị trí để tra cứu trong đây
         const result = stepContext.options;
         if (!result.stop) {
-            const locationMessageText = 'Trạm bạn tra cứu là?';
-            await stepContext.context.sendActivity(locationMessageText, locationMessageText, InputHints.IgnoringInput);
 
-            const locationCard = CardFactory.adaptiveCard(LocationCard);
-            await stepContext.context.sendActivity({ attachments: [locationCard] });
+            // Get departures from Firebase
+            try {
+
+                const id = await utils.getIdUser(stepContext.context);
+                var myDep = await utils.readDeparture(id);
+            } catch (error) {
+                console.log(error);
+            }
+
+            //Send message
+            try {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Trạm bạn muốn hỏi?",
+                                        "image_url": "https://image.freepik.com/free-vector/flat-bus-stop-concept_23-2147846117.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[0],
+                                                "payload": myDep[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[1],
+                                                "payload": myDep[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDep[2],
+                                                "payload": myDep[2]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Trạm bạn muốn hỏi?",
+                                        "image_url": "https://image.freepik.com/free-vector/flat-bus-stop-concept_23-2147846117.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
+                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
+                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Suối tiên",
+                                                "payload": "Suối tiên"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+            }
 
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
@@ -70,8 +148,13 @@ class SearchDialog extends CancelAndHelpDialog {
 
             // check From and To to Restart searchDialogs 
             const luisResult = await luis.executeLuisQuery(stepContext.context);
-            const bus = luis.getBusEntities(luisResult);
-            const stop = luis.getStopEntities(luisResult);
+            var bus = null;
+            var stop = null;
+
+            if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+                bus = luis.getBusEntities(luisResult);
+                stop = luis.getStopEntities(luisResult);
+            }
 
             const StopDetail = {};
             if (bus && stop) {
@@ -92,9 +175,90 @@ class SearchDialog extends CancelAndHelpDialog {
                 result.stop = stepContext.result;
             }
 
+            // Get Bus from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myBus = await utils.readBus(id);
 
-            //return await stepContext.context.sendActivity(locationMessageText_Hint, locationMessageText_Hint, InputHints.ExpectingInput);
-            const messageText = "Bạn muốn bắt xe bus số mấy?"
+            } catch (error) {
+                console.log(error);
+            }
+
+            //Send message
+            try {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn hỏi xe bus số mấy?",
+                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[0],
+                                                "payload": myBus[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[1],
+                                                "payload": myBus[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myBus[2],
+                                                "payload": myBus[2]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn hỏi xe bus số mấy?",
+                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "08",
+                                                "payload": "08"
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "19",
+                                                "payload": "19"
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "33",
+                                                "payload": "33"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+            }
+
+            const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
@@ -110,8 +274,14 @@ class SearchDialog extends CancelAndHelpDialog {
 
         // check From and To to Restart searchDialogs 
         const luisResult = await luis.executeLuisQuery(stepContext.context);
-        const bus = luis.getBusEntities(luisResult);
-        const stop = luis.getStopEntities(luisResult);
+
+        var bus = null;
+        var stop = null;
+
+        if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+            bus = luis.getBusEntities(luisResult);
+            stop = luis.getStopEntities(luisResult);
+        }
 
         const StopDetail = {};
         if (bus && stop) {
@@ -159,7 +329,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
             }
-            console.log(flag);
+
             if (flag == true) {
                 const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
                 var myHeaders = new fetch.Headers();
@@ -229,7 +399,6 @@ class SearchDialog extends CancelAndHelpDialog {
                 }
 
             }
-
 
 
         } catch (err) {

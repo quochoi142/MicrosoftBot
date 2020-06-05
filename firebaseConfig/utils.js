@@ -111,6 +111,85 @@ const utils = {
             });
 
     },
+    readBus: async (id) => {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        else {
+            firebase.app();
+        }
+
+        var arr = [];
+        var arr2 = [];
+        return await firebase.database().ref('users/' + id + '/departures').orderByChild('time').once('value')
+            .then(function (snapshot) {
+                snapshot.forEach(data => {
+                    arr.push(data.val());
+
+
+                })
+
+                // remove the duplicate element
+                for (var i = 0; i < arr.length; i++) {
+                    var Isduplicate = 0;
+                    for (var j = 0; j < arr2.length; j++) {
+
+                        if ((arr[i].data.bus == arr2[j])) {
+                            Isduplicate = 1;
+                            break;
+                        }
+
+                    }
+
+                    if (Isduplicate)
+                        continue;
+
+                    arr2.push(arr[i].data.bus);
+                }
+
+                return arr2.reverse();
+
+            });
+    },
+    readDeparture: async (id) => {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        else {
+            firebase.app();
+        }
+
+        var arr = [];
+        var arr2 = [];
+        return await firebase.database().ref('users/' + id + '/departures').orderByChild('time').once('value')
+            .then(function (snapshot) {
+                snapshot.forEach(data => {
+                    arr.push(data.val());
+
+                })
+
+                // remove the duplicate element
+                for (var i = 0; i < arr.length; i++) {
+                    var Isduplicate = 0;
+                    for (var j = 0; j < arr2.length; j++) {
+
+                        if ((arr[i].data.departure == arr2[j])) {
+                            Isduplicate = 1;
+                            break;
+                        }
+
+                    }
+
+                    if (Isduplicate)
+                        continue;
+
+                    arr2.push(arr[i].data.departure);
+                }
+
+                return arr2.reverse();
+
+            });
+    },
     getTokenbyId: async (id) => {
         return await firebase.database().ref('users/' + id + '/token').once('value')
             .then(function (snap) {
@@ -120,7 +199,7 @@ const utils = {
     }
     ,
 
-    readRoute: async (id) => {
+    readDestination: async (id) => {
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
         }
@@ -129,16 +208,72 @@ const utils = {
         }
 
         var arr = [];
+        var arr2 = [];
 
         return await firebase.database().ref('users/' + id + '/routes').orderByChild('time').once('value')
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     arr.push(data.val());
 
+                })
+                  // remove the duplicate element
+                  for (var i = 0; i < arr.length; i++) {
+                    var Isduplicate = 0;
+                    for (var j = 0; j < arr2.length; j++) {
+
+                        if ((arr[i].destination == arr2[j])) {
+                            Isduplicate = 1;
+                            break;
+                        }
+
+                    }
+
+                    if (Isduplicate)
+                        continue;
+
+                    arr2.push(arr[i].destination);
+                }
+
+                return arr2.reverse();
+            });
+
+    },
+    readOrigin: async (id) => {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        else {
+            firebase.app();
+        }
+
+        var arr = [];
+        var arr2 = [];
+
+        return await firebase.database().ref('users/' + id + '/routes').orderByChild('time').once('value')
+            .then(function (snapshot) {
+                snapshot.forEach(data => {
+                    arr.push(data.val());
 
                 })
-                console.log(arr);
-                return arr.reverse();
+                  // remove the duplicate element
+                  for (var i = 0; i < arr.length; i++) {
+                    var Isduplicate = 0;
+                    for (var j = 0; j < arr2.length; j++) {
+
+                        if ((arr[i].origin == arr2[j])) {
+                            Isduplicate = 1;
+                            break;
+                        }
+
+                    }
+
+                    if (Isduplicate)
+                        continue;
+
+                    arr2.push(arr[i].origin);
+                }
+
+                return arr2.reverse();
             });
 
     },
@@ -345,6 +480,20 @@ const utils = {
     },
 
     saveDepartures: (id, data) => {
+        //Handle data in origin and destination
+        if (data.bus[0] == '"') {
+            data.bus = data.bus.replace('"', '');
+            data.bus = data.bus.replace('"', '');
+
+        }
+
+        if (data.departure[0] == '"') {
+            data.departure = data.departure.replace('"', '');
+            data.departure = data.departure.replace('"', '');
+
+        }
+
+
         //initialize firebase
         var db = firebase.database();
 
