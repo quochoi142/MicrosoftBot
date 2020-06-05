@@ -219,6 +219,32 @@ class RouteDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
+            utils.setToken(stepContext.context);
+            var promise = new Promise(function (resolve, reject) {
+                var token;
+                var firebase = utils.getFirebase();
+                firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                    token = snap.val();
+                    var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                    setTimeout(function () {
+                        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                    }, 5 * 60000);
+                    resolve({ url, token })
+
+                })
+
+
+            });
+            var myUrl;
+            var myToken;
+            await promise.then(res => {
+                myUrl = res.url;
+                myToken = res.token
+            }).catch(err => {
+                console.log(err);
+            })
+
             //Send message
             try {
                 await stepContext.context.sendActivity({
@@ -244,9 +270,9 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": myOrigin[1]
                                             },
                                             {
-                                                "type": "postback",
+                                                "type": "web_url",
+                                                "url": myUrl,
                                                 "title": "Vị trí hiện tại",
-                                                "payload": "Vị trí hiện tại"
                                             }
                                         ]
                                     }
@@ -282,7 +308,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                             {
                                                 "type": "web_url",
                                                 "url": myUrl,
-                                                "title": "Mở map",
+                                                "title": "Vị trí hiện tại",
                                             }
                                         ]
                                     }
@@ -325,15 +351,6 @@ class RouteDialog extends CancelAndHelpDialog {
         if (from == "đây" || from == "nơi đây" || from == "chổ này" || from == "nơi này" || stepContext.result == "Vị trí hiện tại" || stepContext.result == "\"Vị trí hiện tại\"" || LuisRecognizer.topIntent(luisResult) == "Tại_đây") {
             try {
                 const id = await utils.getIdUser(stepContext.context);
-
-                var myToken;
-                await promise.then(res => {
-                    myUrl = res.url;
-                    myToken = res.token
-                }).catch(err => {
-                    console.log(err);
-                })
-
                 var map = utils.openMap(id, myToken);
 
                 await map.then(async res => {
