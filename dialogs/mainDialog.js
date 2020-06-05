@@ -16,7 +16,7 @@ const { StopArounDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
 const SEARCH_DIALOG = 'searchDialog';
 var welcome = 'Welcome!';
-var isWelcome = true;
+var isWelcome = false;
 
 class MainDialog extends ComponentDialog {
 
@@ -114,8 +114,8 @@ class MainDialog extends ComponentDialog {
                                         },
                                         {
                                             "type": "postback",
-                                            "title": "Khi nào xe bus đến trạm",
-                                            "payload": "Khi nào xe bus đến trạm"
+                                            "title": "Tra_cứu_xe",
+                                            "payload": "Tra_cứu_xe"
                                         }
                                     ]
                                 }
@@ -158,7 +158,7 @@ class MainDialog extends ComponentDialog {
                 routeDetails.destination = to;
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-            case 'Khi_nào_xe_bus_đến_trạm': {
+            case 'Tra_cứu_xe': {
                 const StopDetail = {};
                 const result = luisResult;
                 if (result.entities.$instance.Stop) {
