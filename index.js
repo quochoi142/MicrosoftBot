@@ -83,7 +83,13 @@ const luisRecognizer = new BusRecognizer(luisConfig);
 const routeDialog = new RouteDialog( ROUTE_DIALOG);
 const searchDialog = new SearchDialog(SEARCH_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
-const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
+//const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
+
+
+const { ProactiveBot } = require('./bots/proactiveBot');
+const conversationReferences = {};
+//const botDiaglog = new ProactiveBot(conversationReferences);
+const bot = new ProactiveBot(conversationReferences,conversationState, userState, dialog);
 
 //Initialize Firebase
 const Firebase = require('./firebaseConfig/utils')
@@ -152,6 +158,19 @@ server.get('/nearstop',(req,res)=>{
 });
 
 
+
+server.get('/api/notify', async (req, res) => {
+    const time = req.time;
+    setTimeout( async()=>{ 
+		for (const conversationReference of Object.values(conversationReferences)) {
+        await adapter.continueConversation(conversationReference, async turnContext => {
+            // If you encounter permission-related errors when sending this message, see
+            // https://aka.ms/BotTrustServiceUrl
+            await turnContext.sendActivity('proactive hello');
+        });
+    }
+	}, time);
+});
 
 // Listen for Upgrade requests for Streaming.
 server.on('upgrade', (req, socket, head) => {

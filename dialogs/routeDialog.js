@@ -18,8 +18,8 @@ const LOCATION = 'location_prompt';
 const utf8 = require('utf8');
 const fetch = require("node-fetch");
 const utils = require('../firebaseConfig/utils');
-
 var encodeUrl = require('encodeurl')
+var flat = 0;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -68,68 +68,84 @@ class RouteDialog extends CancelAndHelpDialog {
             // Get destiantion from Firebase
             try {
                 const id = await utils.getIdUser(stepContext.context);
-                var myDestiantion = await utils.readRoute(id);
-
+                var myDestiantion = await utils.readDestination(id);
             } catch (error) {
                 console.log(error);
             }
-
-            //Init card destination
-            var destinationCard = null;
-
+            //Send message
             try {
-                const destinationJson = {
-
-                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                    "type": "AdaptiveCard",
-                    "version": "1.0",
-                    "body": [
-                        {
-                            "type": "Image",
-                            "url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
-                            "width": "stretch",
-                            "style": "default"
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Nơi bạn muốn đến là?",
+                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myDestiantion[0],
+                                                "payload": myDestiantion[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDestiantion[1],
+                                                "payload": myDestiantion[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myDestiantion[2],
+                                                "payload": myDestiantion[2]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    ],
-                    "actions": [
-                        {
-                            "type": "Action.Submit",
-                            "title": myDestiantion[0].destination,
-                            "data": myDestiantion[0].destination
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": myDestiantion[1].destination,
-                            "data": myDestiantion[1].destination
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": myDestiantion[2].destination,
-                            "data": myDestiantion[2].destination
-
-                        }
-                    ]
-
-                };
-                destinationCard = CardFactory.adaptiveCard(destinationJson);
+                    }
+                });
 
             } catch (error) {
-                destinationCard = CardFactory.adaptiveCard(DestinationCard);
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Nơi bạn muốn đến là?",
+                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
+                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
+                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Suối tiên",
+                                                "payload": "Suối tiên"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
             }
 
-            //Send message to user
-            const destinationMessageText = 'Nơi bạn muốn đến là?';
-            await stepContext.context.sendActivity(destinationMessageText, destinationMessageText, InputHints.IgnoringInput);
-
-            await stepContext.context.sendActivity({ attachments: [destinationCard] });
-
-            /*    const destinationMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm đến vào';
-               const destinationMessageText_Example = 'VD: tôi muốn đến suối tiên';
-               await stepContext.context.sendActivity(destinationMessageText_Hint, destinationMessageText_Hint, InputHints.IgnoringInput);
-               await stepContext.context.sendActivity(destinationMessageText_Example, destinationMessageText_Example, InputHints.IgnoringInput);
-    */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
@@ -142,114 +158,144 @@ class RouteDialog extends CancelAndHelpDialog {
 
         const route = stepContext.options;
 
-
         if (!route.origin) {
+
             const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
             const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
             const luis = new BusRecognizer(luisConfig);
 
             // check From and To to Restart routeDialogs
 
+            var luisResult = await luis.executeLuisQuery(stepContext.context);
 
-            const luisResult = await luis.executeLuisQuery(stepContext.context);
-            
             var from = null;
             var to = null;
-    
+            const routeDetails = {};
+
             if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
                 from = luis.getFromEntities(luisResult);
                 to = luis.getToEntities(luisResult);
-            }
 
-            const routeDetails = {};
-            if (from && to) {
-                routeDetails.origin = from;
-                routeDetails.destination = to;
+
+                if (from && to) {
+                    routeDetails.origin = from;
+                    routeDetails.destination = to;
+                    await stepContext.endDialog();
+                    return await stepContext.beginDialog('routeDialog', routeDetails);
+                }
+                else if ((from == "đây" || from == "nơi đây" || from == "chổ này" || from == "nơi này") && flat == 1) {
+                    route.destination = stepContext.result;
+                }
+                else if (from && !to) {
+
+                    await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
+                    await stepContext.endDialog();
+                    return await stepContext.beginDialog('routeDialog', routeDetails);
+                }
+                else if (!from && to) {
+                    route.destination = to;
+                }
+
+            }
+            else if (LuisRecognizer.topIntent(luisResult) == "None") {
+                
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
-            else if (from && !to) {
-                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
-                await stepContext.endDialog();
-                return await stepContext.beginDialog('routeDialog', routeDetails);
-            }
-            else if (!from && to) {
-                route.destination = to;
-            }
-            else if (!from && !to) {
+            else {
                 route.destination = stepContext.result;
             }
+
+            //reset parameter flat
+            flat = 0;
 
             // Get origin from Firebase
             try {
                 const id = await utils.getIdUser(stepContext.context);
-                var myOrigin = await utils.readRoute(id);
+                var myOrigin = await utils.readOrigin(id);
 
             } catch (error) {
                 console.log(error);
             }
 
-            //Init card destination
-            var originCard = null;
-
+            //Send message
             try {
-                const originJson = {
-
-                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                    "type": "AdaptiveCard",
-                    "version": "1.0",
-                    "body": [
-                        {
-                            "type": "Image",
-                            "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRg4DM9oYGD3aAPH41C2RJpRwga6ChMdSSSRTy6dYN47wC3j2d9",
-                            "width": "stretch",
-                            "style": "default"
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn đi từ đâu?",
+                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myOrigin[0],
+                                                "payload": myOrigin[0]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": myOrigin[1],
+                                                "payload": myOrigin[1]
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Vị trí hiện tại",
+                                                "payload": "Vị trí hiện tại"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    ],
-                    "actions": [
-                        {
-                            "type": "Action.Submit",
-                            "title": myOrigin[0].origin,
-                            "data": myOrigin[0].origin
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": myOrigin[1].origin,
-                            "data": myOrigin[1].origin,
-
-                        },
-                        {
-                            "type": "Action.Submit",
-                            "title": "Vị trí hiện tại",
-                            "data": "Vị trí hiện tại"
-
-                        }
-                    ]
-
-                };
-                originCard = CardFactory.adaptiveCard(originJson);
+                    }
+                });
 
             } catch (error) {
-                originCard = CardFactory.adaptiveCard(OriginCard);
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Bạn muốn đi từ đâu?",
+                                        "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
+                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
+                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Vị trí hiện tại",
+                                                "payload": "Vị trí hiện tại"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
             }
 
-            //Send message
-            const originMessageText = 'Bạn sẽ đi từ đâu?';
-            await stepContext.context.sendActivity(originMessageText, originMessageText, InputHints.IgnoringInput);
-
-            await stepContext.context.sendActivity({ attachments: [originCard] });
-
-            /*   const originMessageText_Hint = 'Ngoài các lựa chọn trên bạn cũng có thể nhập điểm xuất phát vào';
-              const originMessageText_Example = 'VD: tôi muốn đi từ suối tiên';
-              await stepContext.context.sendActivity(originMessageText_Hint, originMessageText_Hint, InputHints.IgnoringInput);
-              await stepContext.context.sendActivity(originMessageText_Example, originMessageText_Example, InputHints.IgnoringInput);
-   */
             const messageText = null;
             const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
-
-
 
         }
 
@@ -265,17 +311,17 @@ class RouteDialog extends CancelAndHelpDialog {
         const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
         const luis = new BusRecognizer(luisConfig);
 
-        const luisResult = await luis.executeLuisQuery(stepContext.context);
-      
+        var luisResult = await luis.executeLuisQuery(stepContext.context);
+
         var from = null;
         var to = null;
+        const routeDetails = {};
 
         if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
             from = luis.getFromEntities(luisResult);
             to = luis.getToEntities(luisResult);
         }
 
-        const routeDetails = {};
         if (from == "đây" || from == "nơi đây" || from == "chổ này" || from == "nơi này" || stepContext.result == "Vị trí hiện tại" || stepContext.result == "\"Vị trí hiện tại\"" || LuisRecognizer.topIntent(luisResult) == "Tại_đây") {
             try {
                 const id = await utils.getIdUser(stepContext.context);
@@ -302,17 +348,22 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 })
             } catch (error) {
-                stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
 
-                const routeDetails = {};
                 routeDetails.destination = result.destination;
-                
-                await stepContext.endDialog();
+                flat = 1;
+                await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+                await stepContext.endDialog('Vị trí hiện tại');
                 return await stepContext.beginDialog('routeDialog', routeDetails);
+
             }
         }
-        else {
+        else if (LuisRecognizer.topIntent(luisResult) == "None") {
+            routeDetails.destination = result.destination;
 
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('routeDialog', routeDetails);
+        }
+        else {
             // check From and To to Restart routeDialogs
             if (from && to) {
                 result.origin = from;
@@ -320,6 +371,7 @@ class RouteDialog extends CancelAndHelpDialog {
             }
             else if (to && !from) {
                 routeDetails.destination = result.destination;
+
                 await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm xuất phát thay vì điểm đến', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
@@ -328,11 +380,11 @@ class RouteDialog extends CancelAndHelpDialog {
                 result.origin = from;
             }
             else if (!from && !to) {
-
                 result.origin = stepContext.result;
             }
 
         }
+
 
         //cho người dùng biết 2 điểm O-D
         const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";

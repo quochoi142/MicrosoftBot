@@ -197,6 +197,12 @@ class MainDialog extends ComponentDialog {
             default: {
                 const didntUnderstandMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới';
                 await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
+               /* const fetch = require("node-fetch");
+                var requestOptions = {
+                    method: 'GET',
+                };
+                const response = await fetch("http://localhost:3978/api/notify",requestOptions)
+               // await stepContext.context.sendActivity("http://localhost:3978/api/notify")*/
             }
 
 
