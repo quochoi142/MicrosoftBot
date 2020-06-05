@@ -563,7 +563,7 @@ const utils = {
     notify: async (geo, place, bus, id) => {
         var encodeUrl = require('encodeurl');
         const fetch = require("node-fetch");
-        var refFirebase = firebase.database().ref('users/' + id + '/noti');
+        var refFirebase = firebase.database().ref('users/' + id + '/noti/isOn');
         refFirebase.once('value').then(async function (snapshot) {
             if (snapshot.val() == true) {
                 const date = new Date()
@@ -658,7 +658,7 @@ const utils = {
     },
 
     isTurnOnNotify: async (id) => {
-        return await firebase.database().ref('users/' + id + "/noti").once('value')
+        return await firebase.database().ref('users/' + id + "/noti/isOn").once('value')
             .then(function (snapshot) {
                 //console.log(snapshot.val())
                 return snapshot.val();
