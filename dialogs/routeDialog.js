@@ -176,7 +176,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 from = luis.getFromEntities(luisResult);
                 to = luis.getToEntities(luisResult);
 
-
+                await stepContext.context.sendActivity('1', '', InputHints.IgnoringInput);
                 if (from && to) {
                     routeDetails.origin = from;
                     routeDetails.destination = to;
@@ -219,7 +219,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
-
+            await stepContext.context.sendActivity('2', '', InputHints.IgnoringInput);
             //Send message
             try {
                 await stepContext.context.sendActivity({
@@ -246,8 +246,8 @@ class RouteDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "postback",
-                                                "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
+                                                "payload": "Vị trí hiện tại",
                                             }
                                         ]
                                     }
@@ -281,9 +281,9 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
                                             },
                                             {
-                                                "type": "postback ",
-                                                "url": "Vị trí hiện tại",
+                                                "type": "postback",
                                                 "title": "Vị trí hiện tại",
+                                                "payload": "Vị trí hiện tại",
                                             }
                                         ]
                                     }
