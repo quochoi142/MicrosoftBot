@@ -245,7 +245,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": myOrigin[1]
                                             },
                                             {
-                                                "type": "web_url",
+                                                "type": "postback",
                                                 "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
                                             }
@@ -281,7 +281,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
                                             },
                                             {
-                                                "type": "web_url",
+                                                "type": "postbacknode ",
                                                 "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
                                             }
@@ -353,7 +353,36 @@ class RouteDialog extends CancelAndHelpDialog {
                     console.log(err);
                 })
 
-
+                //Send card 
+                try {
+                    await stepContext.context.sendActivity({
+                        //text: "Bạn cũng có thể nhập trực tiếp",
+                        channelData: {
+                            "attachment": {
+                                "type": "template",
+                                "payload": {
+                                    "template_type": "generic",
+                                    "elements": [
+                                        {
+                                            "title": "Bạn muốn tìm xung quanh trạm nào?",
+                                            "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
+                                            "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": myUrl,
+                                                    "title": "Mở map",
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+                }
 
                 var map = utils.openMap(id, myToken);
 

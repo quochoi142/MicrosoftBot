@@ -227,6 +227,11 @@ class StopArounDialog extends CancelAndHelpDialog {
                                         "subtitle": "Bạn chỉ có thể chọn, không được nhập trực tiếp",
                                         "buttons": [
                                             {
+                                                "type": "postback",
+                                                "title": "myInfo",
+                                                "payload": "myInfo"
+                                            },
+                                            {
                                                 "type": "web_url",
                                                 "url": myUrl,
                                                 "title": "Mở map",
