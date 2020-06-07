@@ -184,12 +184,11 @@ class StopArounDialog extends CancelAndHelpDialog {
             //Send card 
 
             await stepContext.context.sendActivity({
-                //text: "Bạn cũng có thể nhập trực tiếp",
                 channelData: {
                     "attachment": {
                         "type": "template",
                         "payload": {
-                            "template_type": "button",
+                            "template_type": "generic",
                             "elements": [
                                 {
                                     "title": "Bạn muốn tìm xung quanh trạm nào?",
