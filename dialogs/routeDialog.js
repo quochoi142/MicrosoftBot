@@ -281,7 +281,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                                 "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
                                             },
                                             {
-                                                "type": "postbacknode ",
+                                                "type": "postback ",
                                                 "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
                                             }
