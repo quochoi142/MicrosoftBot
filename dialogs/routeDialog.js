@@ -188,7 +188,7 @@ class RouteDialog extends CancelAndHelpDialog {
                 }
                 else if (from && !to) {
 
-                    await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát', '', InputHints.IgnoringInput);
+                    await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát.', '', InputHints.IgnoringInput);
                     await stepContext.endDialog();
                     return await stepContext.beginDialog('routeDialog', routeDetails);
                 }
@@ -199,7 +199,7 @@ class RouteDialog extends CancelAndHelpDialog {
             }
             else if (LuisRecognizer.topIntent(luisResult) == "None" && flat != 1) {
 
-                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.', '', InputHints.IgnoringInput);
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng nhập chi tiết hoặc chính xác hơn.', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
@@ -219,31 +219,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
-            utils.setToken(stepContext.context);
-            var promise = new Promise(function (resolve, reject) {
-                var token;
-                var firebase = utils.getFirebase();
-                firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
-                    token = snap.val();
-                    var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
-                    setTimeout(function () {
-                        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
-
-                    }, 5 * 60000);
-                    resolve({ url, token })
-
-                })
-
-
-            });
-            var myUrl;
-            var myToken;
-            await promise.then(res => {
-                myUrl = res.url;
-                myToken = res.token
-            }).catch(err => {
-                console.log(err);
-            })
 
             //Send message
             try {
@@ -271,7 +246,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "web_url",
-                                                "url": myUrl,
+                                                "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
                                             }
                                         ]
@@ -307,7 +282,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "web_url",
-                                                "url": myUrl,
+                                                "url": "Vị trí hiện tại",
                                                 "title": "Vị trí hiện tại",
                                             }
                                         ]
@@ -351,6 +326,35 @@ class RouteDialog extends CancelAndHelpDialog {
         if (from == "đây" || from == "nơi đây" || from == "chổ này" || from == "nơi này" || stepContext.result == "Vị trí hiện tại" || stepContext.result == "\"Vị trí hiện tại\"" || LuisRecognizer.topIntent(luisResult) == "Tại_đây") {
             try {
                 const id = await utils.getIdUser(stepContext.context);
+
+                utils.setToken(stepContext.context);
+                var promise = new Promise(function (resolve, reject) {
+                    var token;
+                    var firebase = utils.getFirebase();
+                    firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                        token = snap.val();
+                        var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                        setTimeout(function () {
+                            firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                        }, 5 * 60000);
+                        resolve({ url, token })
+
+                    })
+
+
+                });
+                var myUrl;
+                var myToken;
+                await promise.then(res => {
+                    myUrl = res.url;
+                    myToken = res.token
+                }).catch(err => {
+                    console.log(err);
+                })
+
+
+
                 var map = utils.openMap(id, myToken);
 
                 await map.then(async res => {

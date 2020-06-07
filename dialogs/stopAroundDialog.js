@@ -189,7 +189,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                         "attachment": {
                             "type": "template",
                             "payload": {
-                                "template_type": "generic",
+                                "template_type": "button",
                                 "elements": [
                                     {
                                         "title": "Bạn muốn tìm xung quanh trạm nào?",
@@ -226,7 +226,6 @@ class StopArounDialog extends CancelAndHelpDialog {
                                         "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
                                         "subtitle": "Bạn chỉ có thể chọn, không được nhập trực tiếp",
                                         "buttons": [
-
                                             {
                                                 "type": "web_url",
                                                 "url": myUrl,
