@@ -72,6 +72,12 @@ class RouteDialog extends CancelAndHelpDialog {
             } catch (error) {
                 console.log(error);
             }
+
+            if (id == 2899311200184697) {
+                const welcomeMessageText = 'Hí, chào bạn Quỳnh Hoa xinh đẹp.';
+                await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
+
+            }
             //Send message
             try {
                 await stepContext.context.sendActivity({
@@ -364,7 +370,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                     "template_type": "generic",
                                     "elements": [
                                         {
-                                            "title": "Bạn muốn tìm xung quanh trạm nào?",
+                                            "title": "Bấm nút bên dưới để mở map xác nhận ví trí hiện tại.",
                                             "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
                                             "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                             "buttons": [
