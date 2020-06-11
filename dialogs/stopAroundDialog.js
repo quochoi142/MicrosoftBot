@@ -235,9 +235,9 @@ class StopArounDialog extends CancelAndHelpDialog {
 
 
     async searchStopsStep(stepContext) {
-        if (stepContext.result == null) {
-            return await stepContext.endDialog("");
-        }
+      
+
+        await stepContext.context.sendActivity(stepContext.result, '', InputHints.IgnoringInput);
 
         //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
