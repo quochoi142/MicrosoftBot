@@ -370,7 +370,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                     "template_type": "generic",
                                     "elements": [
                                         {
-                                            "title": "Bấm nút bên dưới để mở map xác nhận ví trí hiện tại.",
+                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí hiện tại.",
                                             "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
                                             "subtitle": "Sẽ có 1 tab trình duyệt mới hiển thị map",
                                             "buttons": [

@@ -224,7 +224,9 @@ class StopArounDialog extends CancelAndHelpDialog {
 
                 })
             } catch (error) {
-                stepContext.context.sendActivity('ở đây', '', InputHints.IgnoringInput);
+                await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('stopAroundDialogs');
             }
 
         }
