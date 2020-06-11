@@ -193,7 +193,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                                 {
                                     "title": "Bạn muốn tìm xung quanh trạm nào?",
                                     "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
-                                    "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                    "subtitle": "Hãy mở map và xác nhận vị trí",
                                     "buttons": [
                                         {
                                             "type": "web_url",
@@ -236,8 +236,6 @@ class StopArounDialog extends CancelAndHelpDialog {
 
     async searchStopsStep(stepContext) {
       
-
-        await stepContext.context.sendActivity(stepContext.result, '', InputHints.IgnoringInput);
 
         //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
@@ -372,8 +370,7 @@ class StopArounDialog extends CancelAndHelpDialog {
         if (flag) {
             prompt = "Bạn cần giúp gì thêm không?";
         }
-        stepContext.context.sendActivity(prompt, '', InputHints.IgnoringInput);
-        stepContext.context.sendActivity(1, '', InputHints.IgnoringInput);
+
         return await stepContext.endDialog(prompt);
     }
 }
