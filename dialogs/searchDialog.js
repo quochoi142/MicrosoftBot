@@ -151,7 +151,7 @@ class SearchDialog extends CancelAndHelpDialog {
             var bus = null;
             var stop = null;
 
-            if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+            if (LuisRecognizer.topIntent(luisResult) == "Tra_cứu_xe") {
                 bus = luis.getBusEntities(luisResult);
                 stop = luis.getStopEntities(luisResult);
             }
@@ -278,7 +278,7 @@ class SearchDialog extends CancelAndHelpDialog {
         var bus = null;
         var stop = null;
 
-        if (LuisRecognizer.topIntent(luisResult) == "Tìm_đường") {
+        if (LuisRecognizer.topIntent(luisResult) == "Tra_cứu_xe") {
             bus = luis.getBusEntities(luisResult);
             stop = luis.getStopEntities(luisResult);
         }
