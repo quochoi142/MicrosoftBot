@@ -15,7 +15,7 @@ const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const { StopArounDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
 const SEARCH_DIALOG = 'searchDialog';
-var welcome = 'Welcome!';
+var welcome = 'Chào mừng bạn đến với Bus Bot!';
 var isWelcome = false;
 
 class MainDialog extends ComponentDialog {
@@ -138,7 +138,7 @@ class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     async actStep(stepContext) {
-        isWelcome = true;
+      
         const routeDetails = {};
 
 
@@ -213,7 +213,7 @@ class MainDialog extends ComponentDialog {
 
 
         }
-
+        isWelcome = true;
         return await stepContext.replaceDialog(this.initialDialogId);
     }
 
