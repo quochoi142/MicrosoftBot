@@ -372,7 +372,7 @@ class RouteDialog extends CancelAndHelpDialog {
                                         {
                                             "title": "Bấm nút bên dưới để mở map xác nhận ví trí hiện tại.",
                                             "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
-                                            "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                            "subtitle": "Sẽ có 1 tab trình duyệt mới hiển thị map",
                                             "buttons": [
                                                 {
                                                     "type": "web_url",
