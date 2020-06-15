@@ -29,7 +29,7 @@ class SearchDialog extends CancelAndHelpDialog {
                 this.GetStopStep.bind(this),
                 this.GetBusNum.bind(this),
                 this.SearchStep.bind(this),
-                this.confirmNotify.bind(this)
+                // this.confirmNotify.bind(this)
 
             ]));
 
@@ -137,7 +137,7 @@ class SearchDialog extends CancelAndHelpDialog {
     }
 
     async GetBusNum(stepContext) {
-        const result = stepContext.options;
+        var result = stepContext.options;
 
 
         if (!result.bus) {
@@ -184,87 +184,145 @@ class SearchDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
-            //Send message
-            try {
-                await stepContext.context.sendActivity({
-                    channelData: {
-                        "attachment": {
-                            "type": "template",
-                            "payload": {
-                                "template_type": "generic",
-                                "elements": [
-                                    {
-                                        "title": "Bạn muốn hỏi xe bus số mấy?",
-                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
-                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
-                                        "buttons": [
-                                            {
-                                                "type": "postback",
-                                                "title": myBus[0],
-                                                "payload": myBus[0]
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": myBus[1],
-                                                "payload": myBus[1]
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": myBus[2],
-                                                "payload": myBus[2]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
+            //////--------------------------------------
+
+            var place = (stepContext.result) ? stepContext.result : result.stop;
+            const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
+
+            const response = await fetch(utf8.encode(urlRequestGeo));
+            const json = await response.json();
+
+            if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
+                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+                await stepContext.context.sendActivity(prompt)
+                flag = false;
+            } else {
+                //request get Geo(lat,lng)
+                result = {};
+                result.address = json.candidates[0].formatted_address;
+                result.geo = json.candidates[0].geometry.location;
+                this.geo = result.geo
+                this.place = place
+                const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+                const response = await fetch(encodeUrl(url), requestOptions)
+                if (response.status != 200) {
+                    await stepContext.context.sendActivity("Lỗi server")
+                    stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                }
+                const data = await response.json();
+
+                if (data.boards.length == 0) {
+                    prompt = 'Không tìm thấy trạm ' + place;
+                    await stepContext.context.sendActivity(prompt)
+                    stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                } else {
+                    var buses = [];
+                    const boards = data.boards;
+                    var isExistsBus = false;
+                    for (var i = 0; i < boards.length; i++) {
+
+                        if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
+                            //const departures = boards[i].departures;
+                            this.buses = boards[i].departures;
+
+
+
+
                         }
+
+
+                    }
+
+                }
+                var departures = []
+                var buttons = []
+                this.buses.forEach(e => {
+                    if (!departures.includes(e.transport.name)) {
+                        departures.push(e.transport.name)
+                        buttons.push({
+                            "type": "postback",
+                            "title": e.transport.name,
+                            "payload": e.transport.name
+                        })
                     }
                 });
 
-            } catch (error) {
-                await stepContext.context.sendActivity({
-                    channelData: {
-                        "attachment": {
-                            "type": "template",
-                            "payload": {
-                                "template_type": "generic",
-                                "elements": [
-                                    {
-                                        "title": "Bạn muốn hỏi xe bus số mấy?",
-                                        "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
-                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
-                                        "buttons": [
-                                            {
-                                                "type": "postback",
-                                                "title": "08",
-                                                "payload": "08"
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": "19",
-                                                "payload": "19"
-                                            },
-                                            {
-                                                "type": "postback",
-                                                "title": "33",
-                                                "payload": "33"
-                                            }
-                                        ]
-                                    }
-                                ]
+                //////--------------------------------------
+
+                //Send message
+                try {
+                    await stepContext.context.sendActivity({
+                        channelData: {
+                            "attachment": {
+                                "type": "template",
+                                "payload": {
+                                    "template_type": "generic",
+                                    "elements": [
+                                        {
+                                            "title": "Bạn muốn hỏi xe bus số mấy?",
+                                            "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                            "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                            "buttons": buttons
+                                        }
+                                    ]
+                                }
                             }
                         }
-                    }
-                });
+                    });
+
+                } catch (error) {
+                    // await stepContext.context.sendActivity({
+                    //     channelData: {
+                    //         "attachment": {
+                    //             "type": "template",
+                    //             "payload": {
+                    //                 "template_type": "generic",
+                    //                 "elements": [
+                    //                     {
+                    //                         "title": "Bạn muốn hỏi xe bus số mấy?",
+                    //                         "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                    //                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                    //                         "buttons": [
+                    //                             {
+                    //                                 "type": "postback",
+                    //                                 "title": "08",
+                    //                                 "payload": "08"
+                    //                             },
+                    //                             {
+                    //                                 "type": "postback",
+                    //                                 "title": "19",
+                    //                                 "payload": "19"
+                    //                             },
+                    //                             {
+                    //                                 "type": "postback",
+                    //                                 "title": "33",
+                    //                                 "payload": "33"
+                    //                             }
+                    //                         ]
+                    //                     }
+                    //                 ]
+                    //             }
+                    //         }
+                    //     }
+                    // });
+                    return stepContext.sendActivity("Bạn muốn hỏi bus số mấy?", "Bạn muốn hỏi bus số mấy?", InputHints.ExpectingInput)
+                }
+
+                const messageText = null;
+                const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+                return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
             }
-
-            const messageText = null;
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+            return stepContext.next(result.bus);
         }
-        return stepContext.next(result.bus);
     }
-
     async SearchStep(stepContext) {
         const result0 = stepContext.options
 
@@ -400,6 +458,73 @@ class SearchDialog extends CancelAndHelpDialog {
 
             }
 
+            // var result;
+            // var No_bus;
+            // const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
+
+            // const response = await fetch(utf8.encode(urlRequestGeo));
+            // const json = await response.json();
+
+            // if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
+            //     prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
+            //     await stepContext.context.sendActivity(prompt)
+            //     flag = false;
+            // } else {
+            //     //request get Geo(lat,lng)
+            //     result = {};
+            //     result.address = json.candidates[0].formatted_address;
+            //     result.geo = json.candidates[0].geometry.location;
+            //     this.geo = result.geo
+            //     this.place = place
+            //     this.bus = result0.bus
+            //     //request get departures around the place
+
+
+            // }
+
+            // if (flag == true) {
+
+            //     const boards = data.boards;
+            //     var isExistsBus = false;
+
+            //     const departure = this.buses
+            //     for (var j = 0; j < departures.length; j++) {
+            //         if (result0.bus.match('(\\d+)')[0] == parseInt(departures[j].transport.name)) {
+            //             isExistsBus = true
+            //             No_bus = departures[j].transport.name;
+            //             var time = departures[j].time;
+            //             const moment = require('moment')
+            //             var now = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+
+            //             time = moment.utc(moment(time, "YYYY-MM-DDTHH:mm:ssZ").diff(now)).format('HH:mm')
+            //             const tokens = time.split(":");
+            //             const h = tokens[0]
+            //             const m = tokens[1]
+            //             time = "";
+            //             if (h != 0) {
+            //                 time += parseInt(h) + "h";
+            //             }
+            //             if (m != 0) {
+            //                 time += parseInt(m) + "'";
+            //             }
+            //             time = (time == "") ? "1'" : time;
+
+            //             msg = "Xe bus số " + departures[j].transport.name + " xuất phát từ " + departures[j].transport.headsign + " khoảng " + time + " sẽ đi qua trạm " + boards[i].place.name;
+            //             break;
+            //         }
+            //     }
+
+
+
+
+            //     if (!isExistsBus) {
+            //         await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
+            //         flag = false
+            //     }
+            // }
+
+
+
 
         } catch (err) {
             console.log(err);
@@ -424,13 +549,16 @@ class SearchDialog extends CancelAndHelpDialog {
             const idUser = utils.getIdUser(stepContext.context);
             await utils.saveDepartures(idUser, dataDeparture);
 
-            const id = utils.getIdUser(stepContext.context);
-            const isNoti = await utils.isTurnOnNotify(id)
-            if (isNoti == true) {
-                return await stepContext.next(false)
-            }
-            //return await stepContext.endDialog(prompt);
-            return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
+            const prompt = "Bạn cần giúp gì thêm không?";
+
+            return await stepContext.endDialog(prompt);
+            // const id = utils.getIdUser(stepContext.context);
+            // const isNoti = await utils.isTurnOnNotify(id)
+            // if (isNoti == true) {
+            //     return await stepContext.next(false)
+            // }
+            // //return await stepContext.endDialog(prompt);
+            // return await stepContext.prompt(CONFIRM, 'Bạn có muốn đặt nhắc nhở cho các ngày (T2->T6) không? Tin nhắn sẽ được gửi trước 10\'', ['Có', 'Không']);
         }
 
     }
@@ -459,7 +587,7 @@ class SearchDialog extends CancelAndHelpDialog {
             }
             setTimeout(utils.notify, time, this.geo, this.place, this.bus, id)
             fb.database().ref('users/' + id).child("/noti/isOn").set(true)
-            fb.database().ref('users/' + id).child("/noti/TimeSet").set(day+"-------"+time)
+            fb.database().ref('users/' + id).child("/noti/TimeSet").set(day + "-------" + time)
             await stepContext.context.sendActivity('Đã đặt nhắc nhở, bạn có thể tắt bằng cầu lệnh "tắt nhắc nhở"');
         }
 

@@ -53,6 +53,16 @@
     var myInfo, myMaker;
     const polylines = [];
 
+    function zoomToObject(obj) {
+      var bounds = new google.maps.LatLngBounds();
+      var points = obj.getPath().getArray();
+      for (var n = 0; n < points.length; n++) {
+        bounds.extend(points[n]);
+      }
+      map.fitBounds(bounds);
+    }
+
+
     function initMap() {
 
       initFireBase();
@@ -81,6 +91,7 @@
         addYourLocationButton();
 
         //draw polylines
+        var polyArr = [];
         data.polylines.forEach(e => {
           var path = new google.maps.Polyline({
             path: e,
@@ -90,11 +101,21 @@
             strokeWeight: 10,
 
           });
-
-          path.setMap(map);
+          polyArr=polyArr.concat(e);
+          //path.setMap(map);
           polylines.push(path)
 
         });
+        var temp = new google.maps.Polyline({
+            path: polyArr,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1,
+            strokeWeight: 10,
+
+          });
+          temp.setMap(map)
+          zoomToObject(temp)
 
         //set markers
 
@@ -161,6 +182,7 @@
           idIncrease++
           tr.appendChild(td);
           tr.addEventListener('click', function () {
+            temp.setMap(null);
             var index = e.index;
             for (var i = 0; i < leng; i++) {
               if (index != i) {
@@ -204,9 +226,9 @@
             });
             polylines[index].setMap(map);
 
+            zoomToObject(polylines[index]);
 
-
-            map.setCenter(data.markers[index].geo)
+            //map.setCenter(data.markers[index].geo)
 
           })
           steps.appendChild(tr);
