@@ -3,6 +3,7 @@ const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { InputHints, MessageFactory, ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
+const { BusRecognizer } = require('../dialogs/BusRecognizer');
 
 const WATERFALL_DIALOG = 'STOP_AROUND_WATERFALL'
 const LOCATION = 'CONFIRM_LOCATION'
