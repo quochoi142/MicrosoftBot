@@ -320,8 +320,9 @@ class SearchDialog extends CancelAndHelpDialog {
                 const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
                 return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
             }
-            return stepContext.next(result.bus);
+
         }
+        return stepContext.next(result.bus);
     }
     async SearchStep(stepContext) {
         const result0 = stepContext.options
@@ -371,7 +372,7 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
+            if (response.status != 200 && json.candidates && json.candidates.length == 0) {
                 prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
                 await stepContext.context.sendActivity(prompt)
                 flag = false;
