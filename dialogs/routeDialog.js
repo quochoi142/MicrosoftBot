@@ -73,11 +73,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
-            if (id == 2899311200184697) {
-                const welcomeMessageText = 'Hí, chào bạn Quỳnh Hoa xinh đẹp.';
-                await stepContext.context.sendActivity(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
-
-            }
             //Send message
             try {
                 await stepContext.context.sendActivity({
@@ -182,7 +177,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 from = luis.getFromEntities(luisResult);
                 to = luis.getToEntities(luisResult);
 
-                await stepContext.context.sendActivity('1', '', InputHints.IgnoringInput);
                 if (from && to) {
                     routeDetails.origin = from;
                     routeDetails.destination = to;
@@ -225,7 +219,6 @@ class RouteDialog extends CancelAndHelpDialog {
                 console.log(error);
             }
 
-            await stepContext.context.sendActivity('2', '', InputHints.IgnoringInput);
             //Send message
             try {
                 await stepContext.context.sendActivity({

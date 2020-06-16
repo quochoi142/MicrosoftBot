@@ -232,16 +232,197 @@ class StopArounDialog extends CancelAndHelpDialog {
         }
         return await stepContext.next(result.origin)
     }
+    async openMapStep(stepContext) {
 
+        var result = stepContext.options;
+        if (!result.origin) {
+
+            // Get destiantion from Firebase
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+                var myStop = await utils.readStop(id);
+            } catch (error) {
+                console.log(error);
+            }
+
+            //Send message
+            try {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Nơi bạn muốn đến là?",
+                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": myStop,
+                                                "payload": myStop
+                                            },
+                                            {
+                                                "type": "postback",
+                                                "title": "Mở map chọn vị trí",
+                                                "payload": "Mở map chọn vị trí"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                await stepContext.context.sendActivity({
+                    channelData: {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "Nơi bạn muốn đến là?",
+                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                        "buttons": [
+                                            {
+                                                "type": "postback",
+                                                "title": "Mở map chọn vị trí",
+                                                "payload": "Mở map chọn vị trí"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                });
+            }
+
+            const msg = null;
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+        }
+        return await stepContext.next(result.origin)
+    }
 
     async searchStopsStep(stepContext) {
-      
 
-        //stepContext.context.sendActivity(0, '', InputHints.IgnoringInput);
+        var result = stepContext.options;
+
+        const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+        const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
+        const luis = new BusRecognizer(luisConfig);
+
+        var luisResult = await luis.executeLuisQuery(stepContext.context);
+
+        var origin = null;
+        const originDetails = {};
+
+        if (LuisRecognizer.topIntent(luisResult) == "Tìm_trạm") {
+            origin = luis.getOriginEntities(luisResult);
+        }
+
+        if (origin == "đây" || origin == "nơi đây" || origin == "chổ này" || origin == "nơi này" || stepContext.result == "Mở map chọn vị trí" || stepContext.result == "\"Mở map chọn vị trí\"" || LuisRecognizer.topIntent(luisResult) == "Tại_đây") {
+            try {
+                const id = await utils.getIdUser(stepContext.context);
+
+                utils.setToken(stepContext.context);
+                var promise = new Promise(function (resolve, reject) {
+                    var token;
+                    var firebase = utils.getFirebase();
+                    firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
+                        token = snap.val();
+                        var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
+                        setTimeout(function () {
+                            firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
+
+                        }, 5 * 60000);
+                        resolve({ url, token })
+
+                    })
+
+                });
+                var myUrl;
+                var myToken;
+                await promise.then(res => {
+                    myUrl = res.url;
+                    myToken = res.token
+                }).catch(err => {
+                    console.log(err);
+                })
+
+                //Send card 
+                try {
+                    await stepContext.context.sendActivity({
+
+                        channelData: {
+                            "attachment": {
+                                "type": "template",
+                                "payload": {
+                                    "template_type": "generic",
+                                    "elements": [
+                                        {
+                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí hiện tại.",
+                                            "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
+                                            "subtitle": "Sẽ có 1 tab trình duyệt mới hiển thị map",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": myUrl,
+                                                    "title": "Mở map",
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+                }
+
+                var map = utils.openMap(id, myToken);
+
+                await map.then(async res => {
+
+                    var token = await utils.getTokenbyId(id)
+                    if (res.token != token) {
+                        result.origin = null;
+                    } else {
+                        result.origin = res.location;
+                    }
+
+
+                })
+            } catch (error) {
+                //chưa sửa xong
+                originDetails.origin = null;
+                await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+
+            }
+        }
+        else if (LuisRecognizer.topIntent(luisResult) == "None" || origin == null){
+            originDetails.origin = null;
+            await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
+            await stepContext.endDialog();
+            return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+        }
+        else if (origin) {
+            result.origin = origin;
+        }
+
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;
         var prompt = '';
         var flag = true;
-        //stepContext.context.sendActivity(0.1, '', InputHints.IgnoringInput);
+
         try {
             var result;
             if (utils.isGeo(place) == true) {
