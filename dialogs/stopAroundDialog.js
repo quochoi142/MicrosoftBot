@@ -3,6 +3,7 @@ const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { InputHints, MessageFactory, ActivityTypes } = require('botbuilder');
 const { TextPrompt, WaterfallDialog, AttachmentPrompt } = require('botbuilder-dialogs');
 const { CardFactory } = require('botbuilder-core');
+const { LuisRecognizer } = require('botbuilder-ai');
 const { BusRecognizer } = require('../dialogs/BusRecognizer');
 
 const WATERFALL_DIALOG = 'STOP_AROUND_WATERFALL'
@@ -24,7 +25,6 @@ class StopArounDialog extends CancelAndHelpDialog {
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                //this.getLocationStep.bind(this),
                 this.openMapStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
@@ -410,7 +410,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
             }
         }
-        else if (LuisRecognizer.topIntent(luisResult) == "None" || origin == null){
+        else if (LuisRecognizer.topIntent(luisResult) == "None"){
             originDetails.origin = null;
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
@@ -418,6 +418,9 @@ class StopArounDialog extends CancelAndHelpDialog {
         }
         else if (origin) {
             result.origin = origin;
+        }
+        else if (!origin) {
+            result.origin = stepContext.result;
         }
 
         const place = (stepContext.options.origin) ? stepContext.options.origin : stepContext.result;

@@ -141,7 +141,6 @@ class MainDialog extends ComponentDialog {
       
         const routeDetails = {};
 
-
         if (!this.luisRecognizer.isConfigured) {
             // LUIS is not configured, we just run the BookingDialog path.
 
