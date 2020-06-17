@@ -399,22 +399,21 @@ class StopArounDialog extends CancelAndHelpDialog {
                         result.origin = res.location;
                     }
 
-
                 })
             } catch (error) {
                 //chưa sửa xong
-                originDetails.origin = null;
+
                 await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
-                return await stepContext.beginDialog('stopAroungDialog', originDetails);
+                return await stepContext.beginDialog('stopAroundDialog');
 
             }
         }
         else if (LuisRecognizer.topIntent(luisResult) == "None") {
-            originDetails.origin = null;
+
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
-            return await stepContext.beginDialog('stopAroungDialog', originDetails);
+            return await stepContext.beginDialog('stopAroundDialog');
         }
         else if (origin) {
             result.origin = origin;
