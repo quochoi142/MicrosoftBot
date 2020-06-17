@@ -256,8 +256,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                                 "template_type": "generic",
                                 "elements": [
                                     {
-                                        "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "title": "Bạn muốn tìm trạm xung quanh vị trí nào",
+                                        "image_url": "https://i.pcmag.com/imagery/articles/05ADBV1ymnSvbBWkkDkQIzv-5.fit_scale.size_2698x1517.v1569489490.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -287,8 +287,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                                 "template_type": "generic",
                                 "elements": [
                                     {
-                                        "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "title": "Bạn muốn tìm trạm xung quanh vị trí nào",
+                                        "image_url": "https://i.pcmag.com/imagery/articles/05ADBV1ymnSvbBWkkDkQIzv-5.fit_scale.size_2698x1517.v1569489490.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -368,7 +368,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                                     "template_type": "generic",
                                     "elements": [
                                         {
-                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí hiện tại.",
+                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí.",
                                             "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
                                             "subtitle": "Sẽ có 1 tab trình duyệt mới hiển thị map",
                                             "buttons": [
@@ -410,7 +410,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
             }
         }
-        else if (LuisRecognizer.topIntent(luisResult) == "None"){
+        else if (LuisRecognizer.topIntent(luisResult) == "None") {
             originDetails.origin = null;
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
