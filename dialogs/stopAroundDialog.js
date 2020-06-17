@@ -406,7 +406,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                 originDetails.origin = null;
                 await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
-                return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+                return await stepContext.beginDialog('stopAroungDialog', originDetails);
 
             }
         }
@@ -414,7 +414,7 @@ class StopArounDialog extends CancelAndHelpDialog {
             originDetails.origin = null;
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
-            return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+            return await stepContext.beginDialog('stopAroungDialog', originDetails);
         }
         else if (origin) {
             result.origin = origin;
