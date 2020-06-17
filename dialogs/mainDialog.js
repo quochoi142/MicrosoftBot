@@ -12,7 +12,7 @@ const ConfirmCard = require('../resources/confirmCard.json');
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 
 
-const { StopArounDialog } = require('./stopAroundDialog')
+const { StopAroundDialog } = require('./stopAroundDialog')
 const STOP_AROUND_DIALOG = 'STOP_AROUND_DIALOG';
 const SEARCH_DIALOG = 'searchDialog';
 var welcome = 'Chào mừng bạn đến với Bus Bot!';
@@ -32,7 +32,7 @@ class MainDialog extends ComponentDialog {
         if (!searchDialog) throw new Error('[MainDialog]: Missing parameter \'searchDialog\' is required');
 
 
-        const stopAround = new StopArounDialog(STOP_AROUND_DIALOG);
+        const stopAround = new StopAroundDialog(STOP_AROUND_DIALOG);
 
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.

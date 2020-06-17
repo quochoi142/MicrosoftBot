@@ -23,7 +23,8 @@ const { RouteDialog } = require('./dialogs/routeDialog');
 const ROUTE_DIALOG = 'routeDialog';
 const { SearchDialog } = require('./dialogs/searchDialog');
 const SEARCH_DIALOG = 'searchDialog';
-
+const { StopAroundDialog } = require('./dialogs/stopAroundDialog');
+const STOP_AROUND_DIALOG = 'stopAroundDialog';
 
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
 const ENV_FILE = path.join(__dirname, '.env');
@@ -82,6 +83,7 @@ const luisRecognizer = new BusRecognizer(luisConfig);
 // Create the main dialog.
 const routeDialog = new RouteDialog(ROUTE_DIALOG);
 const searchDialog = new SearchDialog(SEARCH_DIALOG);
+const stopAroundDialog = new StopAroundDialog(STOP_AROUND_DIALOG);
 const dialog = new MainDialog(luisRecognizer, routeDialog, searchDialog);
 //const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 

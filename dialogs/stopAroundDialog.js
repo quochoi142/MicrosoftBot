@@ -19,7 +19,7 @@ const utils = require('../firebaseConfig/utils');
 
 const randomstring = require('randomstring')
 
-class StopArounDialog extends CancelAndHelpDialog {
+class StopAroundDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
         this.addDialog(new TextPrompt(TEXT_PROMPT))
@@ -311,7 +311,7 @@ class StopArounDialog extends CancelAndHelpDialog {
 
                 await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
-                return await stepContext.beginDialog('stopAroundDialog');
+                return await stepContext.beginDialog('STOP_AROUND_DIALOG');
 
             }
         }
@@ -319,7 +319,8 @@ class StopArounDialog extends CancelAndHelpDialog {
 
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
-            return await stepContext.beginDialog('stopAroundDialog');
+            return await stepContext.beginDialog('STOP_AROUND_DIALOG');
+            stepContext.beginDialog()
         }
         else if (origin) {
             result.origin = origin;
@@ -466,4 +467,4 @@ class StopArounDialog extends CancelAndHelpDialog {
 }
 
 
-module.exports.StopArounDialog = StopArounDialog;
+module.exports.StopAroundDialog = StopAroundDialog;
