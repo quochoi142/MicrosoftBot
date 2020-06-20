@@ -534,7 +534,8 @@ class SearchDialog extends CancelAndHelpDialog {
         } catch (err) {
             console.log(err);
             prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
-            return await stepContext.endDialog(prompt);
+            await stepContext.context.sendActivity(prompt);
+            return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
             flag = false;
         }
 
