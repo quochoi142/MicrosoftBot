@@ -192,10 +192,10 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 && json.candidates && json.candidates.length == 0) {
-                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-                await stepContext.context.sendActivity(prompt)
-                flag = false;
+            if (response.status != 200 || json.candidates || json.candidates.length == 0) {
+                
+                await stepContext.context.sendActivity('Không tìm thấy trạm này')
+                return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
             } else {
                 //request get Geo(lat,lng)
                 result = {};
@@ -376,10 +376,10 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 && json.candidates && json.candidates.length == 0) {
-                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-                await stepContext.context.sendActivity(prompt)
-                flag = false;
+            if (response.status != 200 || json.candidates || json.candidates.length == 0) {
+                await stepContext.context.sendActivity('Không tìm thấy trạm này')
+                return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
+            
             } else {
                 //request get Geo(lat,lng)
                 result = {};
