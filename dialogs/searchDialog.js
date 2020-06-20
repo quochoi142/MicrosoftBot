@@ -106,19 +106,20 @@ class SearchDialog extends CancelAndHelpDialog {
                                         "buttons": [
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
-                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                                "title": "Khu du lịch Suối Tiên",
+                                                "payload": "Khu du lịch Suối Tiên"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
-                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                                "title": "Công viên nước Đầm Sen",
+                                                "payload": "Công viên nước Đầm Sen"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Suối tiên",
-                                                "payload": "Suối tiên"
+                                                "title": "Hồ Con Rùa",
+                                                "payload": "Hồ Con Rùa"
                                             }
+
                                         ]
                                     }
                                 ]
@@ -233,9 +234,6 @@ class SearchDialog extends CancelAndHelpDialog {
                             //const departures = boards[i].departures;
                             buses = boards[i].departures;
 
-
-
-
                         }
 
 
@@ -260,7 +258,6 @@ class SearchDialog extends CancelAndHelpDialog {
                 });
 
                 //////--------------------------------------
-                
                 //Send message
                 try {
                     await stepContext.context.sendActivity({
@@ -456,7 +453,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
                     }
                     if (!isExistsBus) {
-                        await stepContext.context.sendActivity("Có vẻ như xe bus này không đi qua trạm")
+                        await stepContext.context.sendActivity("Có vẻ như xe bus này hiện tại không đi qua trạm,")
                         flag = false
                     }
                 }
@@ -603,8 +600,5 @@ class SearchDialog extends CancelAndHelpDialog {
     }
 
 }
-
-
-
 
 module.exports.SearchDialog = SearchDialog;

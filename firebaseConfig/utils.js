@@ -44,11 +44,29 @@ const utils = {
 
     //Lưu cả điểm origin vs destination
     saveOriDes: (id, origin, destination) => {
+
+
+        //Handle lan-lon in data
+        for (var i = 0; i < origin.length; i++) {
+            if (origin[i] == '|') {
+                var index = origin.lastIndexOf('|');
+                origin = origin.substring(index + 1,origin.length);
+            }
+        }
+
         //Handle data in origin and destination
         if (origin[0] == '"') {
             origin = origin.replace('"', '');
             origin = origin.replace('"', '');
 
+        }
+
+        //Handle lan-lon in data
+        for (var i = 0; i < destination.length; i++) {
+            if (destination[i] == '|') {
+                var index = destination.lastIndexOf('|');
+                destination = destination.substring(index + 1,destination.length);
+            }
         }
 
         if (destination[0] == '"') {
@@ -216,8 +234,8 @@ const utils = {
                     arr.push(data.val());
 
                 })
-                  // remove the duplicate element
-                  for (var i = 0; i < arr.length; i++) {
+                // remove the duplicate element
+                for (var i = 0; i < arr.length; i++) {
                     var Isduplicate = 0;
                     for (var j = 0; j < arr2.length; j++) {
 
@@ -255,8 +273,8 @@ const utils = {
                     arr.push(data.val());
 
                 })
-                  // remove the duplicate element
-                  for (var i = 0; i < arr.length; i++) {
+                // remove the duplicate element
+                for (var i = 0; i < arr.length; i++) {
                     var Isduplicate = 0;
                     for (var j = 0; j < arr2.length; j++) {
 
@@ -445,6 +463,15 @@ const utils = {
 
 
     saveNearestStop: (id, data) => {
+
+        //Handle lan-lon in data
+        for (var i = 0; i < data.length; i++) {
+            if (data[i] == '|') {
+                var index = data.lastIndexOf('|');
+                data = data.substring(index + 1, data.length);
+            }
+        }
+
         //initialize firebase
         var db = firebase.database();
 
@@ -480,6 +507,7 @@ const utils = {
     },
 
     saveDepartures: (id, data) => {
+
         //Handle data in origin and destination
         if (data.bus[0] == '"') {
             data.bus = data.bus.replace('"', '');

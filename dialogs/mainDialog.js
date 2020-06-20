@@ -151,6 +151,7 @@ class MainDialog extends ComponentDialog {
         const luisResult = await this.luisRecognizer.executeLuisQuery(stepContext.context);
         switch (LuisRecognizer.topIntent(luisResult)) {
             case 'Tìm_đường': {
+                isWelcome = true;
                 const from = this.luisRecognizer.getFromEntities(luisResult);
                 const to = this.luisRecognizer.getToEntities(luisResult);
                 routeDetails.origin = from;
@@ -158,6 +159,7 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.beginDialog('routeDialog', routeDetails);
             }
             case 'Tra_cứu_xe': {
+                isWelcome = true;
                 const StopDetail = {};
                 const result = luisResult;
                 if (result.entities.$instance.Stop) {
@@ -173,7 +175,7 @@ class MainDialog extends ComponentDialog {
             }
             case 'Tìm_trạm': {
 
-
+                isWelcome = true;
                 var location = {};
                 const result = luisResult
                 if (result.entities.$instance.Origin) {
@@ -188,6 +190,7 @@ class MainDialog extends ComponentDialog {
                 return await stepContext.next();
             }
             case 'Trợ_giúp': {
+                isWelcome = true;
                 const helpMessageText = 'Bạn hãy chọn 1 trong các lựa chọn bên dưới \r\n Hoặc bạn có thể nhập trực tiếp yêu cầu vào \r\n VD: Tìm đường \r\n Tra cứu xe bus tại trạm suối tiên \r\n Tôi muốn đi từ đầm sen đến suối tiên v.v.';
                 await stepContext.context.sendActivity(helpMessageText, helpMessageText, InputHints.IgnoringInput);
                 return await stepContext.replaceDialog(this.initialDialogId);
