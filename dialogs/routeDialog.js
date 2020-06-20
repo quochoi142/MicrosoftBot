@@ -435,6 +435,21 @@ class RouteDialog extends CancelAndHelpDialog {
         }
 
 
+        //Handle lan-lon in data
+        for (var i = 0; i <  result.origin.length; i++) {
+            if ( result.origin[i] == '|') {
+                var index =  result.origin.lastIndexOf('|');
+                result.origin =  result.origin.substring(index + 1,  result.origin.length);
+            }
+        }
+
+        for (var i = 0; i <  result.destination.length; i++) {
+            if ( result.destination[i] == '|') {
+                var index =  result.destination.lastIndexOf('|');
+                result.destination =  result.destination.substring(index + 1,  result.destination.length);
+            }
+        }
+
         //cho người dùng biết 2 điểm O-D
         const confirmMsg = "Đi từ " + result.origin + " đến " + result.destination + ".";
         stepContext.context.sendActivity(confirmMsg, confirmMsg, InputHints.IgnoringInput);
