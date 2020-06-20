@@ -142,7 +142,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
 
         if (!result.bus) {
-
+            
             const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
             const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
             const luis = new BusRecognizer(luisConfig);
@@ -193,10 +193,10 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 && Fjson.candidates && json.candidates.length == 0) {
-                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-                await stepContext.context.sendActivity(prompt)
-                flag = false;
+            if (response.status != 200 || json.candidates || json.candidates.length == 0) {
+                
+                await stepContext.context.sendActivity('Không tìm thấy trạm này')
+                return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
             } else {
                 //request get Geo(lat,lng)
                 result = {};
@@ -216,14 +216,14 @@ class SearchDialog extends CancelAndHelpDialog {
                 const response = await fetch(encodeUrl(url), requestOptions)
                 if (response.status != 200) {
                     await stepContext.context.sendActivity("Lỗi server")
-                    stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                    return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
                 }
                 const data = await response.json();
 
                 if (data.boards.length == 0) {
                     prompt = 'Không tìm thấy trạm ' + place;
                     await stepContext.context.sendActivity(prompt)
-                    stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                    return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
                 } else {
                     var buses = [];
                     const boards = data.boards;
@@ -232,7 +232,7 @@ class SearchDialog extends CancelAndHelpDialog {
 
                         if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
                             //const departures = boards[i].departures;
-                            this.buses = boards[i].departures;
+                            buses = boards[i].departures;
 
                         }
 
@@ -240,9 +240,13 @@ class SearchDialog extends CancelAndHelpDialog {
                     }
 
                 }
+                if(buses.length==0){
+                    await stepContext.context.sendActivity("Có vẻ như không tìm thấy trạm xe bus này. Vui lòng tìm các trạm xung quanh bạn để biết rõ hơn.");
+                    return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                }
                 var departures = []
                 var buttons = []
-                this.buses.forEach(e => {
+                buses.forEach(e => {
                     if (!departures.includes(e.transport.name)) {
                         departures.push(e.transport.name)
                         buttons.push({
@@ -369,10 +373,10 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 && json.candidates && json.candidates.length == 0) {
-                prompt = 'Không tìm thấy trạm nào xung quanh cả, bạn có thể cung cấp địa chỉ cụ thể hơn không?';
-                await stepContext.context.sendActivity(prompt)
-                flag = false;
+            if (response.status != 200 || json.candidates || json.candidates.length == 0) {
+                await stepContext.context.sendActivity('Không tìm thấy trạm này')
+                return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
+            
             } else {
                 //request get Geo(lat,lng)
                 result = {};
@@ -527,7 +531,8 @@ class SearchDialog extends CancelAndHelpDialog {
         } catch (err) {
             console.log(err);
             prompt = "Có lỗi trong quá trình tìm kiếm, mong bạn thử lại";
-            await stepContext.endDialog(prompt);
+            await stepContext.context.sendActivity(prompt);
+            return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
             flag = false;
         }
 
