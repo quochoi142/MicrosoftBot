@@ -19,7 +19,7 @@ const utils = require('../firebaseConfig/utils');
 
 const randomstring = require('randomstring')
 
-class StopArounDialog extends CancelAndHelpDialog {
+class StopAroundDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id);
         this.addDialog(new TextPrompt(TEXT_PROMPT))
@@ -142,100 +142,6 @@ class StopArounDialog extends CancelAndHelpDialog {
     async openMapStep(stepContext) {
 
         var result = stepContext.options;
-
-        const id = utils.getIdUser(stepContext.context);
-
-        if (!result.origin) {
-            utils.setToken(stepContext.context);
-            var promise = new Promise(function (resolve, reject) {
-                var token;
-                var firebase = utils.getFirebase();
-                firebase.database().ref('users/' + id + '/token').once('value', (snap) => {
-                    token = snap.val();
-                    var url = 'https://botbusvqh.herokuapp.com/map?id=' + id + '&token=' + token;
-                    setTimeout(function () {
-                        firebase.database().ref('users/' + id + '/token').set(randomstring.generate(10));
-
-                    }, 5 * 60000);
-                    resolve({ url, token })
-
-                })
-
-
-            });
-            var myUrl;
-            var myToken;
-            await promise.then(res => {
-                myUrl = res.url;
-                myToken = res.token
-            }).catch(err => {
-                console.log(err);
-            })
-
-            // Moi them
-            // Get origin from Firebase
-            try {
-                const id = await utils.getIdUser(stepContext.context);
-                var myInfo = await utils.readStop(id);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-            //Send card 
-
-            await stepContext.context.sendActivity({
-                channelData: {
-                    "attachment": {
-                        "type": "template",
-                        "payload": {
-                            "template_type": "generic",
-                            "elements": [
-                                {
-                                    "title": "Bạn muốn tìm xung quanh trạm nào?",
-                                    "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
-                                    "subtitle": "Hãy mở map và xác nhận vị trí",
-                                    "buttons": [
-                                        {
-                                            "type": "web_url",
-                                            "url": myUrl,
-                                            "title": "Mở map",
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                }
-            });
-
-
-            try {
-                var map = utils.openMap(id, myToken);
-
-                await map.then(async res => {
-
-                    var token = await utils.getTokenbyId(id)
-                    if (res.token != token) {
-                        result.origin = null;
-                    } else {
-                        result.origin = res.location;
-                    }
-
-
-                })
-            } catch (error) {
-                await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
-                await stepContext.endDialog();
-                return await stepContext.beginDialog('stopAroundDialogs');
-            }
-
-        }
-        return await stepContext.next(result.origin)
-    }
-    async openMapStep(stepContext) {
-
-        var result = stepContext.options;
         if (!result.origin) {
 
             // Get destiantion from Firebase
@@ -256,8 +162,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                                 "template_type": "generic",
                                 "elements": [
                                     {
-                                        "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "title": "Bạn muốn tìm trạm xung quanh vị trí nào",
+                                        "image_url": "https://i.pcmag.com/imagery/articles/05ADBV1ymnSvbBWkkDkQIzv-5.fit_scale.size_2698x1517.v1569489490.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -287,8 +193,8 @@ class StopArounDialog extends CancelAndHelpDialog {
                                 "template_type": "generic",
                                 "elements": [
                                     {
-                                        "title": "Nơi bạn muốn đến là?",
-                                        "image_url": "https://www.controleng.com/wp-content/uploads/sites/2/2013/02/ctl1304-f5-Roadmap-TriCore-Map-w.jpg",
+                                        "title": "Bạn muốn tìm trạm xung quanh vị trí nào",
+                                        "image_url": "https://i.pcmag.com/imagery/articles/05ADBV1ymnSvbBWkkDkQIzv-5.fit_scale.size_2698x1517.v1569489490.jpg",
                                         "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
                                         "buttons": [
                                             {
@@ -368,7 +274,7 @@ class StopArounDialog extends CancelAndHelpDialog {
                                     "template_type": "generic",
                                     "elements": [
                                         {
-                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí hiện tại.",
+                                            "title": "Bấm nút bên dưới để mở map xác nhận vị trí.",
                                             "image_url": "https://previews.123rf.com/images/vadmary/vadmary1302/vadmary130200031/17960600-street-map-with-gps-icons-navigation.jpg",
                                             "subtitle": "Sẽ có 1 tab trình duyệt mới hiển thị map",
                                             "buttons": [
@@ -399,22 +305,22 @@ class StopArounDialog extends CancelAndHelpDialog {
                         result.origin = res.location;
                     }
 
-
                 })
             } catch (error) {
                 //chưa sửa xong
-                originDetails.origin = null;
+
                 await stepContext.context.sendActivity('không lấy được vị trí hiện tại', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
-                return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+                return await stepContext.beginDialog('STOP_AROUND_DIALOG');
 
             }
         }
-        else if (LuisRecognizer.topIntent(luisResult) == "None"){
-            originDetails.origin = null;
+        else if (LuisRecognizer.topIntent(luisResult) == "None") {
+
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
-            return await stepContext.beginDialog('stopAroungDialogs', originDetails);
+            return await stepContext.beginDialog('STOP_AROUND_DIALOG');
+            stepContext.beginDialog()
         }
         else if (origin) {
             result.origin = origin;
@@ -561,4 +467,4 @@ class StopArounDialog extends CancelAndHelpDialog {
 }
 
 
-module.exports.StopArounDialog = StopArounDialog;
+module.exports.StopAroundDialog = StopAroundDialog;
