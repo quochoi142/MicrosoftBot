@@ -125,13 +125,13 @@ class RouteDialog extends CancelAndHelpDialog {
                                         "buttons": [
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
-                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                                "title": "đh KHTN, Linh trung, Thủ Đức",
+                                                "payload": "đh KHTN, Linh trung, Thủ Đức"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
-                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                                "title": "đh KHTN, 227 nguyễn văn cừ",
+                                                "payload": "đh KHTN, 227 nguyễn văn cừ"
                                             },
                                             {
                                                 "type": "postback",
@@ -190,7 +190,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                     await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết điểm đến thay vì điểm xuất phát.', '', InputHints.IgnoringInput);
                     await stepContext.endDialog();
-                    return await stepContext.beginDialog('routeDialog', routeDetails);
+                    return await stepContext.beginDialog('routeDialog');
                 }
                 else if (!from && to) {
                     route.destination = to;
@@ -201,7 +201,7 @@ class RouteDialog extends CancelAndHelpDialog {
 
                 await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng nhập chi tiết hoặc chính xác hơn.', '', InputHints.IgnoringInput);
                 await stepContext.endDialog();
-                return await stepContext.beginDialog('routeDialog', routeDetails);
+                return await stepContext.beginDialog('routeDialog');
             }
             else {
                 route.destination = stepContext.result;
@@ -271,13 +271,13 @@ class RouteDialog extends CancelAndHelpDialog {
                                         "buttons": [
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức.",
-                                                "payload": "Đại học khoa học tự nhiên, Linh Trung, Thủ Đức."
+                                                "title": "Khu du lịch Suối Tiên",
+                                                "payload": "Khu du lịch Suối Tiên"
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ.",
-                                                "payload": "Đại học khoa học tự nhiên, 227 nguyễn văn cừ."
+                                                "title": "Công viên nước Đầm Sen",
+                                                "payload": "Công viên nước Đầm Sen"
                                             },
                                             {
                                                 "type": "postback",

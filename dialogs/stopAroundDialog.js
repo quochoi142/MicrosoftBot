@@ -320,7 +320,7 @@ class StopAroundDialog extends CancelAndHelpDialog {
             await stepContext.context.sendActivity('Câu trả lời không hợp lệ', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
             return await stepContext.beginDialog('STOP_AROUND_DIALOG');
-            stepContext.beginDialog()
+            
         }
         else if (origin) {
             result.origin = origin;
