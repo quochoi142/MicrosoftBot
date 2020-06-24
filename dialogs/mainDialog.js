@@ -226,13 +226,6 @@ class MainDialog extends ComponentDialog {
             return await stepContext.next(stepContext.result);
 
         }
-        if (stepContext.result == undefined) {
-
-            const byeMessageText = 'lỗi chổ trạm';
-            await stepContext.context.sendActivity(byeMessageText, byeMessageText, InputHints.IgnoringInput);
-
-            return await stepContext.endDialog();
-        }
         else {
 
             const byeMessageText = 'Chào tạm biệt...';

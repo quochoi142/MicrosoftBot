@@ -111,8 +111,8 @@ class SearchDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Công viên nước Đầm Sen",
-                                                "payload": "Công viên nước Đầm Sen"
+                                                "title": "Đầm Sen",
+                                                "payload": "Đầm Sen"
                                             },
                                             {
                                                 "type": "postback",
