@@ -27,6 +27,7 @@ class SearchDialog extends CancelAndHelpDialog {
             .addDialog(new ConfirmPrompt(CONFIRM))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.GetStopStep.bind(this),
+                this.ConfirmStop.bind(this),
                 this.GetBusNum.bind(this),
                 this.SearchStep.bind(this),
                 // this.confirmNotify.bind(this)
@@ -137,12 +138,120 @@ class SearchDialog extends CancelAndHelpDialog {
 
     }
 
+    async ConfirmStop(stepContext) {
+        var result = stepContext.options;
+        if (!result.stop) {
+            var place = stepContext.result
+            const urlRequestGeo = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyBuTd5eFJwpova9M3AGpPrSwmzp_hHWVuE&inputtype=textquery&language=vi&fields=formatted_address,geometry&input=' + place + ' tphcm';
+
+            const response = await fetch(utf8.encode(urlRequestGeo));
+            const json = await response.json();
+
+            if (response.status != 200 || (json.candidates && json.candidates.length == 0)) {
+
+                await stepContext.context.sendActivity('Không tìm thấy trạm này')
+                return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
+            } else {
+                //request get Geo(lat,lng)
+                result = {};
+                result.address = json.candidates[0].formatted_address;
+                result.geo = json.candidates[0].geometry.location;
+                this.geo = result.geo
+                this.place = place
+                const url = 'https://transit.hereapi.com/v8/departures?maxPerBoard=10&lang=vi&in=' + result.geo.lat + ',' + result.geo.lng + ';r=1000&name=' + place;
+                var myHeaders = new fetch.Headers();
+                myHeaders.append("Authorization", 'Bearer ' + process.env.token);
+
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow'
+                };
+                const response = await fetch(encodeUrl(url), requestOptions)
+                if (response.status != 200) {
+                    await stepContext.context.sendActivity("Lỗi server")
+                    return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                }
+                const data = await response.json();
+
+                if (data.boards.length == 0) {
+                    prompt = 'Không tìm thấy trạm ' + place;
+                    await stepContext.context.sendActivity(prompt)
+                    return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
+                } else {
+                    var departures = [];
+                    const boards = data.boards;
+                    const index = boards.find(e => e.place.name.toLowerCase() == place.toLowerCase())
+                    if (index) {
+                        return await stepContext.next(place);
+                    }
+                    for (var i = 0; i < boards.length; i++) {
+
+                        if (stringSimilarity.compareTwoStrings(boards[i].place.name.toLowerCase(), place.toLowerCase()) > 0.7) {
+                            if (!departures.includes(boards[i].place.name)) {
+                                departures.push(boards[i].place.name)
+                            }
+
+                        }
+
+
+                    }
+
+                }
+
+                var buttons = []
+                departures.forEach(e => {
+
+                    buttons.push({
+                        "type": "postback",
+                        "title": e,
+                        "payload": e
+                    });
+                })
+                //////--------------------------------------
+                //Send message
+                try {
+                    await stepContext.context.sendActivity({
+                        channelData: {
+                            "attachment": {
+                                "type": "template",
+                                "payload": {
+                                    "template_type": "generic",
+                                    "elements": [
+                                        {
+                                            "title": "Có phải bạn muốn tìm 1 trong các trạm dưới đây?",
+                                            "image_url": "https://image.freepik.com/free-vector/happy-cute-kids-wait-school-bus-with-friends_97632-1086.jpg",
+                                            "subtitle": "Bạn có thể chọn 1 trong các lựa chọn bên dưới hoặc nhập trực tiếp.",
+                                            "buttons": buttons
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    });
+                    const messageText = null;
+                    const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+                    return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+                } catch (error) {
+                    return await stepContext.next(place);
+                }
+
+
+            }
+        }
+
+        return await stepContext.next(result.stop);
+
+
+
+    }
+
     async GetBusNum(stepContext) {
         var result = stepContext.options;
 
 
         if (!result.bus) {
-            
+
             const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
             const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${LuisAPIHostName}` };
             const luis = new BusRecognizer(luisConfig);
@@ -194,7 +303,7 @@ class SearchDialog extends CancelAndHelpDialog {
             const json = await response.json();
 
             if (response.status != 200 || (json.candidates && json.candidates.length == 0)) {
-                
+
                 await stepContext.context.sendActivity('Không tìm thấy trạm này')
                 return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
             } else {
@@ -240,7 +349,7 @@ class SearchDialog extends CancelAndHelpDialog {
                     }
 
                 }
-                if(buses.length==0){
+                if (buses.length == 0) {
                     await stepContext.context.sendActivity("Có vẻ như không tìm thấy trạm xe bus này. Vui lòng tìm các trạm xung quanh bạn để biết rõ hơn.");
                     return await stepContext.endDialog("Bạn cần giúp gì thêm không?")
                 }
@@ -373,10 +482,10 @@ class SearchDialog extends CancelAndHelpDialog {
             const response = await fetch(utf8.encode(urlRequestGeo));
             const json = await response.json();
 
-            if (response.status != 200 ||(json.candidates && json.candidates.length == 0)) {
+            if (response.status != 200 || (json.candidates && json.candidates.length == 0)) {
                 await stepContext.context.sendActivity('Không tìm thấy trạm này')
                 return await stepContext.endDialog("Bạn cần giúp gì thêm không?");
-            
+
             } else {
                 //request get Geo(lat,lng)
                 result = {};
