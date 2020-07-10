@@ -211,7 +211,7 @@ class MainDialog extends ComponentDialog {
             case 'Kết_thúc': {
                 return await stepContext.next();
             }
-            case 'Contact': {
+            case 'Thông_tin_liên_hệ': {
                 isWelcome = true;
                 const contactMessageText = 'Thông tin admin:\r\n Ly Truong Thanh Giang\r\nQuốc Hội Vũ';
                 await stepContext.context.sendActivity(contactMessageText, contactMessageText, InputHints.IgnoringInput);
