@@ -118,6 +118,28 @@ class MainDialog extends ComponentDialog {
                                             "payload": "Tra cứu xe"
                                         }
                                     ]
+                                },
+                                {
+                                    "title": welcome,
+                                    "image_url": "https://image.shutterstock.com/image-vector/welcome-poster-spectrum-brush-strokes-260nw-1146069941.jpg",
+                                    "subtitle": "Bạn hãy chọn 1 trong các chức năng:",
+                                    "buttons": [
+                                        {
+                                            "type": "postback",
+                                            "title": "Trợ giúp",
+                                            "payload": "Trợ giúp"
+                                        },
+                                        {
+                                            "type": "postback",
+                                            "title": "Thông tin liên hệ",
+                                            "payload": "Thông tin liên hệ"
+                                        },
+                                        {
+                                            "type": "postback",
+                                            "title": "Kết thúc",
+                                            "payload": "Kết thúc"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -138,7 +160,7 @@ class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     async actStep(stepContext) {
-      
+
         const routeDetails = {};
 
         if (!this.luisRecognizer.isConfigured) {
@@ -188,6 +210,13 @@ class MainDialog extends ComponentDialog {
             }
             case 'Kết_thúc': {
                 return await stepContext.next();
+            }
+            case 'Contact': {
+                isWelcome = true;
+                const contactMessageText = 'Thông tin admin:\r\n Ly Truong Thanh Giang\r\nQuốc Hội Vũ';
+                await stepContext.context.sendActivity(contactMessageText, contactMessageText, InputHints.IgnoringInput);
+                return await stepContext.replaceDialog(this.initialDialogId);
+
             }
             case 'Trợ_giúp': {
                 isWelcome = true;
