@@ -199,6 +199,11 @@ class StopAroundDialog extends CancelAndHelpDialog {
                                         "buttons": [
                                             {
                                                 "type": "postback",
+                                                "title": "đh KHTN, 227 nguyễn văn cừ",
+                                                "payload": "đh KHTN, 227 nguyễn văn cừ",
+                                            },
+                                            {
+                                                "type": "postback",
                                                 "title": "Mở map chọn vị trí",
                                                 "payload": "Mở map chọn vị trí"
                                             }

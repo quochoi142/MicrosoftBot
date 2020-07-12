@@ -118,7 +118,7 @@ const utils = {
 
         var location;
 
-        return await firebase.database().ref('users/' + id + '/location').once('value')
+        return await firebase.database().ref('users/' + id + '/stops').orderByChild('time').once('value')
             .then(function (snapshot) {
                 snapshot.forEach(data => {
                     location = data.val();
