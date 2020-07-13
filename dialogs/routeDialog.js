@@ -52,13 +52,7 @@ class RouteDialog extends CancelAndHelpDialog {
         else {
             return false;
         }
-        // var location = activity.entry[0];
-        // if (location != null) {
-        //     return true;
-        // }
-        // return false
-        // return promptContext.recognized.succeeded && promptContext.recognized.value > 0 && promptContext.recognized.value < 150;
-    }
+     }
 
     async destinationStep(stepContext) {
         const route = stepContext.options;

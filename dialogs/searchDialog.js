@@ -112,7 +112,7 @@ class SearchDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "Đầm Sen",
+                                                "title": "N",
                                                 "payload": "Đầm Sen"
                                             },
                                             {

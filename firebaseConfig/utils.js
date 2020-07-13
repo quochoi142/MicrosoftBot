@@ -407,7 +407,6 @@ const utils = {
                 }
                 i = true;
 
-
             });
 
         });
