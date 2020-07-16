@@ -96,7 +96,6 @@ class StopAroundDialog extends CancelAndHelpDialog {
 
                 })
 
-
             });
             var myUrl;
             await promise.then(url => {

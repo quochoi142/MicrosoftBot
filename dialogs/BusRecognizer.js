@@ -77,7 +77,7 @@ class BusRecognizer {
     getOriginEntities(result) {
         let originValue;
         if (result.entities.$instance.Origin) {
-            stopValue = result.entities.$instance.Origin[0].text;
+            originValue = result.entities.$instance.Origin[0].text;
         }
 
         return originValue;
