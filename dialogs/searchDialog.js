@@ -112,7 +112,7 @@ class SearchDialog extends CancelAndHelpDialog {
                                             },
                                             {
                                                 "type": "postback",
-                                                "title": "N",
+                                                "title": "Đầm Sen",
                                                 "payload": "Đầm Sen"
                                             },
                                             {
@@ -450,25 +450,31 @@ class SearchDialog extends CancelAndHelpDialog {
         if (LuisRecognizer.topIntent(luisResult) == "Tra_cứu_xe") {
             bus = luis.getBusEntities(luisResult);
             stop = luis.getStopEntities(luisResult);
-        }
 
-        const StopDetail = {};
-        if (bus && stop) {
-            result0.stop = stop;
-            result0.bus = bus;
+
+            const StopDetail = {};
+            if (bus && stop) {
+                result0.stop = stop;
+                result0.bus = bus;
+            }
+            else if (!bus && stop) {
+                await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết số xe thay vì tên trạm', '', InputHints.IgnoringInput);
+                await stepContext.endDialog();
+                return await stepContext.beginDialog('searchDialog', StopDetail);
+            }
+            else if (bus && !stop) {
+                result0.bus = bus;
+            }
         }
-        else if (!bus && stop) {
-            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng cho tôi biết số xe thay vì tên trạm', '', InputHints.IgnoringInput);
+        else if (LuisRecognizer.topIntent(luisResult) == "None") {
+
+            await stepContext.context.sendActivity('Câu trả lời không hợp lệ.\r\n Vui lòng nhập chi tiết hoặc chính xác hơn.', '', InputHints.IgnoringInput);
             await stepContext.endDialog();
-            return await stepContext.beginDialog('searchDialog', StopDetail);
-        }
-        else if (bus && !stop) {
-            result0.bus = bus;
+            return await stepContext.beginDialog('searchDialog');
         }
         else if (!bus && !stop) {
             result0.bus = stepContext.result;
         }
-
 
         const place = result0.stop;
         var prompt = '';
