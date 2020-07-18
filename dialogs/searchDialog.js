@@ -30,7 +30,6 @@ class SearchDialog extends CancelAndHelpDialog {
                 this.ConfirmStop.bind(this),
                 this.GetBusNum.bind(this),
                 this.SearchStep.bind(this),
-                // this.confirmNotify.bind(this)
 
             ]));
 

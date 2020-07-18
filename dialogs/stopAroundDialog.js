@@ -25,7 +25,7 @@ class StopAroundDialog extends CancelAndHelpDialog {
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new TextPrompt(LOCATION, this.locationValidator))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.openMapStep.bind(this),
+                this.getLocationStep.bind(this),
                 this.searchStopsStep.bind(this)
             ]));
 
@@ -64,7 +64,7 @@ class StopAroundDialog extends CancelAndHelpDialog {
 
 
 
-    async getLocationStep(stepContext) {
+    /* async getLocationStep(stepContext) {
 
         // const result = stepContext.options;
         // if (!result.origin) {
@@ -118,7 +118,7 @@ class StopAroundDialog extends CancelAndHelpDialog {
 
         return await stepContext.next(result.origin)
 
-    }
+    } */
 
     //  async openMap(stepContext) {
     //     if (stepContext.result != 'map')
@@ -138,7 +138,7 @@ class StopAroundDialog extends CancelAndHelpDialog {
     // }
 
     //code here
-    async openMapStep(stepContext) {
+    async getLocationStep(stepContext) {
 
         var result = stepContext.options;
         if (!result.origin) {
